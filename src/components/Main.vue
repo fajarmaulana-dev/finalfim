@@ -318,13 +318,14 @@ const expand = ref(false);
 const colorize = computed(() => {
     if (countDown_var.value > 10 && countDown_var.value <= 30) {
         return 'yellow-600'
-    }
-    if (countDown_var.value <= 10) {
+    } else if (countDown_var.value > 0 && countDown_var.value <= 10) {
         if (countDown_var.value % 2 === 0) {
             return 'red-600'
         } else {
             return 'yellow-600'
         }
+    } else {
+        return 'blue-600'
     }
 })
 </script>
@@ -385,7 +386,7 @@ const colorize = computed(() => {
         </div>
         <div class="overlay" :class="{ 'dis-none': !display.container, 'dis-flex': display.container }">
             <div class="time" :class="{ 'quest-disapp': !display.box, 'quest-app': display.box }">
-                <h4>Sisa Waktu (s)</h4>
+                <h4 :style="`color: var(--${colorize})`">Sisa Waktu (s)</h4>
                 <Progress :withImage="false" :percent="percentage()" :current="countDown_var" :color="colorize" />
             </div>
             <div class="question" :class="{ 'quest-disapp': !display.box, 'quest-app': display.box }">
@@ -722,7 +723,7 @@ const colorize = computed(() => {
 
 .time h4 {
     position: absolute;
-    top: 6.5rem;
+    top: 6.25rem;
     left: 0;
     text-align: center;
     font-size: .75rem;

@@ -67,7 +67,7 @@ const typeToastImage = computed(() => {
 })
 
 const typeModalImage = computed(() => {
-    if (type.value === 'success') return image.value = 'src/assets/color-circle-check-solid.svg';
+    if (type.value === 'success') return image.value = 'src/assets/fimo jempol.png';
     if (type.value === 'warning') return image.value = 'src/assets/color-triangle-exclamation-solid.svg';
     if (type.value === 'error') return image.value = 'src/assets/color-circle-exclamation-solid.svg';
     if (type.value === 'primary') return image.value = 'src/assets/color-circle-info-solid.svg';
