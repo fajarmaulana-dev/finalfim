@@ -65,13 +65,6 @@ const typeToastImage = computed(() => {
     if (type.value === 'error') { return image.value = 'https://drive.google.com/u/0/uc?id=1fM0Td4ptI-cr4i_VFHfFWoOrYkAWX0_Y&export=download' };
     if (type.value === 'primary') { return image.value = 'https://drive.google.com/u/0/uc?id=11IfdOuE4scHacx9sKOIXXUiLkmlFmJsC&export=download' };
 })
-
-const typeModalImage = computed(() => {
-    if (type.value === 'success') { return image.value = 'src/assets/fimojempol.png' };
-    if (type.value === 'warning') { return image.value = 'src/assets/color-triangle-exclamation-solid.svg' };
-    if (type.value === 'error') { return image.value = 'src/assets/color-circle-exclamation-solid.svg' };
-    if (type.value === 'primary') { return image.value = 'src/assets/color-circle-info-solid.svg' };
-})
 const col = `flex-direction: column; text-align: center;`;
 </script>
 
