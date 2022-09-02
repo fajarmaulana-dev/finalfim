@@ -60,10 +60,10 @@ const typeColor = computed(() => {
 })
 
 const typeToastImage = computed(() => {
-    if (type.value === 'success') { return image.value = '/assets/circle-check-solid.png' };
-    if (type.value === 'warning') { return image.value = '/assets/triangle-exclamation-solid.png' };
-    if (type.value === 'error') { return image.value = '/assets/circle-exclamation-solid.png' };
-    if (type.value === 'primary') { return image.value = '/assets/circle-info-solid.png' };
+    if (type.value === 'success') { return image.value = 'https://drive.google.com/u/0/uc?id=1WKOn9maVyKppl8THaHbBHCxps7ce_dNB&export=download' };
+    if (type.value === 'warning') { return image.value = 'https://drive.google.com/u/0/uc?id=1DAwmDf6h38Er5mG6hqJkODrKWUOKYlQn&export=download' };
+    if (type.value === 'error') { return image.value = 'https://drive.google.com/u/0/uc?id=1fM0Td4ptI-cr4i_VFHfFWoOrYkAWX0_Y&export=download' };
+    if (type.value === 'primary') { return image.value = 'https://drive.google.com/u/0/uc?id=11IfdOuE4scHacx9sKOIXXUiLkmlFmJsC&export=download' };
 })
 const col = `flex-direction: column; text-align: center;`;
 </script>
