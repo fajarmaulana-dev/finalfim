@@ -473,7 +473,7 @@ const expand = ref(false);
     justify-content: center;
     flex-direction: column;
     width: 100%;
-    padding: 5rem 0;
+    padding: 5rem 0 10rem 0;
 }
 
 .main>em {
