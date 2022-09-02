@@ -60,10 +60,10 @@ const typeColor = computed(() => {
 })
 
 const typeToastImage = computed(() => {
-    if (type.value === 'success') { return image.value = 'src/assets/circle-check-solid.svg' };
-    if (type.value === 'warning') { return image.value = 'src/assets/triangle-exclamation-solid.svg' };
-    if (type.value === 'error') { return image.value = 'src/assets/circle-exclamation-solid.svg' };
-    if (type.value === 'primary') { return image.value = 'src/assets/circle-info-solid.svg' };
+    if (type.value === 'success') { return image.value = 'https://drive.google.com/u/0/uc?id=1WKOn9maVyKppl8THaHbBHCxps7ce_dNB&export=download' };
+    if (type.value === 'warning') { return image.value = 'https://drive.google.com/u/0/uc?id=1DAwmDf6h38Er5mG6hqJkODrKWUOKYlQn&export=download' };
+    if (type.value === 'error') { return image.value = 'https://drive.google.com/u/0/uc?id=1fM0Td4ptI-cr4i_VFHfFWoOrYkAWX0_Y&export=download' };
+    if (type.value === 'primary') { return image.value = 'https://drive.google.com/u/0/uc?id=11IfdOuE4scHacx9sKOIXXUiLkmlFmJsC&export=download' };
 })
 
 const typeModalImage = computed(() => {
@@ -87,7 +87,7 @@ const col = `flex-direction: column; text-align: center;`;
                         class="gridcardImg" />
                 </template>
                 <template #body>
-                    <p style="font-weight: 700; font-size: 1.25rem;">{{  title  }}</p>
+                    <p style="font-weight: 700; font-size: 1.25rem;">{{ title }}</p>
                     <p style="margin-top: .5rem; font-size: 1rem;">
                         <slot></slot>
                     </p>
@@ -95,9 +95,9 @@ const col = `flex-direction: column; text-align: center;`;
                 <template #footer>
                     <Button v-if="withConfirm === true" :round="true" :color="type"
                         style="margin-right: .6rem; width: 100%;" @click="$emit('confirm')">
-                        {{  confirmText  }}</Button>
+                        {{ confirmText }}</Button>
                     <Button :color="type" :round="true" :dismiss="true" style="width: 100%;"
-                        @click="$emit('closeModal')">{{  closeText  }}</Button>
+                        @click="$emit('closeModal')">{{ closeText }}</Button>
                 </template>
             </Card>
         </section>
@@ -106,13 +106,8 @@ const col = `flex-direction: column; text-align: center;`;
             style=" justify-content: end; align-items: flex-end; transform: translate(-2rem, -1.5rem);">
             <section class="toast" :class="{ 'toast-disapp': !box, 'toast-app': box }"
                 :style="`background-color: var(--${typeColor}) !important;`">
-<<<<<<< HEAD
-                <div style="background-image: url('src/assets/circle-info-solid.svg');" class="pre-toast"></div>
-=======
-                <div style="background-image: url('https://asset.kompas.com/crops/SV5q4gPkeD8YJTuzO31BqTr9DEI=/192x128:1728x1152/750x500/data/photo/2021/03/06/60436a28b258b.jpg');"
-                    class="pre-toast"></div>
->>>>>>> parent of a23e89e... test
-                <span>{{  message  }}</span>
+                <div :style="`background-image: url(${typeToastImage});`" class="pre-toast"></div>
+                <span>{{ message }}</span>
             </section>
         </section>
     </div>
