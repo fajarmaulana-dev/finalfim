@@ -60,10 +60,10 @@ const typeColor = computed(() => {
 })
 
 const typeToastImage = computed(() => {
-    if (type.value === 'success') { return image.value = 'src/assets/circle-check-solid.png' };
-    if (type.value === 'warning') { return image.value = 'src/assets/triangle-exclamation-solid.png' };
-    if (type.value === 'error') { return image.value = 'src/assets/circle-exclamation-solid.png' };
-    if (type.value === 'primary') { return image.value = 'src/assets/circle-info-solid.png' };
+    if (type.value === 'success') { return image.value = '/assets/circle-check-solid.png' };
+    if (type.value === 'warning') { return image.value = '/assets/triangle-exclamation-solid.png' };
+    if (type.value === 'error') { return image.value = '/assets/circle-exclamation-solid.png' };
+    if (type.value === 'primary') { return image.value = '/assets/circle-info-solid.png' };
 })
 const col = `flex-direction: column; text-align: center;`;
 </script>
