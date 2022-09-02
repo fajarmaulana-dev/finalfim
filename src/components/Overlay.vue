@@ -173,6 +173,6 @@ const col = `flex-direction: column; text-align: center;`;
 }
 
 .toast-disapp {
-    transform: translateY(5.25rem);
+    transform: translateY(10rem);
 }
 </style>

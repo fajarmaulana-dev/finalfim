@@ -719,7 +719,7 @@ const expand = ref(false);
 
 .options {
     position: absolute;
-    height: 22.5vh;
+    height: 23vh;
     padding-top: .5rem;
     bottom: 1rem;
     right: 1rem;
