@@ -304,12 +304,12 @@ const undoMin = (e, f) => {
     i_model.value[e] += minscore.value;
     disBtn.value[e] = false;
     disAdd.value[e] = false;
-    undo_message.value = `Pengurangan poin untuk peserta ${f} dibatalkan`;
+    undo_message.value = `Pengurangan ${minscore.value} poin untuk peserta ${f} dibatalkan`;
     opensToast();
 }
 
 const violation = (e, f) => {
-    contestants.value[e].score -= vioscore.value;
+    i_model.value[e] -= vioscore.value;
     err_message.value = `Pengurangan ${vioscore.value} poin untuk peserta ${f}`;
     openeToast()
 }
@@ -334,7 +334,7 @@ const colorize = computed(() => {
     <div :id="is" style="padding: 0 5vw; display: grid; place-items: center; width: 100%; height: 100%;">
         <div class="main">
             <h2 style="font-size: var(--title); line-height: 2rem;">Babak Kuis</h2>
-            <em>{{  title  }}</em>
+            <em>{{ title }}</em>
             <div>
                 <button ref="mod1" @click="addMod(1);" :disabled="disMod[1] === true ? true : false"></button>
                 <button ref="mod2" @click="addMod(2)" :disabled="disMod[2] === true ? true : false"></button>
@@ -357,7 +357,7 @@ const colorize = computed(() => {
                     <div class="questions">
                         <button v-for="val in quests" :key="val.index" @click="openQuest(val.index)"
                             :style="`background-color: var(${val.bg}); color: var(${val.font}); border-color: var(${val.border}); max-width: ${is === 'mces' ? '3.5' : '4.5'}rem; max-height: ${is === 'mces' ? '3.5' : '4.5'}rem`">
-                            {{  val.value  }}</button>
+                            {{ val.value }}</button>
                     </div>
                 </div>
                 <div class="action">
@@ -366,7 +366,7 @@ const colorize = computed(() => {
                         <div>
                             <div v-for="(i, index) in contestants" :key="i"
                                 style="height: calc(100%/8); position: relative;">
-                                <label>Peserta {{  i.name  }}&nbsp;&nbsp;:</label>
+                                <label>Peserta {{ i.name }}&nbsp;&nbsp;:</label>
                                 <input type="text" v-model.number="i_model[index]" />
                             </div>
                         </div>
@@ -377,7 +377,7 @@ const colorize = computed(() => {
                             <div v-for="i in contestants" :key="i"
                                 style="height: calc(100%/8); border: 3px solid; border-radius: .5rem;"
                                 :style="`background: var(${i.color}-400); border-color: var(${i.color}-600)`">
-                                <p :style="`color: var(${i.color}-700) !important`">{{  i.name  }}</p>
+                                <p :style="`color: var(${i.color}-700) !important`">{{ i.name }}</p>
                             </div>
                         </div>
                     </div>
@@ -392,14 +392,14 @@ const colorize = computed(() => {
             <div class="question" :class="{ 'quest-disapp': !display.box, 'quest-app': display.box }">
                 <div class="pend" style="left: 0;">
                     <img src="@/assets/keping.png" alt="nomor">
-                    <span style="left: -.6rem;">{{  filtered().map(e => e.value)[0]  }}</span>
+                    <span style="left: -.6rem;">{{ filtered().map(e => e.value)[0] }}</span>
                 </div>
                 <div class="pend" style="right: 0;">
                     <img src="@/assets/keping.png" alt="nomor" style="transform: scaleX(-1);">
-                    <span style="right: -.6rem; text-align: center;">{{  filtered().map(e => e.score)[0] 
-                        }}<br />pt</span>
+                    <span style="right: -.6rem; text-align: center;">{{ filtered().map(e => e.score)[0]
+                    }}<br />pt</span>
                 </div>
-                <div class="text" :style="`max-height: ${expand === true ? 'calc(30vh + 5vw)' : '65vh'}`">
+                <div class="text" :style="`max-height: ${expand === true ? 'calc(29vh + 4vw)' : '60vh'}`">
                     <div style="width: 100%" v-html="filtered().map(e => e.question)[0]"></div>
                 </div>
                 <div class="options" :style="`transform: translateY(${expand === true ? '0' : '24vh'})`">
@@ -411,7 +411,7 @@ const colorize = computed(() => {
                         <h4>Pelanggaran<br />Tata Tertib</h4>
                         <div>
                             <button v-for="(contestant, index) in contestants" :key="contestant.name"
-                                @click="violation(index, contestant.name)">{{  contestant.name  }} - {{  vioscore 
+                                @click="violation(index, contestant.name)">{{ contestant.name }} - {{ vioscore
                                 }}</button>
                         </div>
                     </div>
@@ -421,14 +421,14 @@ const colorize = computed(() => {
                                 <button v-for="(contestant, index) in contestants" :key="contestant.name"
                                     :class="{ disButton: disAdd[index] }" :disabled="disAdd[index]"
                                     @click="answer(filtered().map(e => e.index)[0], contestant.name, contestant.color, index); arrLength += 1; countDown_var = 0">
-                                    {{  contestant.name  }}+
+                                    {{ contestant.name }}+
                                 </button>
                             </div>
                             <div>
                                 <button v-for="(contestant, index) in contestants" :key="contestant.name"
                                     :disabled="disBtn[index]" @click="minScore(index, contestant.name)"
                                     :class="{ disButton: disBtn[index] }">
-                                    {{  contestant.name  }}-
+                                    {{ contestant.name }}-
                                 </button>
                             </div>
                             <div>
@@ -436,7 +436,7 @@ const colorize = computed(() => {
                                     :disabled="!disBtn[index]" @click="undoMin(index, contestant.name)"
                                     :class="{ disButton: !disBtn[index] }">
                                     <i class="fa-solid fa-arrow-rotate-left" style="font-size: var(--mini-icon);"></i>
-                                    {{  contestant.name  }}
+                                    {{ contestant.name }}
                                 </button>
                             </div>
                         </div>
@@ -459,8 +459,8 @@ const colorize = computed(() => {
         <Overlay is="toast" type="success" :container="display.success" :box="display.stoast" :message="undo_message" />
         <Overlay type="success" :with-confirm="false" :container="display.modalContainer" :box="display.modal"
             @close-modal="closeModal()" title="Poin Bonus !" closeText="OK">
-            <b>Peserta {{  responses.map(a => a.answerer)[responses.length - 1]  }}</b> memperoleh bonus poin
-            sebanyak <b>{{  bonus  }} poin</b>.
+            <b>Peserta {{ responses.map(a => a.answerer)[responses.length - 1] }}</b> memperoleh bonus poin
+            sebanyak <b>{{ bonus }} poin</b>.
         </Overlay>
     </div>
 </template>

@@ -56,7 +56,7 @@ const slice3 = () => {
             </div>
         </div>
         <div class="value">
-            {{  current  }}
+            {{ current }}
         </div>
     </section>
 </template>
