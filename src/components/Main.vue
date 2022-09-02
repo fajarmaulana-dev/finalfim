@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, watch, toRefs } from 'vue';
+import { ref, reactive, watch, toRefs, computed } from 'vue';
 import Progress from '@/components/Progress.vue';
 import Overlay from '@/components/Overlay.vue';
 import Button from '@/components/Button.vue';
@@ -315,6 +315,18 @@ const violation = (e, f) => {
 }
 
 const expand = ref(false);
+const colorize = computed(() => {
+    if (countDown_var.value > 10 && countDown_var.value <= 30) {
+        return 'yellow-600'
+    }
+    if (countDown_var.value <= 10) {
+        if (countDown_var.value % 2 === 0) {
+            return 'red-600'
+        } else {
+            return 'yellow-600'
+        }
+    }
+})
 </script>
 
 <template>
@@ -374,7 +386,7 @@ const expand = ref(false);
         <div class="overlay" :class="{ 'dis-none': !display.container, 'dis-flex': display.container }">
             <div class="time" :class="{ 'quest-disapp': !display.box, 'quest-app': display.box }">
                 <h4>Sisa Waktu (s)</h4>
-                <Progress :withImage="false" :percent="percentage()" :current="countDown_var" />
+                <Progress :withImage="false" :percent="percentage()" :current="countDown_var" :color="colorize" />
             </div>
             <div class="question" :class="{ 'quest-disapp': !display.box, 'quest-app': display.box }">
                 <div class="pend" style="left: 0;">

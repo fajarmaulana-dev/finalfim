@@ -52,6 +52,7 @@ const slice3 = () => {
             </div>
             <div class="mid" :id="withImage.toString()">
                 <img v-if="withImage === true" :src="image" alt="Progress Fill" />
+                <div class="after" :style="`background-color: var(--${color})`"></div>
             </div>
         </div>
         <div class="value">
@@ -100,8 +101,7 @@ const slice3 = () => {
     place-items: center;
 }
 
-.mid::after {
-    content: '';
+.after {
     position: absolute;
     width: 3.25rem;
     height: 3.25rem;
