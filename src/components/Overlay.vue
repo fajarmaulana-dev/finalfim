@@ -83,7 +83,8 @@ const col = `flex-direction: column; text-align: center;`;
             <Card style="width: 85vw; max-width: 30rem;" footer-style="width: 100%; margin: 1.5rem 0 .5rem;"
                 :content-style="`${col} width: 100%;`" is="form" :class="{ 'modal-disapp': !box, 'modal-app': box }">
                 <template #header>
-                    <img :src="typeModalImage" alt="Type Indicator" style="min-width: 6rem;" class="gridcardImg" />
+                    <img src="@/assets/fimojempol.png" alt="Type Indicator" style="min-width: 6rem;"
+                        class="gridcardImg" />
                 </template>
                 <template #body>
                     <p style="font-weight: 700; font-size: 1.25rem;">{{  title  }}</p>
@@ -105,7 +106,12 @@ const col = `flex-direction: column; text-align: center;`;
             style=" justify-content: end; align-items: flex-end; transform: translate(-2rem, -1.5rem);">
             <section class="toast" :class="{ 'toast-disapp': !box, 'toast-app': box }"
                 :style="`background-color: var(--${typeColor}) !important;`">
-                <div :style="`background-image: url(${typeToastImage});`" class="pre-toast"></div>
+<<<<<<< HEAD
+                <div style="background-image: url('src/assets/circle-info-solid.svg');" class="pre-toast"></div>
+=======
+                <div style="background-image: url('https://asset.kompas.com/crops/SV5q4gPkeD8YJTuzO31BqTr9DEI=/192x128:1728x1152/750x500/data/photo/2021/03/06/60436a28b258b.jpg');"
+                    class="pre-toast"></div>
+>>>>>>> parent of a23e89e... test
                 <span>{{  message  }}</span>
             </section>
         </section>
