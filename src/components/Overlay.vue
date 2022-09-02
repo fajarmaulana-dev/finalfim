@@ -60,17 +60,17 @@ const typeColor = computed(() => {
 })
 
 const typeToastImage = computed(() => {
-    if (type.value === 'success') return image.value = 'src/assets/circle-check-solid.svg';
-    if (type.value === 'warning') return image.value = 'src/assets/triangle-exclamation-solid.svg';
-    if (type.value === 'error') return image.value = 'src/assets/circle-exclamation-solid.svg';
-    if (type.value === 'primary') return image.value = 'src/assets/circle-info-solid.svg';
+    if (type.value === 'success') return image.value = '@/assets/circle-check-solid.svg';
+    if (type.value === 'warning') return image.value = '@/assets/triangle-exclamation-solid.svg';
+    if (type.value === 'error') return image.value = '@/assets/circle-exclamation-solid.svg';
+    if (type.value === 'primary') return image.value = '@/assets/circle-info-solid.svg';
 })
 
 const typeModalImage = computed(() => {
-    if (type.value === 'success') return image.value = 'src/assets/color-circle-check-solid.svg';
-    if (type.value === 'warning') return image.value = 'src/assets/color-triangle-exclamation-solid.svg';
-    if (type.value === 'error') return image.value = 'src/assets/color-circle-exclamation-solid.svg';
-    if (type.value === 'primary') return image.value = 'src/assets/color-circle-info-solid.svg';
+    if (type.value === 'success') return image.value = '@/assets/color-circle-check-solid.svg';
+    if (type.value === 'warning') return image.value = '@/assets/color-triangle-exclamation-solid.svg';
+    if (type.value === 'error') return image.value = '@/assets/color-circle-exclamation-solid.svg';
+    if (type.value === 'primary') return image.value = '@/assets/color-circle-info-solid.svg';
 })
 const col = `flex-direction: column; text-align: center;`;
 </script>

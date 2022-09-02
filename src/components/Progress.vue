@@ -16,7 +16,7 @@ const props = defineProps({
     },
     image: {
         type: String,
-        default: 'src/assets/react.png',
+        default: '@/assets/react.png',
     },
     percent: {
         type: [Function, Number],

@@ -11,7 +11,7 @@ const menus = ref([
 <template>
   <header>
     <div class="nav-logo">
-      <img class="org-logo" src="src/assets/logo.svg" alt="organization logo">
+      <img class="org-logo" src="@/assets/logo.svg" alt="organization logo">
       <p class="page-title">Forum Ilmiah<br />
         <span style="color: var(--warning);">Matematika Nasional</span>
       </p>

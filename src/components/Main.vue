@@ -378,11 +378,11 @@ const expand = ref(false);
             </div>
             <div class="question" :class="{ 'quest-disapp': !display.box, 'quest-app': display.box }">
                 <div class="pend" style="left: 0;">
-                    <img src="src/assets/keping.png" alt="nomor">
+                    <img src="@/assets/keping.png" alt="nomor">
                     <span style="left: -.6rem;">{{  filtered().map(e => e.value)[0]  }}</span>
                 </div>
                 <div class="pend" style="right: 0;">
-                    <img src="src/assets/keping.png" alt="nomor" style="transform: scaleX(-1);">
+                    <img src="@/assets/keping.png" alt="nomor" style="transform: scaleX(-1);">
                     <span style="right: -.6rem; text-align: center;">{{  filtered().map(e => e.score)[0] 
                         }}<br />pt</span>
                 </div>
