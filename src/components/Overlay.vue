@@ -53,24 +53,24 @@ const { is, container, box, title, message, clr, img, type, withConfirm, confirm
 watch(img, () => image.value = img.value);
 watch(clr, () => color.value = clr.value);
 const typeColor = computed(() => {
-    if (type.value === 'success') return color.value = 'success';
-    if (type.value === 'warning') return color.value = 'warning';
-    if (type.value === 'error') return color.value = 'error';
-    if (type.value === 'primary') return color.value = 'primary';
+    if (type.value === 'success') { return color.value = 'success' };
+    if (type.value === 'warning') { return color.value = 'warning' };
+    if (type.value === 'error') { return color.value = 'error' };
+    if (type.value === 'primary') { return color.value = 'primary' };
 })
 
 const typeToastImage = computed(() => {
-    if (type.value === 'success') return image.value = 'src/assets/circle-check-solid.svg';
-    if (type.value === 'warning') return image.value = 'src/assets/triangle-exclamation-solid.svg';
-    if (type.value === 'error') return image.value = 'src/assets/circle-exclamation-solid.svg';
-    if (type.value === 'primary') return image.value = 'src/assets/circle-info-solid.svg';
+    if (type.value === 'success') { return image.value = 'src/assets/circle-check-solid.svg' };
+    if (type.value === 'warning') { return image.value = 'src/assets/triangle-exclamation-solid.svg' };
+    if (type.value === 'error') { return image.value = 'src/assets/circle-exclamation-solid.svg' };
+    if (type.value === 'primary') { return image.value = 'src/assets/circle-info-solid.svg' };
 })
 
 const typeModalImage = computed(() => {
-    if (type.value === 'success') return image.value = 'src/assets/fimojempol.png';
-    if (type.value === 'warning') return image.value = 'src/assets/color-triangle-exclamation-solid.svg';
-    if (type.value === 'error') return image.value = 'src/assets/color-circle-exclamation-solid.svg';
-    if (type.value === 'primary') return image.value = 'src/assets/color-circle-info-solid.svg';
+    if (type.value === 'success') { return image.value = 'src/assets/fimojempol.png' };
+    if (type.value === 'warning') { return image.value = 'src/assets/color-triangle-exclamation-solid.svg' };
+    if (type.value === 'error') { return image.value = 'src/assets/color-circle-exclamation-solid.svg' };
+    if (type.value === 'primary') { return image.value = 'src/assets/color-circle-info-solid.svg' };
 })
 const col = `flex-direction: column; text-align: center;`;
 </script>
