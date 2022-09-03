@@ -399,7 +399,7 @@ const colorize = computed(() => {
                     <span style="right: -.6rem; text-align: center;">{{ filtered().map(e => e.score)[0]
                     }}<br />pt</span>
                 </div>
-                <div class="text" :style="`max-height: ${expand === true ? 'calc(29vh + 4vw)' : '60vh'}`">
+                <div class="text" :style="`max-height: ${expand === true ? 'calc(29vh + 4vw)' : '57.5vh'}`">
                     <div style="width: 100%" v-html="filtered().map(e => e.question)[0]"></div>
                 </div>
                 <div class="options" :style="`transform: translateY(${expand === true ? '0' : '24vh'})`">
