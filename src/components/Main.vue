@@ -191,7 +191,7 @@ let divider; is.value === 'mces' ? divider = 5 : divider = 4;
 const answer = (e, f, g, h) => {
     const a = responses.value.map(k => k.answered);
     if (a.includes(e)) {
-        responses.value.splice(responses.value.indexOf(e), 1);
+        responses.value.splice(a.indexOf(e), 1);
     }
     responses.value.push({ answered: e, answerer: f });
     arrLength.value += 1;
@@ -373,7 +373,6 @@ const colorize = computed(() => {
                     </div>
                 </div>
             </div>
-            <p>{{ responses }}</p>
         </div>
         <div class="overlay" :class="{ 'dis-none': !display.container, 'dis-flex': display.container }">
             <div class="time" :class="{ 'quest-disapp': !display.box, 'quest-app': display.box }">
