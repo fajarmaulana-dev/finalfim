@@ -189,87 +189,77 @@ const filtered = () => quests.value.filter((e) => e.index === selected.value);
 const arrLength = ref(responses.value.length);
 let divider; is.value === 'mces' ? divider = 5 : divider = 4;
 const answer = (e, f, g, h) => {
+    const a = responses.value.map(k => k.answered);
+    if (a.includes(e)) {
+        responses.value.splice(responses.value.indexOf(e), 1);
+    }
     responses.value.push({ answered: e, answerer: f });
     arrLength.value += 1;
     quests.value[e - 1].value = f;
-    quests.value[e - 1].bg = `${g}-400`
-    quests.value[e - 1].font = `${g}-700`
-    quests.value[e - 1].border = `${g}-600`
+    quests.value[e - 1].bg = `${g}-400`;
+    quests.value[e - 1].font = `${g}-700`;
+    quests.value[e - 1].border = `${g}-600`;
     i_model.value[h] += quests.value[e - 1].score;
 
     const filt = (mod) => responses.value.filter(a => a.answered % divider === mod);
-    if (filt(0).length === divider) { mod0.value.click() }
-    if (filt(1).length === divider) { mod1.value.click() }
-    if (filt(2).length === divider) { mod2.value.click() }
-    if (filt(3).length === divider) { mod3.value.click() }
+    const ever = (mod) => filt(mod).length === divider && filt(mod).every(a => a.answerer === filt(mod).map(k => k.answerer)[0]);
+    if (ever(0)) { mod0.value.click() }
+    if (ever(1)) { mod1.value.click() }
+    if (ever(2)) { mod2.value.click() }
+    if (ever(3)) { mod3.value.click() }
 
     const filt1 = (less) => responses.value.filter(a => a.answered / divider > less && a.answered / divider <= (less + 1));
-    if (filt1(0).length === divider) { less0.value.click() }
-    if (filt1(1).length === divider) { less1.value.click() }
-    if (filt1(2).length === divider) { less2.value.click() }
-    if (filt1(3).length === divider) { less3.value.click() }
+    const ever1 = (less) => filt1(less).length === divider && filt1(less).every(a => a.answerer === filt(less).map(k => k.answerer)[0]);
+    if (ever1(0)) { less0.value.click() }
+    if (ever1(1)) { less1.value.click() }
+    if (ever1(2)) { less2.value.click() }
+    if (ever1(3)) { less3.value.click() }
 
-    if (responses.value.filter(a => a.answered % (divider + 1) === 1).length === divider) { mod61.value.click() }
+    const filt61 = responses.value.filter(a => a.answered % (divider + 1) === 1);
+    if (filt61.length === divider && filt61.every(a => a.answerer === filt61.map(k => k.answerer)[0])) { mod61.value.click() }
     if (is.value === 'mces') {
-        if (filt(4).length === divider) { mod4.value.click() }
-        if (filt1(4).length === divider) { less4.value.click() }
-        if (responses.value.filter(a => a.answered % (divider - 1) === 1 && a.answered % (divider + 1) !== 1 || a.answered === 13).length === divider) { mod41.value.click() }
+        if (ever(4)) { mod4.value.click() }
+        if (ever1(4)) { less4.value.click() }
+        const filt41 = responses.value.filter(a => a.answered % (divider - 1) === 1 && a.answered % (divider + 1) !== 1 || a.answered === 13);
+        if (filt41.length === divider && filt41.every(a => a.answerer === filt41.map(k => k.answerer)[0])) { mod41.value.click() }
     } else {
-        if (responses.value.filter(a => a.answered % (divider - 1) === 1 && a.answered % (divider + 1) !== 1).length === divider) { mod41.value.click() }
+        const filt42 = responses.value.filter(a => a.answered % (divider - 1) === 1 && a.answered % (divider + 1) !== 1);
+        if (filt42.length === divider && filt42.every(a => a.answerer === filt42.map(k => k.answerer)[0])) { mod41.value.click() }
     }
 }
 
 const disMod = ref([false, false, false, false, false]);
 const addMod = (mod) => {
     const ans = responses.value.filter(a => a.answered % divider === mod);
-    for (let i = 0; i < contestants.value.length; i++) {
-        if (ans.every(a => a.answerer === contestants.value[i].name)) {
-            i_model.value[i] += bonus.value;
-            disMod.value[mod] = true;
-        }
-    }
+    i_model.value[contestants.value.map(a => a.name).indexOf(ans.map(k => k.answerer)[0])] += bonus.value;
+    disMod.value[mod] = true;
     openModal();
 }
 
 const disLess = ref([false, false, false, false, false]);
 const addLess = (less) => {
     const ans = responses.value.filter(a => a.answered / divider > less && a.answered / divider <= (less + 1));
-    for (let i = 0; i < contestants.value.length; i++) {
-        if (ans.every(a => a.answerer === contestants.value[i].name)) {
-            i_model.value[i] += bonus.value;
-            disLess.value[less] = true;
-        }
-    }
+    i_model.value[contestants.value.map(a => a.name).indexOf(ans.map(k => k.answerer)[0])] += bonus.value;
+    disLess.value[less] = true;
     openModal();
 }
 
 const disDiag = ref([false, false]);
 const addDiag1 = () => {
     const ans = responses.value.filter(a => a.answered % (divider + 1) === 1);
-    for (let i = 0; i < contestants.value.length; i++) {
-        if (ans.every(a => a.answerer === contestants.value[i].name)) {
-            i_model.value[i] += bonus.value;
-            disDiag.value[0] = true;
-        }
-    }
+    i_model.value[contestants.value.map(a => a.name).indexOf(ans.map(k => k.answerer)[0])] += bonus.value;
+    disDiag.value[0] = true;
     openModal();
 }
 const addDiag2 = () => {
     const ans = responses.value.filter(a => a.answered % (divider - 1) === 1 && a.answered % (divider + 1) !== 1 || a.answered === 13);
     const ans1 = responses.value.filter(a => a.answered % (divider - 1) === 1 && a.answered % (divider + 1) !== 1);
-    for (let i = 0; i < contestants.value.length; i++) {
-        if (is.value === 'mces') {
-            if (ans.every(a => a.answerer === contestants.value[i].name)) {
-                contestants.value[i].score += bonus.value;
-                disDiag.value[1] = true;
-            }
-        } else {
-            if (ans1.every(a => a.answerer === contestants.value[i].name)) {
-                contestants.value[i].score += bonus.value;
-                disDiag.value[1] = true;
-            }
-        }
+    if (is.value === 'mces') {
+        i_model.value[contestants.value.map(a => a.name).indexOf(ans.map(k => k.answerer)[0])] += bonus.value;
+    } else {
+        i_model.value[contestants.value.map(a => a.name).indexOf(ans1.map(k => k.answerer)[0])] += bonus.value;
     }
+    disDiag.value[1] = true;
     openModal()
 }
 
@@ -356,7 +346,7 @@ const colorize = computed(() => {
                     <h2>Pilihan Soal</h2>
                     <div class="questions">
                         <button v-for="val in quests" :key="val.index" @click="openQuest(val.index)"
-                            :style="`background-color: var(${val.bg}); color: var(${val.font}); border-color: var(${val.border}); max-width: ${is === 'mces' ? '3.5' : '4.5'}rem; max-height: ${is === 'mces' ? '3.5' : '4.5'}rem`">
+                            :style="`background-color: var(${val.bg}); color: var(${val.font}); border-color: var(${val.border}); width: ${is === 'mces' ? '15' : '18'}vw; height: ${is === 'mces' ? '15' : '18'}vw; max-width: ${is === 'mces' ? '3.5' : '4.5'}rem; max-height: ${is === 'mces' ? '3.5' : '4.5'}rem`">
                             {{ val.value }}</button>
                     </div>
                 </div>
@@ -383,6 +373,7 @@ const colorize = computed(() => {
                     </div>
                 </div>
             </div>
+            <p>{{ responses }}</p>
         </div>
         <div class="overlay" :class="{ 'dis-none': !display.container, 'dis-flex': display.container }">
             <div class="time" :class="{ 'quest-disapp': !display.box, 'quest-app': display.box }">
@@ -544,8 +535,6 @@ const colorize = computed(() => {
 }
 
 .questions>button {
-    width: 15vw;
-    height: 15vw;
     border: 2px solid;
     font-weight: 700;
     font-size: var(--sub-title);
