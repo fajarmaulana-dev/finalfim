@@ -326,7 +326,8 @@ const colorize = computed(() => {
                 </div>
                 <div
                     style="width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between; gap: 1.5rem;">
-                    <div class="text" :style="`min-height: ${expand === true ? '10rem' : 'calc(100% - 7.25rem)'}`">
+                    <div class="text"
+                        :style="`min-height: ${expand === true ? 'calc(100% - 27.25rem)' : 'calc(100% - 7.25rem)'}`">
                         <div style="width: 100%" v-html="filtered().map(e => e.question)[0]"></div>
                     </div>
                     <div class="options">
