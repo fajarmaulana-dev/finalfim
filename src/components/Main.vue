@@ -324,24 +324,32 @@ const colorize = computed(() => {
                     <span style="right: -.6rem; text-align: center;">{{ filtered().map(e => e.score)[0]
                     }}<br />pt</span>
                 </div>
-                <div class="text" :style="`max-height: ${expand === true ? 'calc(29vh + 4vw)' : '57.5vh'}`">
-                    <div style="width: 100%" v-html="filtered().map(e => e.question)[0]"></div>
-                </div>
-                <div class="options" :style="`transform: translateY(${expand === true ? '0' : '24vh'})`">
-                    <span @click="expand = !expand">
-                        <i class="fa-solid fa-chevron-down"
-                            :style="expand === true ? '' : 'transform: rotate(180deg)'"></i>
-                    </span>
-                    <div class="violation">
-                        <h4>Pelanggaran<br />Tata Tertib</h4>
-                        <div>
-                            <button v-for="(contestant, index) in contestants" :key="contestant.name"
-                                @click="violation(index, contestant.name)">{{ contestant.name }} - {{ vioscore
-                                }}</button>
-                        </div>
+                <div
+                    style="width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between; gap: 1.5rem;">
+                    <div class="text" :style="`min-height: ${expand === true ? '10rem' : 'calc(100% - 7.25rem)'}`">
+                        <div style="width: 100%" v-html="filtered().map(e => e.question)[0]"></div>
                     </div>
-                    <div class="attenders">
-                        <div>
+                    <div class="options">
+                        <span @click="expand = !expand">
+                            <i class="fa-solid fa-chevron-down"
+                                :style="expand === true ? '' : 'transform: rotate(180deg)'"></i>
+                        </span>
+                        <div class="violation">
+                            <p style="height: 25%; color: var(--red-600);">Pelanggaran Tata Tertib</p>
+                            <div>
+                                <button style="width: 50%;" @click="violation(0, 'A')">A - 10</button>
+                                <button style="width: 50%;" @click="violation(1, 'B')">B - 10</button>
+                            </div>
+                            <div>
+                                <button style="width: 50%;" @click="violation(2, 'C')">C - 10</button>
+                                <button style="width: 50%;" @click="violation(3, 'D')">D - 10</button>
+                            </div>
+                            <div>
+                                <button style="width: 50%;" @click="violation(4, 'E')">E - 10</button>
+                                <button style="width: 50%;" @click="violation(5, 'F')">F - 10</button>
+                            </div>
+                        </div>
+                        <div class="option">
                             <div>
                                 <button v-for="(contestant, index) in contestants" :key="contestant.name"
                                     :class="{ disButton: disAdd[index] }" :disabled="disAdd[index]"
@@ -360,17 +368,17 @@ const colorize = computed(() => {
                                 <button v-for="(contestant, index) in contestants" :key="contestant.name"
                                     :disabled="!disBtn[index]" @click="undoMin(index, contestant.name)"
                                     :class="{ disButton: !disBtn[index] }">
-                                    <i class="fa-solid fa-arrow-rotate-left" style="font-size: var(--mini-icon);"></i>
-                                    {{ contestant.name }}
+                                    <i class="fa-solid fa-arrow-rotate-left" style="font-size: var(--card-detail);"></i>
+                                    &nbsp;{{ contestant.name }}
                                 </button>
                             </div>
-                        </div>
-                        <div class="blank">
-                            <button
-                                @click="notAnswered(filtered().map(e => e.index)[0]); arrLength += 1; countDown_var = 0"
-                                style="height: 62%;">Tak Terjawab</button>
-                            <button style="height: 28%;"
-                                @click="justClose(); arrLength += 1; countDown_var = 0">Kembali</button>
+                            <div>
+                                <button
+                                    @click="notAnswered(filtered().map(e => e.index)[0]); arrLength += 1; countDown_var = 0">
+                                    Tak Terjawab
+                                </button>
+                                <button @click="justClose(); arrLength += 1; countDown_var = 0">Kembali</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -590,19 +598,6 @@ const colorize = computed(() => {
     transform: scale(0);
 }
 
-.text {
-    margin: 5.5rem 1.5rem;
-    padding-bottom: 2rem;
-    line-height: 1.75rem;
-    font-size: var(--card-title);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-y: auto;
-    position: relative;
-    transition: .5s;
-}
-
 .question {
     position: relative;
     width: 90%;
@@ -654,17 +649,99 @@ const colorize = computed(() => {
     width: 100%;
 }
 
+.text {
+    /* calc(100% - 7.25rem) */
+    width: 100%;
+    padding: 0 3vw;
+    margin-top: 5.75rem;
+    overflow-y: auto;
+    transition: min-height .75s ease-in-out;
+}
+
 .options {
-    position: absolute;
-    height: 23vh;
-    padding-top: .5rem;
-    bottom: 1rem;
-    right: 1rem;
-    left: 1rem;
+    position: relative;
+    width: 100%;
+    min-height: 12rem;
     display: flex;
+    padding: calc(.55rem + .5vw);
     gap: 1rem;
     border-top: 2px solid var(--blue-500);
+}
+
+.options>div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: .5rem;
+}
+
+.violation {
+    width: 36vw;
+    max-width: 13rem;
+    height: 100%;
+}
+
+.option {
+    min-width: calc(100% - 36vw);
+    width: calc(100% - 13rem);
+    height: 100%;
+}
+
+.options p,
+.options button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--card-detail);
+    font-weight: 700;
+    z-index: 5;
+}
+
+.options>div>div {
+    height: 25%;
+    display: flex;
+    gap: .5rem;
+    justify-content: space-between;
+}
+
+.options button {
+    border-radius: .25rem;
+    color: var(--blue-500);
+    background-color: var(--blue-300);
+    border: 2px solid var(--blue-500);
+    cursor: pointer;
     transition: .5s;
+}
+
+.violation button {
+    color: var(--red-500);
+    background-color: var(--red-300);
+    border: 2px solid var(--red-500);
+}
+
+.options button:hover {
+    transform: scaleY(1.1);
+    border-width: 3px;
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.violation button:hover {
+    border-color: var(--red-600);
+    color: var(--red-600);
+}
+
+.options button:active {
+    transform: scaleY(.9);
+    border-width: 3px;
+}
+
+.option>div>button {
+    width: calc(100% / 6);
+}
+
+.option>div:nth-child(4)>button {
+    width: 50%;
 }
 
 .options>span {
@@ -682,13 +759,12 @@ const colorize = computed(() => {
     border-radius: 100%;
     top: -1.1rem;
     left: calc(50% - 2rem);
-    z-index: -1;
     cursor: pointer;
 }
 
 .options>span>i {
     transition: .5s;
-    transition-delay: .6s;
+    transition-delay: .5s;
 }
 
 .options>span:hover {
@@ -702,115 +778,6 @@ const colorize = computed(() => {
     height: .95rem;
     background-color: var(--light);
     bottom: 0;
-}
-
-.violation {
-    height: 100%;
-    width: 10rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    gap: .65rem;
-}
-
-.violation>h4 {
-    text-align: center;
-    font-size: var(--card-detail);
-    width: 100%;
-    color: var(--red-600);
-    font-weight: 700;
-    height: 20%;
-}
-
-.violation>div {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    width: 100%;
-    height: 75%;
-    gap: .5rem;
-}
-
-.violation button {
-    width: 45%;
-    height: 28.5%;
-    font-size: var(--mini-icon);
-    background-color: var(--red-300);
-    border: 2px solid var(--red-500);
-    border-radius: .25rem;
-    font-weight: 700;
-    color: var(--red-600);
-    transition: .5s;
-    cursor: pointer;
-}
-
-.violation button:hover {
-    transform: scaleY(1.1);
-    border-width: 3px;
-    border-color: var(--red-700);
-    color: var(--red-700);
-}
-
-.violation button:active {
-    transform: scaleY(.9);
-    border-width: 3px;
-}
-
-.attenders {
-    width: 90%;
-    display: flex;
-    gap: .75rem;
-    height: 100%;
-}
-
-.attenders>div {
-    width: 20%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: .65rem;
-}
-
-.attenders>div:not(.blank) {
-    width: 80%;
-}
-
-.attenders>div>div {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    gap: .5rem;
-    height: 29.5%;
-}
-
-.attenders>div>div>button,
-.blank button {
-    width: 100%;
-    background-color: var(--blue-300);
-    border: 2px solid var(--primary);
-    color: var(--primary);
-    border-radius: .25rem;
-    font-size: var(--mini-icon);
-    font-weight: 700;
-    transition: .5s;
-    cursor: pointer;
-}
-
-.attenders>div>div>button:hover,
-.blank button:hover {
-    transform: scaleY(1.1);
-    border-width: 3px;
-    border-color: var(--blue-700);
-    color: var(--blue-700);
-}
-
-.attenders>div>div>button:active,
-.blank button:active {
-    transform: scaleY(.9);
-    border-width: 3px;
 }
 
 @media all and (max-width: 1023px) {
@@ -831,33 +798,7 @@ const colorize = computed(() => {
     }
 }
 
-@media all and (max-width: 639px) {
-    .attenders {
-        flex-direction: column;
-        gap: .65rem;
-    }
-
-    .attenders>div {
-        flex-direction: row;
-        height: 22.5% !important;
-        width: 100% !important;
-    }
-
-    .attenders>div:not(.blank) {
-        height: 77.5% !important;
-        flex-direction: column;
-    }
-
-    .attenders>div>div {
-        height: 26%;
-    }
-
-    .blank button {
-        height: 100% !important;
-    }
-}
-
-@media all and (max-width: 389px) {
+@media all and (max-width: 459px) {
     .color h2::after {
         content: 'Indikator' !important;
     }
@@ -878,22 +819,14 @@ const colorize = computed(() => {
         margin-top: 2rem !important;
     }
 
-    .violation {
-        width: 5rem;
-        gap: .25rem;
-    }
-
     .options {
-        gap: .5rem;
+        flex-direction: column;
+        min-height: 20rem;
     }
 
-    .violation>h4 {
-        font-size: .5rem;
+    .options>div {
+        min-width: 100%;
     }
 
-    .violation button {
-        font-size: .45rem;
-        width: 35%;
-    }
 }
 </style>
