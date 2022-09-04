@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, watch, toRefs, computed } from 'vue';
+import { ref, watch, toRefs, computed } from 'vue';
 import Progress from '@/components/Progress.vue';
 import Overlay from '@/components/Overlay.vue';
 import Button from '@/components/Button.vue';
@@ -54,101 +54,50 @@ const percentage = () => {
     return countDown_var.value / 120;
 }
 
-const display = reactive({
-    container: false,
-    box: false,
-    warning: false,
-    info: false,
-    error: false,
-    success: false,
-    itoast: false,
-    wtoast: false,
-    etoast: false,
-    stoast: false,
-    modalContainer: false,
-    modal: false,
-});
+const modal = ref([
+    { container: false, box: false },
+    { container: false, box: false },
+])
 
-const openModal = () => {
-    display.modalContainer = true;
+const toast = ref([
+    { container: false, box: false },
+    { container: false, box: false },
+    { container: false, box: false },
+    { container: false, box: false },
+])
+
+const openModal = (i) => {
+    modal.value[i].container = true;
     setTimeout(() => {
-        display.modal = true;
+        modal.value[i].box = true;
     }, 100);
 }
 
-const closeModal = () => {
-    display.modal = false;
+const closeModal = (i) => {
+    modal.value[i].box = false;
     setTimeout(() => {
-        display.modalContainer = false;
+        modal.value[i].container = false;
     }, 300);
+    
 }
 
 const openQuest = (e) => {
     selected.value = e;
-    display.container = true;
-    setTimeout(() => {
-        display.box = true;
-    }, 100);
+    openModal(0);
     countDown_var.value = 120;
     countDownTimer();
 }
 
-const closeQuest = () => {
-    display.box = false;
+const openToast = (i) => {
+    toast.value[i].container = true;
     setTimeout(() => {
-        display.container = false;
-    }, 300);
-}
-
-const openwToast = () => {
-    display.warning = true;
-    setTimeout(() => {
-        display.wtoast = true;
+        toast.value[i].box = true;
     }, 100);
     setTimeout(() => {
-        display.wtoast = false;
+        toast.value[i].box = false;
     }, 2500);
     setTimeout(() => {
-        display.warning = false;
-    }, 3100);
-}
-
-const openiToast = () => {
-    display.info = true;
-    setTimeout(() => {
-        display.itoast = true;
-    }, 100);
-    setTimeout(() => {
-        display.itoast = false;
-    }, 2500);
-    setTimeout(() => {
-        display.info = false;
-    }, 3100);
-}
-
-const openeToast = () => {
-    display.error = true;
-    setTimeout(() => {
-        display.etoast = true;
-    }, 100);
-    setTimeout(() => {
-        display.etoast = false;
-    }, 2500);
-    setTimeout(() => {
-        display.error = false;
-    }, 3100);
-}
-
-const opensToast = () => {
-    display.success = true;
-    setTimeout(() => {
-        display.stoast = true;
-    }, 100);
-    setTimeout(() => {
-        display.stoast = false;
-    }, 2500);
-    setTimeout(() => {
-        display.success = false;
+        toast.value[i].container = false;
     }, 3100);
 }
 
@@ -158,29 +107,20 @@ watch(countDown_var, () => {
             notAnswered(selected.value);
             arrLength.value += 1;
         }
-        closeQuest();
+        closeModal(0);
         disAdd.value = [false, false, false, false, false, false];
         disBtn.value = [false, false, false, false, false, false];
         const b = responses.value.map(a => a.answerer)[responses.value.length - 1];
-        if (b === 'NA') { openwToast(); arrLength.value -= 1; };
-        if (b === 'A' || b === 'B' || b === 'C' || b === 'D' || b === 'E' || b === 'F') { openiToast(); arrLength.value -= 1; }
+        if (b === 'NA') { openToast(0); arrLength.value -= 1; };
+        if (b === 'A' || b === 'B' || b === 'C' || b === 'D' || b === 'E' || b === 'F') { openToast(1); arrLength.value -= 1; }
         if (b === '') { arrLength.value -= 1; }
     }
 })
 
 const i_model = ref([contestants.value[0].score, contestants.value[1].score, contestants.value[2].score, contestants.value[3].score, contestants.value[4].score, contestants.value[5].score,])
 
-const mod0 = ref();
-const mod1 = ref();
-const mod2 = ref();
-const mod3 = ref();
-const mod4 = ref();
-
-const less0 = ref();
-const less1 = ref();
-const less2 = ref();
-const less3 = ref();
-const less4 = ref();
+const mod = ref([]);
+const less = ref([]);
 
 const mod61 = ref();
 const mod41 = ref();
@@ -203,23 +143,21 @@ const answer = (e, f, g, h) => {
 
     const filt = (mod) => responses.value.filter(a => a.answered % divider === mod);
     const ever = (mod) => filt(mod).length === divider && filt(mod).every(a => a.answerer === filt(mod).map(k => k.answerer)[0]);
-    if (ever(0)) { mod0.value.click() }
-    if (ever(1)) { mod1.value.click() }
-    if (ever(2)) { mod2.value.click() }
-    if (ever(3)) { mod3.value.click() }
+    for (let i = 0; i < divider; i++) {
+        if (ever(i)) { mod.value[i].click() }
+    }
 
     const filt1 = (less) => responses.value.filter(a => a.answered / divider > less && a.answered / divider <= (less + 1));
-    const ever1 = (less) => filt1(less).length === divider && filt1(less).every(a => a.answerer === filt(less).map(k => k.answerer)[0]);
-    if (ever1(0)) { less0.value.click() }
-    if (ever1(1)) { less1.value.click() }
-    if (ever1(2)) { less2.value.click() }
-    if (ever1(3)) { less3.value.click() }
+    const ever1 = (less) => filt1(less).length === divider && filt1(less).every(a => a.answerer === filt1(less).map(k => k.answerer)[0]);
+    for (let i = 0; i < divider; i++) {
+        if (ever1(i)) { less.value[i].click() }
+    }
 
     const filt61 = responses.value.filter(a => a.answered % (divider + 1) === 1);
     if (filt61.length === divider && filt61.every(a => a.answerer === filt61.map(k => k.answerer)[0])) { mod61.value.click() }
     if (is.value === 'mces') {
-        if (ever(4)) { mod4.value.click() }
-        if (ever1(4)) { less4.value.click() }
+        if (ever(4)) { mod.value[4].click() }
+        if (ever1(4)) { less.value[4].click() }
         const filt41 = responses.value.filter(a => a.answered % (divider - 1) === 1 && a.answered % (divider + 1) !== 1 || a.answered === 13);
         if (filt41.length === divider && filt41.every(a => a.answerer === filt41.map(k => k.answerer)[0])) { mod41.value.click() }
     } else {
@@ -228,28 +166,32 @@ const answer = (e, f, g, h) => {
     }
 }
 
+const disTriggered = ref(0)
 const disMod = ref([false, false, false, false, false]);
 const addMod = (mod) => {
     const ans = responses.value.filter(a => a.answered % divider === mod);
     i_model.value[contestants.value.map(a => a.name).indexOf(ans.map(k => k.answerer)[0])] += bonus.value;
+    disTriggered.value += 1;
     disMod.value[mod] = true;
-    openModal();
+    openModal(1);
 }
 
 const disLess = ref([false, false, false, false, false]);
 const addLess = (less) => {
     const ans = responses.value.filter(a => a.answered / divider > less && a.answered / divider <= (less + 1));
     i_model.value[contestants.value.map(a => a.name).indexOf(ans.map(k => k.answerer)[0])] += bonus.value;
+    disTriggered.value += 1;
     disLess.value[less] = true;
-    openModal();
+    openModal(1);
 }
 
 const disDiag = ref([false, false]);
 const addDiag1 = () => {
     const ans = responses.value.filter(a => a.answered % (divider + 1) === 1);
     i_model.value[contestants.value.map(a => a.name).indexOf(ans.map(k => k.answerer)[0])] += bonus.value;
+    disTriggered.value += 1;
     disDiag.value[0] = true;
-    openModal();
+    openModal(1);
 }
 const addDiag2 = () => {
     const ans = responses.value.filter(a => a.answered % (divider - 1) === 1 && a.answered % (divider + 1) !== 1 || a.answered === 13);
@@ -259,8 +201,9 @@ const addDiag2 = () => {
     } else {
         i_model.value[contestants.value.map(a => a.name).indexOf(ans1.map(k => k.answerer)[0])] += bonus.value;
     }
+    disTriggered.value += 1;
     disDiag.value[1] = true;
-    openModal()
+    openModal(1)
 }
 
 const disBtn = ref([false, false, false, false, false, false]);
@@ -286,7 +229,7 @@ const minScore = (e, f) => {
     disBtn.value[e] = true;
     disAdd.value[e] = true;
     err_message.value = `Pengurangan ${minscore.value} poin untuk peserta ${f}`;
-    openeToast();
+    openToast(2);
 }
 
 const undo_message = ref();
@@ -295,13 +238,13 @@ const undoMin = (e, f) => {
     disBtn.value[e] = false;
     disAdd.value[e] = false;
     undo_message.value = `Pengurangan ${minscore.value} poin untuk peserta ${f} dibatalkan`;
-    opensToast();
+    openToast(3);
 }
 
 const violation = (e, f) => {
     i_model.value[e] -= vioscore.value;
     err_message.value = `Pengurangan ${vioscore.value} poin untuk peserta ${f}`;
-    openeToast()
+    openToast(2)
 }
 
 const expand = ref(false);
@@ -326,18 +269,10 @@ const colorize = computed(() => {
             <h2 style="font-size: var(--title); line-height: 2rem;">Babak Kuis</h2>
             <em>{{ title }}</em>
             <div>
-                <button ref="mod1" @click="addMod(1);" :disabled="disMod[1] === true ? true : false"></button>
-                <button ref="mod2" @click="addMod(2)" :disabled="disMod[2] === true ? true : false"></button>
-                <button ref="mod3" @click="addMod(3)" :disabled="disMod[3] === true ? true : false"></button>
-                <button v-if="is === 'mces'" ref="mod4" @click="addMod(4)"
-                    :disabled="disMod[4] === true ? true : false"></button>
-                <button ref="mod0" @click="addMod(0)" :disabled="disMod[0] === true ? true : false"></button>
-                <button ref="less1" @click="addLess(1)" :disabled="disLess[1] === true ? true : false"></button>
-                <button ref="less2" @click="addLess(2)" :disabled="disLess[2] === true ? true : false"></button>
-                <button ref="less3" @click="addLess(3)" :disabled="disLess[3] === true ? true : false"></button>
-                <button v-if="is === 'mces'" ref="less4" @click="addLess(4)"
-                    :disabled="disLess[4] === true ? true : false"></button>
-                <button ref="less0" @click="addLess(0)" :disabled="disLess[0] === true ? true : false"></button>
+                <button v-for="i in divider" :key="i" :ref="e => { mod[i - 1] = e }" @click="addMod(i - 1);"
+                    :disabled="disMod[i - 1] === true ? true : false"></button>
+                <button v-for="i in divider" :key="i" :ref="e => { less[i - 1] = e }" @click="addLess(i - 1);"
+                    :disabled="disLess[i - 1] === true ? true : false"></button>
                 <button ref="mod61" @click="addDiag1()" :disabled="disDiag[0] === true ? true : false"></button>
                 <button ref="mod41" @click="addDiag2()" :disabled="disDiag[1] === true ? true : false"></button>
             </div>
@@ -374,12 +309,12 @@ const colorize = computed(() => {
                 </div>
             </div>
         </div>
-        <div class="overlay" :class="{ 'dis-none': !display.container, 'dis-flex': display.container }">
-            <div class="time" :class="{ 'quest-disapp': !display.box, 'quest-app': display.box }">
+        <div class="overlay" :class="{ 'dis-none': !modal[0].container, 'dis-flex': modal[0].container }">
+            <div class="time" :class="{ 'quest-disapp': !modal[0].box, 'quest-app': modal[0].box }">
                 <h4 :style="`color: var(--${colorize})`">Sisa Waktu (s)</h4>
                 <Progress :withImage="false" :percent="percentage()" :current="countDown_var" :color="colorize" />
             </div>
-            <div class="question" :class="{ 'quest-disapp': !display.box, 'quest-app': display.box }">
+            <div class="question" :class="{ 'quest-disapp': !modal[0].box, 'quest-app': modal[0].box }">
                 <div class="pend" style="left: 0;">
                     <img src="@/assets/keping.png" alt="nomor">
                     <span style="left: -.6rem;">{{ filtered().map(e => e.value)[0] }}</span>
@@ -441,16 +376,17 @@ const colorize = computed(() => {
                 </div>
             </div>
         </div>
-        <Overlay is="toast" :container="display.info" :box="display.itoast"
+        <Overlay is="toast" :container="toast[1].container" :box="toast[1].box"
             :message="`Selamat. Tambahan ${quests.map(a => a.score)[selected - 1]} poin untuk peserta ${responses.map(a => a.answerer)[responses.length - 1]}`" />
-        <Overlay is="toast" type="warning" :container="display.warning" :box="display.wtoast"
+        <Overlay is="toast" type="warning" :container="toast[0].container" :box="toast[0].box"
             :message="`Soal nomor ${selected} tidak terjawab`" />
-        <Overlay is="toast" type="error" :container="display.error" :box="display.etoast" :message="err_message" />
-        <Overlay is="toast" type="success" :container="display.success" :box="display.stoast" :message="undo_message" />
-        <Overlay type="success" :with-confirm="false" :container="display.modalContainer" :box="display.modal"
-            @close-modal="closeModal()" title="Poin Bonus !" closeText="OK">
+        <Overlay is="toast" type="error" :container="toast[2].container" :box="toast[2].box" :message="err_message" />
+        <Overlay is="toast" type="success" :container="toast[3].container" :box="toast[3].box"
+            :message="undo_message" />
+        <Overlay type="success" :with-confirm="false" :container="modal[1].container" :box="modal[1].box"
+            @close-modal="closeModal(1); disTriggered = 0;" title="Poin Bonus !" closeText="OK">
             <b>Peserta {{ responses.map(a => a.answerer)[responses.length - 1] }}</b> memperoleh bonus poin
-            sebanyak <b>{{ bonus }} poin</b>.
+            sebanyak <b>{{ disTriggered * bonus }} poin</b>.
         </Overlay>
     </div>
 </template>
