@@ -131,7 +131,6 @@ let divider; is.value === 'mces' ? divider = 5 : divider = 4;
 const answer = (e, f, g, h) => {
     const a = responses.value.map(k => k.answered);
     if (a.includes(e)) {
-        console.log(i_model.value[contestants.value.map(k => k.name).indexOf(responses.value[a.indexOf(e)].answerer)])
         i_model.value[contestants.value.map(k => k.name).indexOf(responses.value[a.indexOf(e)].answerer)] -= quests.value[e - 1].score;
         responses.value.splice(a.indexOf(e), 1);
     }
@@ -212,6 +211,11 @@ const disBtn = ref([false, false, false, false, false, false]);
 const disAdd = ref([false, false, false, false, false, false]);
 
 const notAnswered = (e) => {
+    const a = responses.value.map(k => k.answered);
+    if (a.includes(e)) {
+        i_model.value[contestants.value.map(k => k.name).indexOf(responses.value[a.indexOf(e)].answerer)] -= quests.value[e - 1].score;
+        responses.value.splice(a.indexOf(e), 1);
+    }
     responses.value.push({ answered: e, answerer: 'NA' });
     quests.value[e - 1].value = 'NA';
     quests.value[e - 1].bg = `--light`
