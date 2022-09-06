@@ -172,27 +172,33 @@ const disMod = ref([false, false, false, false, false]);
 const addMod = (mod) => {
     const ans = responses.value.filter(a => a.answered % divider === mod);
     i_model.value[contestants.value.map(a => a.name).indexOf(ans.map(k => k.answerer)[0])] += bonus.value;
-    disTriggered.value += 1;
     disMod.value[mod] = true;
-    openModal(1);
+    if (ans[0].answerer !== 'NA') {
+        disTriggered.value += 1;
+        openModal(1);
+    }
 }
 
 const disLess = ref([false, false, false, false, false]);
 const addLess = (less) => {
     const ans = responses.value.filter(a => a.answered / divider > less && a.answered / divider <= (less + 1));
     i_model.value[contestants.value.map(a => a.name).indexOf(ans.map(k => k.answerer)[0])] += bonus.value;
-    disTriggered.value += 1;
     disLess.value[less] = true;
-    openModal(1);
+    if (ans[0].answerer !== 'NA') {
+        disTriggered.value += 1;
+        openModal(1);
+    }
 }
 
 const disDiag = ref([false, false]);
 const addDiag1 = () => {
     const ans = responses.value.filter(a => a.answered % (divider + 1) === 1);
     i_model.value[contestants.value.map(a => a.name).indexOf(ans.map(k => k.answerer)[0])] += bonus.value;
-    disTriggered.value += 1;
     disDiag.value[0] = true;
-    openModal(1);
+    if (ans[0].answerer !== 'NA') {
+        disTriggered.value += 1;
+        openModal(1);
+    }
 }
 const addDiag2 = () => {
     const ans = responses.value.filter(a => a.answered % (divider - 1) === 1 && a.answered % (divider + 1) !== 1 || a.answered === 13);
@@ -202,9 +208,11 @@ const addDiag2 = () => {
     } else {
         i_model.value[contestants.value.map(a => a.name).indexOf(ans1.map(k => k.answerer)[0])] += bonus.value;
     }
-    disTriggered.value += 1;
     disDiag.value[1] = true;
-    openModal(1)
+    if (ans[0].answerer !== 'NA' || ans1[0].answerer !== 'NA') {
+        disTriggered.value += 1;
+        openModal(1);
+    }
 }
 
 const disBtn = ref([false, false, false, false, false, false]);
