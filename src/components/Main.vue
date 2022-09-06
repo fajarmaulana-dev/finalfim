@@ -78,7 +78,7 @@ const closeModal = (i) => {
     setTimeout(() => {
         modal.value[i].container = false;
     }, 300);
-    
+
 }
 
 const openQuest = (e) => {
@@ -143,13 +143,13 @@ const answer = (e, f, g, h) => {
 
     const filt = (mod) => responses.value.filter(a => a.answered % divider === mod);
     const ever = (mod) => filt(mod).length === divider && filt(mod).every(a => a.answerer === filt(mod).map(k => k.answerer)[0]);
-    for (let i = 0; i < (divider - 1); i++) {
+    for (let i = 0; i < 4; i++) {
         if (ever(i)) { mod.value[i].click() }
     }
 
     const filt1 = (less) => responses.value.filter(a => a.answered / divider > less && a.answered / divider <= (less + 1));
     const ever1 = (less) => filt1(less).length === divider && filt1(less).every(a => a.answerer === filt1(less).map(k => k.answerer)[0]);
-    for (let i = 0; i < (divider - 1); i++) {
+    for (let i = 0; i < 4; i++) {
         if (ever1(i)) { less.value[i].click() }
     }
 
@@ -308,7 +308,6 @@ const colorize = computed(() => {
                     </div>
                 </div>
             </div>
-            <p>{{disTriggered}}</p>
         </div>
         <div class="overlay" :class="{ 'dis-none': !modal[0].container, 'dis-flex': modal[0].container }">
             <div class="time" :class="{ 'quest-disapp': !modal[0].box, 'quest-app': modal[0].box }">
