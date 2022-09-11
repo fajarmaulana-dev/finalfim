@@ -327,6 +327,9 @@ const colorize = computed(() => {
             <div class="time" :class="{ 'quest-disapp': !modal[0].box, 'quest-app': modal[0].box }">
                 <h4 :style="`color: var(--${colorize})`">Sisa Waktu (s)</h4>
                 <Progress :withImage="false" :percent="percentage()" :current="countDown_var" :color="colorize" />
+                <div class="opt" style="left: -2.5rem"
+                    @click="notAnswered(filtered().map(e => e.index)[0]); arrLength += 1; countDown_var = 0">NA</div>
+                <div class="opt" style="left: 7rem" @click="justClose(); arrLength += 1; countDown_var = 0">✕</div>
             </div>
             <div class="question" :class="{ 'quest-disapp': !modal[0].box, 'quest-app': modal[0].box }">
                 <div class="pend" style="left: 0;">
@@ -334,7 +337,7 @@ const colorize = computed(() => {
                     <span style="left: -.6rem;">{{ filtered().map(e => e.value)[0] }}</span>
                 </div>
                 <div class="pend" style="right: 0;">
-                    <img src="@/assets/keping.png" alt="nomor" style="transform: scaleX(-1);">
+                    <img src="@/assets/keping.png" alt="poin" style="transform: scaleX(-1);">
                     <span style="right: -.6rem; text-align: center;">{{ filtered().map(e => e.score)[0]
                     }}<br />pt</span>
                 </div>
@@ -653,6 +656,35 @@ const colorize = computed(() => {
     z-index: 5;
     transition: .1s;
     transition-delay: .1s;
+}
+
+.time .opt {
+    background-color: var(--primary);
+    color: var(--light);
+    font-size: .85rem;
+    font-weight: 700;
+    width: 2.5rem;
+    height: 2.5rem;
+    position: absolute;
+    top: 2.5rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transform: scale(0);
+    transition: transform .5s;
+}
+
+.time:hover .opt {
+    transform: scale(1);
+}
+
+.opt:hover {
+    background-color: var(--blue-600);
+}
+
+.opt:active {
+    background-color: var(--primary);
 }
 
 .time h4 {
