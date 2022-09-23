@@ -102,6 +102,8 @@ const openToast = (i) => {
 }
 
 watch(countDown_var, () => {
+    console.log(`bef-actual: ${responses.value.length}`)
+    console.log(`bef-balancer: ${arrLength.value}`)
     if (countDown_var.value === 0) {
         if (arrLength.value === responses.value.length) {
             notAnswered(selected.value);
@@ -111,9 +113,11 @@ watch(countDown_var, () => {
         disAdd.value = [false, false, false, false, false, false];
         disBtn.value = [false, false, false, false, false, false];
         const b = responses.value.map(a => a.answerer)[responses.value.length - 1];
-        if (b === 'NA') { openToast(0); arrLength.value -= 1; };
-        if (b === 'A' || b === 'B' || b === 'C' || b === 'D' || b === 'E' || b === 'F') { openToast(1); arrLength.value -= 1; }
-        if (b === '') { arrLength.value -= 1; }
+        if (b === 'NA') { openToast(0); arrLength.value = responses.value.length; };
+        if (b === 'A' || b === 'B' || b === 'C' || b === 'D' || b === 'E' || b === 'F') { openToast(1); arrLength.value = responses.value.length; }
+        if (b === 'JC') { arrLength.value = responses.value.length; }
+        console.log(`af-actual: ${responses.value.length}`)
+        console.log(`af-balancer: ${arrLength.value}`)
     }
 })
 
@@ -233,7 +237,7 @@ const notAnswered = (e) => {
 }
 
 const justClose = () => {
-    responses.value.push({ answered: '', answerer: '' });
+    responses.value.push({ answered: 'JC', answerer: 'JC' });
     arrLength.value += 1;
 }
 

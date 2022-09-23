@@ -20,7 +20,7 @@ const menus = ref([
   <RouterView />
   <footer>
     <router-link v-for="menu in menus" :key="menu.title" :to="menu.path" class="foot-menu">
-      <p>{{  menu.title  }}</p>
+      <p>{{ menu.title }}</p>
     </router-link>
   </footer>
 </template>
@@ -218,5 +218,18 @@ footer .foot-menu p {
   footer {
     height: 2.65rem;
   }
+}
+
+.text>div>p {
+  margin-bottom: .75rem !important;
+  line-height: 1.6rem;
+}
+
+.text>div {
+  padding-top: .5rem;
+}
+
+.ql-align-center {
+  text-align: center !important;
 }
 </style>
