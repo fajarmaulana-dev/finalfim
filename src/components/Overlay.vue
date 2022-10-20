@@ -59,11 +59,12 @@ const typeColor = computed(() => {
     if (type.value === 'primary') { return color.value = 'primary' };
 })
 
+const base_drive = (id) => `https://drive.google.com/u/0/uc?id=${id}&export=download`
 const typeToastImage = computed(() => {
-    if (type.value === 'success') { return image.value = 'https://drive.google.com/u/0/uc?id=1WKOn9maVyKppl8THaHbBHCxps7ce_dNB&export=download' };
-    if (type.value === 'warning') { return image.value = 'https://drive.google.com/u/0/uc?id=1DAwmDf6h38Er5mG6hqJkODrKWUOKYlQn&export=download' };
-    if (type.value === 'error') { return image.value = 'https://drive.google.com/u/0/uc?id=1fM0Td4ptI-cr4i_VFHfFWoOrYkAWX0_Y&export=download' };
-    if (type.value === 'primary') { return image.value = 'https://drive.google.com/u/0/uc?id=11IfdOuE4scHacx9sKOIXXUiLkmlFmJsC&export=download' };
+    if (type.value === 'success') { return image.value = base_drive('13gE5ido6N5vaajm9vhGZiS8mfnvkJlht') };
+    if (type.value === 'warning') { return image.value = base_drive('1Fgei4jaXU7YCq-bZTtaoP0V_JBQJx-C9') };
+    if (type.value === 'error') { return image.value = base_drive('1-fzCNYiLa97CgsQ5AtP4mmLlYe1J2D-a') };
+    if (type.value === 'primary') { return image.value = base_drive('1EWAzk9pf_SjF-zIoBZ6UYlEMER9G-7xa') };
 })
 const col = `flex-direction: column; text-align: center;`;
 </script>
