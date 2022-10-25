@@ -100,7 +100,7 @@ const col = `flex-direction: column; text-align: center;`;
             style=" justify-content: end; align-items: flex-end; transform: translate(-2rem, -1.5rem);">
             <section class="toast" :class="{ 'toast-disapp': !box, 'toast-app': box }"
                 :style="`background-color: var(--${typeColor}) !important;`">
-                <div :style="`background-image: url(${typeToastImage});`" class="pre-toast"></div>
+                <img :src="typeToastImage" alt="toast" class="pre-toast">
                 <span>{{ message }}</span>
             </section>
         </section>
@@ -144,6 +144,10 @@ const col = `flex-direction: column; text-align: center;`;
     display: flex;
     transition: transform .5s;
     transform: translateY(5.25rem);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
 
 .toast span {
@@ -155,12 +159,8 @@ const col = `flex-direction: column; text-align: center;`;
 }
 
 .pre-toast {
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position-y: center;
     margin-right: 1rem;
-    width: 1.75rem;
-    background-position-x: left;
+    height: 1.75rem;
 }
 
 .toast-app {

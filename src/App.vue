@@ -1,24 +1,68 @@
 <script setup>
-import { RouterView, RouterLink } from 'vue-router';
-import { ref } from 'vue'
+import { RouterView, RouterLink, useRoute } from 'vue-router';
+import router from './router/index';
+import { ref } from 'vue';
+import { useElementary } from '@/composables/mces';
+import { useJunior } from '@/composables/mcjhs';
+import { useSenior } from '@/composables/mcshs';
+
+const { resetItems: e_item, resetMeta: e_meta, resetContestants: e_contest, getItems: e_gets, getMeta: e_geta, getAllContestants: e_getc } = useElementary()
+const { resetItems: j_item, resetMeta: j_meta, resetContestants: j_contest, getItems: j_gets, getMeta: j_geta, getAllContestants: j_getc } = useJunior()
+const { resetItems: s_item, resetMeta: s_meta, resetContestants: s_contest, getItems: s_gets, getMeta: s_geta, getAllContestants: s_getc } = useSenior()
+
+const route = useRoute();
 const menus = ref([
   { title: 'MCES', path: '/' },
   { title: 'MCJHS', path: '/mcjhs' },
   { title: 'MCSHS', path: '/mcshs' },
 ])
+
+const edit_menus = ref([
+  { title: 'MCES', path: '/edit/mces' },
+  { title: 'MCJHS', path: '/edit/mcjhs' },
+  { title: 'MCSHS', path: '/edit/mcshs' },
+])
+
+const reset = () => {
+  if (route.path === '/') {
+    e_item(); e_contest(); e_meta();
+    location.reload()
+  }
+  if (route.path === '/mcjhs') {
+    j_item(); j_contest(); j_meta();
+    location.reload()
+  }
+  if (route.path === '/mcshs') {
+    s_item(); s_contest(); s_meta();
+    location.reload()
+  }
+}
 </script>
 
 <template>
-  <header>
+  <header style="justify-content: space-between; padding: 0 1rem;">
     <div class="nav-logo">
       <img class="org-logo" src="@/assets/fimojempol.png" alt="organization logo">
       <p class="page-title">Forum Ilmiah<br />
         <span style="color: var(--warning);">Matematika Nasional</span>
       </p>
     </div>
+    <div class="action" style="display: flex; flex-direction: row; gap: .5rem;">
+      <i v-if="route.path.includes('edit')" class="fa-solid fa-house-chimney" style="background-color: var(--primary);"
+        @click="router.push('/')"></i>
+      <i v-if="!route.path.includes('edit')" class="fa-solid fa-arrow-rotate-left"
+        style="background-color: var(--error);" @click="reset()"></i>
+      <i v-if="!route.path.includes('edit')" class="fa-solid fa-pen-to-square" style="background-color: var(--primary);"
+        @click="router.push('/edit/mces')"></i>
+    </div>
   </header>
   <RouterView />
-  <footer>
+  <footer v-if="route.path.includes('edit')">
+    <router-link v-for="menu in edit_menus" :key="menu.title" :to="menu.path" class="foot-menu">
+      <p>{{ menu.title }}</p>
+    </router-link>
+  </footer>
+  <footer v-else>
     <router-link v-for="menu in menus" :key="menu.title" :to="menu.path" class="foot-menu">
       <p>{{ menu.title }}</p>
     </router-link>
@@ -119,6 +163,25 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: var(--blue-700);
+}
+
+.action i {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  color: var(--light);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: .5s;
+}
+
+.action i:hover {
+  opacity: .8;
+}
+
+.action i:active {
+  opacity: 1;
 }
 
 .gridcardImg {
@@ -229,7 +292,55 @@ footer .foot-menu p {
   padding-top: .5rem;
 }
 
+.ql-align-right {
+  text-align: right;
+}
+
 .ql-align-center {
-  text-align: center !important;
+  text-align: center;
+}
+
+.ql-align-justify {
+  text-align: justify;
+}
+
+.ql-indent-1 {
+  margin-left: 3.5rem;
+}
+
+.ql-indent-2 {
+  margin-left: 7rem;
+}
+
+.ql-indent-3 {
+  margin-left: 10.5rem;
+}
+
+.ql-indent-4 {
+  margin-left: 14rem;
+}
+
+.ql-indent-5 {
+  margin-left: 17.5rem;
+}
+
+.ql-indent-6 {
+  margin-left: 21rem;
+}
+
+.ql-indent-7 {
+  margin-left: 24.5rem;
+}
+
+.ql-indent-8 {
+  margin-left: 28rem;
+}
+
+.ql-font-serif {
+  font-family: serif !important;
+}
+
+.ql-font-monospace {
+  font-family: monospace !important;
 }
 </style>
