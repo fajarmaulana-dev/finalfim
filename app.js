@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const HttpError = require("./models/http-error");
@@ -39,9 +40,7 @@ app.use((error, req, res, next) => {
     .json({ message: error.message || "An unknown error occurred!" });
 });
 mongoose
-  .connect(
-    "mongodb+srv://fajarmaulana-dev:c4rT4G321@cluster0.r4ihdsy.mongodb.net/fim?retryWrites=true&w=majority"
-  )
+  .connect(process.env.DATABASE_URL, { useNewUrlParser: true })
   .then(() => app.listen(5000))
   .catch((err) => {
     console.log(err);
