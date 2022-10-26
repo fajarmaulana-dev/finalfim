@@ -74,7 +74,8 @@ const editit = (i) => {
     </div>
     <Overlay type="warning" :with-confirm="true" :container="modal[0].container" :box="modal[0].box"
         @close-modal="closeModal(); edit[edit.indexOf(true)] = false;" @confirm="editit(edit.indexOf(true))"
-        title="Reset Soal" closeText="Jangan Reset" confirmText="Ya, Reset">Apakah kamu yakin mereset soal nomor {{
+        title="Reset Soal" closeText="Jangan Reset" confirmText="Ya, Reset">Apakah kamu yakin ingin mereset soal nomor
+        {{
         edit.indexOf(true) + 1
         }} ?
     </Overlay>
