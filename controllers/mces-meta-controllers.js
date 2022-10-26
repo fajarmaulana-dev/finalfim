@@ -36,8 +36,8 @@ const createMeta = async (req, res, next) => {
   res.status(201).json({ meta: createdMeta });
 };
 
-const updateRes = async (req, res, next) => {
-  const { responses } = req.body;
+const updateMeta = async (req, res, next) => {
+  const { responses, disMod, disLess, disDiag } = req.body;
   let meta;
   try {
     temp = await MCESMeta.find({});
@@ -51,90 +51,10 @@ const updateRes = async (req, res, next) => {
   }
 
   meta.responses = responses;
-  try {
-    await meta.save();
-  } catch (err) {
-    const error = new HttpError(
-      "Something when wrong, could not update meta",
-      500
-    );
-    return next(error);
-  }
-
-  res.json({ meta: meta.toObject({ getters: true }) });
-};
-
-const updateMod = async (req, res, next) => {
-  const { disMod } = req.body;
-  let meta;
-  try {
-    temp = await MCESMeta.find({});
-    meta = temp[0];
-  } catch (err) {
-    const error = new HttpError(
-      "Fetching meta failed, please try again later.",
-      500
-    );
-    return next(error);
-  }
-
   meta.disMod = disMod;
-  try {
-    await meta.save();
-  } catch (err) {
-    const error = new HttpError(
-      "Something when wrong, could not update meta",
-      500
-    );
-    return next(error);
-  }
-
-  res.json({ meta: meta.toObject({ getters: true }) });
-};
-
-const updateLess = async (req, res, next) => {
-  const { disLess } = req.body;
-  let meta;
-  try {
-    temp = await MCESMeta.find({});
-    meta = temp[0];
-  } catch (err) {
-    const error = new HttpError(
-      "Fetching meta failed, please try again later.",
-      500
-    );
-    return next(error);
-  }
-
   meta.disLess = disLess;
-  try {
-    await meta.save();
-  } catch (err) {
-    const error = new HttpError(
-      "Something when wrong, could not update meta",
-      500
-    );
-    return next(error);
-  }
-
-  res.json({ meta: meta.toObject({ getters: true }) });
-};
-
-const updateDiag = async (req, res, next) => {
-  const { disDiag } = req.body;
-  let meta;
-  try {
-    temp = await MCESMeta.find({});
-    meta = temp[0];
-  } catch (err) {
-    const error = new HttpError(
-      "Fetching meta failed, please try again later.",
-      500
-    );
-    return next(error);
-  }
-
   meta.disDiag = disDiag;
+
   try {
     await meta.save();
   } catch (err) {
@@ -179,8 +99,5 @@ const resetMeta = async (req, res, next) => {
 
 exports.getMeta = getMeta;
 exports.createMeta = createMeta;
-exports.updateRes = updateRes;
-exports.updateMod = updateMod;
-exports.updateLess = updateLess;
-exports.updateDiag = updateDiag;
+exports.updateMeta = updateMeta;
 exports.resetMeta = resetMeta;

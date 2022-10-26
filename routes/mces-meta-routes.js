@@ -4,10 +4,7 @@ const mcesMeta = require("../controllers/mces-meta-controllers");
 
 router.get("/", mcesMeta.getMeta);
 router.post("/", mcesMeta.createMeta);
-router.patch("/upres", mcesMeta.updateRes);
-router.patch("/upmod", mcesMeta.updateMod);
-router.patch("/upless", mcesMeta.updateLess);
-router.patch("/updiag", mcesMeta.updateDiag);
+router.patch("/update", mcesMeta.updateMeta);
 router.patch("/reset", mcesMeta.resetMeta);
 
 module.exports = router;
