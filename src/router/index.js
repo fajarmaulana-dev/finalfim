@@ -8,6 +8,8 @@ const router = createRouter({
   routes,
 });
 
+NProgress.configure({ showSpinner: false });
+
 router.beforeEach((to, from, next) => {
   NProgress.start();
   next();

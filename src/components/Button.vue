@@ -60,6 +60,7 @@ const { is, icon, type, color, dismiss, disabled, round, to } = toRefs(props);
 <style scoped>
 .btn-text {
     width: 100%;
+    height: 100%;
     padding: .5rem;
     font-size: 1rem;
     font-weight: 700;

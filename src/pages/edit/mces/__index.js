@@ -27,20 +27,14 @@ export class ElementaryService extends CrudService {
     return axios.patch(`${BASE_API}/api/mcesm/reset`);
   }
   upRes(data) {
-    return axios.patch(`${BASE_API}/api/mcesm/upres`, data);
-  }
-  upMod(data) {
-    return axios.patch(`${BASE_API}/api/mcesm/upmod`, data);
-  }
-  upLess(data) {
-    return axios.patch(`${BASE_API}/api/mcesm/upless`, data);
-  }
-  upDiag(data) {
-    return axios.patch(`${BASE_API}/api/mcesm/updiag`, data);
+    return axios.patch(`${BASE_API}/api/mcesm/update`, data);
   }
 
   getAllContestants() {
     return axios.get(`${BASE_API}/api/mcesc`);
+  }
+  getContestant(id) {
+    return axios.get(`${BASE_API}/api/mcesc/${id}`);
   }
   editScore(data) {
     return axios.patch(`${BASE_API}/api/mcesc/update/score`, data);
