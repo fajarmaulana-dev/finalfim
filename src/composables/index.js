@@ -27,8 +27,10 @@ class DefaultService {
 
     const getItem = async (id) => {
       try {
+        loading.quest = true;
         const res = await service.getQuest(id);
         item.value = res.data.quest;
+        loading.quest = false;
         return res;
       } catch (err) {
         console.log(err);

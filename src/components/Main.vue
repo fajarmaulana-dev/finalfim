@@ -136,9 +136,12 @@ const arrLength = ref(meta.value.map(m => m.responses).length);
 let divider; is.value === 'mces' ? divider = 5 : divider = 4;
 const answer = (e, f, g, h) => {
     const a = meta.value[0].responses.map(k => k.answered);
+    console.log(a)
     if (a.includes(e)) {
-        const h = contestants.value.map(k => k.name).indexOf(meta.value[0].responses[a.indexOf(e)].answerer)
-        i_model.value[h] -= quests.value[e - 1].score;
+        const z = contestants.value.map(k => k.name).indexOf(meta.value[0].responses[a.indexOf(e)].answerer)
+        i_model.value[z] -= quests.value[e - 1].score;
+        undo_message.value = `Pemindahan ${quests.value[e - 1].score} poin dari peserta ${contestants.value[z].name} ke peserta ${f} telah sukses.`;
+        openToast(3);
         meta.value[0].responses.splice(a.indexOf(e), 1);
     }
     meta.value[0].responses.push({ answered: e, answerer: f });
@@ -172,8 +175,6 @@ const answer = (e, f, g, h) => {
         const filt42 = meta.value[0].responses.filter(a => a.answered % (divider - 1) === 1 && a.answered % (divider + 1) !== 1);
         if (filt42.length === divider && filt42.every(a => a.answerer === filt42.map(k => k.answerer)[0])) { mod41.value.click() }
     }
-
-    contestants.value[h].score = i_model.value[h];
 }
 
 const disTriggered = ref(0)
@@ -250,6 +251,7 @@ const justClose = () => {
     if (different.value === true) {
         undo_message.value = 'Semua pengurangan poin telah dibatalkan';
         openToast(3);
+        different.value = false
     }
 }
 
@@ -406,8 +408,7 @@ const inputScore = (idx) => {
                         <div class="option">
                             <div>
                                 <button v-for="(contestant, index) in contestants" :key="contestant.name"
-                                    :class="{ disButton: disAdd[index] }" :disabled="disAdd[index]"
-                                    @click="answer(filtered().map(e => e.index)[0], contestant.name, contestant.color, index);
+                                    :class="{ disButton: disAdd[index] }" :disabled="disAdd[index]" @click="answer(filtered().map(e => e.index)[0], contestant.name, contestant.color, index);
                                     arrLength += 1; countDown_var = 0;
                                     answerItem(quests[filtered().map(e => e.index)[0] - 1]?.id,
                                         {
@@ -415,10 +416,8 @@ const inputScore = (idx) => {
                                             border: `${contestant.color}-600`,
                                             font: `${contestant.color}-700`
                                         });
-                                    editScore({ scores: i_model });
-                                    upRes({ responses: meta[0]?.responses, disMod: meta[0]?.disMod, disLess: meta[0]?.disLess, disDiag: meta[0]?.disDiag });">{{
-        contestant.name
-}}+</button>
+                                    upRes({ responses: meta[0]?.responses, disMod: meta[0]?.disMod, disLess: meta[0]?.disLess, disDiag: meta[0]?.disDiag });
+                                    editScore({ scores: i_model });">{{ contestant.name }}+</button>
                             </div>
                             <div>
                                 <button v-for="(contestant, index) in contestants" :key="contestant.name"

@@ -7,6 +7,7 @@ import ImageResize from 'quill-image-resize-vue';
 import QuillImageDropAndPaste from 'quill-image-drop-and-paste';
 import Rich from '@/components/Rich.vue';
 import { useSenior } from '@/composables/mcshs';
+import Spinner from '@/components/Spinner.vue';
 onMounted(() => window.katex = katex);
 const route = useRoute();
 
@@ -15,7 +16,7 @@ const modules = [
     { name: 'quillImageDropAndPaste', module: QuillImageDropAndPaste }
 ]
 
-const { item, getItem, editItem } = useSenior();
+const { item, getItem, editItem, loading } = useSenior();
 const question = ref()
 
 const onSave = async (question, score) => {
@@ -33,8 +34,11 @@ onMounted(async () => {
 
 <template>
     <div class="main">
-        <h2 style="font-size: var(--title); line-height: 2rem; margin-bottom: 3rem;">Edit Soal MCES</h2>
-        <div v-for="quest in question" :key="quest.id" style="min-height: 5rem; width: 90vw; margin-bottom: 3rem;">
+        <h2 style="font-size: var(--title); line-height: 2rem; margin-bottom: 3rem;">Edit Soal MCSHS</h2>
+        <Spinner v-if="loading.quest" is="bloks" :width="50" color1="primary" color2="warning" color3="error"
+            style="position: absolute; top: 50%; left: 50%" />
+        <div v-else v-for="quest in question" :key="quest.id"
+            style="min-height: 5rem; width: 90vw; margin-bottom: 3rem;">
             <QuillEditor theme="snow" toolbar="#rich" v-model:content="quest.question" contentType="html"
                 :modules="modules" placeholder="Ketikkan soal disini ..." spellcheck="false">
                 <template #toolbar>
