@@ -27,20 +27,14 @@ export class SeniorService extends CrudService {
     return axios.patch(`${BASE_API}/api/mcshsm/reset`);
   }
   upRes(data) {
-    return axios.patch(`${BASE_API}/api/mcshsm/upres`, data);
-  }
-  upMod(data) {
-    return axios.patch(`${BASE_API}/api/mcshsm/upmod`, data);
-  }
-  upLess(data) {
-    return axios.patch(`${BASE_API}/api/mcshsm/upless`, data);
-  }
-  upDiag(data) {
-    return axios.patch(`${BASE_API}/api/mcshsm/updiag`, data);
+    return axios.patch(`${BASE_API}/api/mcshsm/update`, data);
   }
 
   getAllContestants() {
     return axios.get(`${BASE_API}/api/mcshsc`);
+  }
+  getContestant(id) {
+    return axios.get(`${BASE_API}/api/mcshsc/${id}`);
   }
   editScore(data) {
     return axios.patch(`${BASE_API}/api/mcshsc/update/score`, data);

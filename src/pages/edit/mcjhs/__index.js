@@ -27,20 +27,14 @@ export class JuniorService extends CrudService {
     return axios.patch(`${BASE_API}/api/mcjhsm/reset`);
   }
   upRes(data) {
-    return axios.patch(`${BASE_API}/api/mcjhsm/upres`, data);
-  }
-  upMod(data) {
-    return axios.patch(`${BASE_API}/api/mcjhsm/upmod`, data);
-  }
-  upLess(data) {
-    return axios.patch(`${BASE_API}/api/mcjhsm/upless`, data);
-  }
-  upDiag(data) {
-    return axios.patch(`${BASE_API}/api/mcjhsm/updiag`, data);
+    return axios.patch(`${BASE_API}/api/mcjhsm/update`, data);
   }
 
   getAllContestants() {
     return axios.get(`${BASE_API}/api/mcjhsc`);
+  }
+  getContestant(id) {
+    return axios.get(`${BASE_API}/api/mcjhsc/${id}`);
   }
   editScore(data) {
     return axios.patch(`${BASE_API}/api/mcjhsc/update/score`, data);

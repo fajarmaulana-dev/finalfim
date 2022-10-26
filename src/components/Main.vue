@@ -1,8 +1,9 @@
 <script setup>
-import { ref, watch, toRefs, computed, onMounted } from 'vue';
+import { ref, watch, toRefs, computed } from 'vue';
 import Progress from '@/components/Progress.vue';
 import Overlay from '@/components/Overlay.vue';
 import Button from '@/components/Button.vue';
+import Spinner from '@/components/Spinner.vue';
 
 const props = defineProps({
     ['quests']: Array,
@@ -35,12 +36,10 @@ const props = defineProps({
     answerItem: Function,
     editScore: Function,
     upRes: Function,
-    upMod: Function,
-    upLess: Function,
-    upDiag: Function,
+    loading: Object
 })
 
-const { quests, contestants, meta, bonus, countDown, minscore, vioscore, is, title, answerItem, editScore, upDiag, upMod, upLess, upRes } = toRefs(props);
+const { quests, contestants, meta, bonus, countDown, minscore, vioscore, is, title, answerItem, editScore, upRes, loading } = toRefs(props);
 
 const countDown_var = ref();
 watch(countDown, () => countDown_var.value = countDown.value)
@@ -153,13 +152,13 @@ const answer = (e, f, g, h) => {
     const filt = (mod) => meta.value[0].responses.filter(a => a.answered % divider === mod);
     const ever = (mod) => filt(mod).length === divider && filt(mod).every(a => a.answerer === filt(mod).map(k => k.answerer)[0]);
     for (let i = 0; i < 4; i++) {
-        if (ever(i)) { mod.value[i].click() }
+        if (ever(i)) { mod.value[i].click(); }
     }
 
     const filt1 = (less) => meta.value[0].responses.filter(a => a.answered / divider > less && a.answered / divider <= (less + 1));
     const ever1 = (less) => filt1(less).length === divider && filt1(less).every(a => a.answerer === filt1(less).map(k => k.answerer)[0]);
     for (let i = 0; i < 4; i++) {
-        if (ever1(i)) { less.value[i].click() }
+        if (ever1(i)) { less.value[i].click(); }
     }
 
     const filt61 = meta.value[0].responses.filter(a => a.answered % (divider + 1) === 1);
@@ -310,16 +309,18 @@ const inputScore = (idx) => {
                     :disabled="meta[0]?.disMod[i - 1] === true ? true : false"></button>
                 <button v-for="i in divider" :key="i" :ref="e => { less[i - 1] = e }" @click="addLess(i - 1);"
                     :disabled="meta[0]?.disLess[i - 1] === true ? true : false"></button>
-                <button ref="mod61" @click="addDiag1()"
+                <button ref="mod61" @click="addDiag1();"
                     :disabled="meta[0]?.disDiag[0] === true ? true : false"></button>
-                <button ref="mod41" @click="addDiag2()"
+                <button ref="mod41" @click="addDiag2();"
                     :disabled="meta[0]?.disDiag[1] === true ? true : false"></button>
             </div>
             <div class="content">
                 <div style="display: flex; flex-direction: column; align-items: center;">
                     <h2>Pilihan Soal</h2>
                     <div class="questions">
-                        <button v-for="val in quests" :key="val.index" @click="openQuest(val.index)"
+                        <Spinner v-if="loading.quest" is="bloks" :width="50" color1="primary" color2="warning"
+                            color3="error" />
+                        <button v-else v-for="val in quests" :key="val.index" @click="openQuest(val.index)"
                             :style="`background-color: var(${val.bg}); color: var(${val.font}); border-color: var(${val.border}); width: ${is === 'mces' ? '15' : '18'}vw; height: ${is === 'mces' ? '15' : '18'}vw; max-width: ${is === 'mces' ? '3.5' : '4.5'}rem; max-height: ${is === 'mces' ? '3.5' : '4.5'}rem`">
                             {{ val.value }}</button>
                     </div>
@@ -327,8 +328,12 @@ const inputScore = (idx) => {
                 <div class="action">
                     <div style="width: 100%;">
                         <h2>Poin Peserta</h2>
-                        <div>
-                            <div v-for="(i, index) in contestants" :key="i"
+                        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+                            <Spinner v-if="loading.quest" is="bloks" :width="50" color1="primary" color2="warning"
+                                color3="error" />
+                            <Spinner v-else-if="loading.contestant" is="bloks" :width="50" color1="primary"
+                                color2="warning" color3="error" />
+                            <div v-else v-for="(i, index) in contestants" :key="i"
                                 style="height: calc(100%/8); position: relative;">
                                 <label>Peserta {{ i.name }}&nbsp;&nbsp;:</label>
                                 <input type="text" v-model.number="i_model[index]"
@@ -338,9 +343,13 @@ const inputScore = (idx) => {
                     </div>
                     <div style="width: 100%;" class="color">
                         <h2></h2>
-                        <div>
-                            <div v-for="i in contestants" :key="i"
-                                style="height: calc(100%/8); border: 3px solid; border-radius: .5rem;"
+                        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+                            <Spinner v-if="loading.quest" is="bloks" :width="50" color1="primary" color2="warning"
+                                color3="error" />
+                            <Spinner v-else-if="loading.contestant" is="bloks" :width="50" color1="primary"
+                                color2="warning" color3="error" />
+                            <div v-else v-for="i in contestants" :key="i"
+                                style="height: calc(100%/8); border: 3px solid; border-radius: .5rem; width: 100%;"
                                 :style="`background: var(${i.color}-400); border-color: var(${i.color}-600)`">
                                 <p :style="`color: var(${i.color}-700) !important`">{{ i.name }}</p>
                             </div>
@@ -396,10 +405,17 @@ const inputScore = (idx) => {
                         <div class="option">
                             <div>
                                 <button v-for="(contestant, index) in contestants" :key="contestant.name"
-                                    :class="{ disButton: disAdd[index] }" :disabled="disAdd[index]" @click="answer(filtered().map(e => e.index)[0], contestant.name, contestant.color, index); arrLength += 1; countDown_var = 0;
+                                    :class="{ disButton: disAdd[index] }" :disabled="disAdd[index]"
+                                    @click="answer(filtered().map(e => e.index)[0], contestant.name, contestant.color, index);
+                                    arrLength += 1; countDown_var = 0;
                                     answerItem(quests[filtered().map(e => e.index)[0] - 1]?.id,
-                                        { value: contestant.name, bg: `${contestant.color}-400`, border: `${contestant.color}-600`, font: `${contestant.color}-700` });
-                                    editScore({ scores: i_model }); upRes({ responses: meta[0]?.responses })">{{
+                                        {
+                                            value: contestant.name, bg: `${contestant.color}-400`,
+                                            border: `${contestant.color}-600`,
+                                            font: `${contestant.color}-700`
+                                        });
+                                    editScore({ scores: i_model });
+                                    upRes({ responses: meta[0]?.responses, disMod: meta[0]?.disMod, disLess: meta[0]?.disLess, disDiag: meta[0]?.disDiag });">{{
         contestant.name
 }}+</button>
                             </div>
@@ -418,11 +434,11 @@ const inputScore = (idx) => {
                                 </button>
                             </div>
                             <div>
-                                <button @click="notAnswered(filtered().map(e => e.index)[0]); arrLength += 1; countDown_var = 0; upRes({ responses: meta[0]?.responses });
+                                <button @click="notAnswered(filtered().map(e => e.index)[0]); arrLength += 1; countDown_var = 0; upRes({ responses: meta[0]?.responses, disMod: meta[0]?.disMod, disLess: meta[0]?.disLess, disDiag: meta[0]?.disDiag });
                                 answerItem(quests[filtered().map(e => e.index)[0] - 1]?.id, { value: 'NA', bg: '--light', border: '--primary', font: '--primary' });
                                 editScore({ scores: i_model })">Tak Terjawab</button>
                                 <button
-                                    @click="justClose(); arrLength += 1; countDown_var = 0; upRes({ responses: meta[0]?.responses })">Kembali</button>
+                                    @click="justClose(); arrLength += 1; countDown_var = 0; upRes({ responses: meta[0]?.responses, disMod: meta[0]?.disMod, disLess: meta[0]?.disLess, disDiag: meta[0]?.disDiag });">Kembali</button>
                             </div>
                         </div>
                     </div>
@@ -465,7 +481,7 @@ const inputScore = (idx) => {
     justify-content: center;
     flex-direction: column;
     width: 100%;
-    padding: 5rem 0 10rem 0;
+    padding: 6rem 0 9rem 0;
 }
 
 .main>em {

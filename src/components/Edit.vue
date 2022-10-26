@@ -1,6 +1,8 @@
 <script setup>
-import { toRefs } from 'vue';
-import router from '@/router/index'
+import { toRefs, ref } from 'vue';
+import router from '@/router/index';
+import Spinner from '@/components/Spinner.vue';
+import Overlay from '@/components/Overlay.vue'
 
 const emit = defineEmits(['reset'])
 
@@ -8,22 +10,55 @@ const props = defineProps({
     is: String,
     ['quests']: Array,
     reset: Function,
+    loading: Object
 })
 
-const { is, quests, reset } = toRefs(props);
+const { is, quests, reset, loading } = toRefs(props);
 const move = (id) => setTimeout(() => { router.push(`/edit/${is.value}/${id}`) }, 1000)
+
+const modal = ref([
+    { container: false, box: false }
+])
+
+const openModal = () => {
+    modal.value[0].container = true;
+    setTimeout(() => {
+        modal.value[0].box = true;
+    }, 100);
+}
+
+const closeModal = () => {
+    modal.value[0].box = false;
+    setTimeout(() => {
+        modal.value[0].container = false;
+    }, 300);
+
+}
+
+const edit = ref([...Array(25)].map((_, i) => false));
+const hiden = ref([])
+const editit = (i) => {
+    hiden.value[i].click()
+    edit.value[i] = false;
+    closeModal();
+}
 </script>
 
 <template>
     <div class="main">
         <h2 style="font-size: var(--title); line-height: 2rem; margin-bottom: 3rem;">Daftar Soal {{ is.toUpperCase() }}
         </h2>
-        <div v-for="quest in quests" :key="quest.id" style="min-height: 5rem; width: 90vw; margin-bottom: 3rem;">
+        <Spinner v-if="loading.quest" is="bloks" :width="50" color1="primary" color2="warning" color3="error"
+            style="position: absolute; top: 50%; left: 50%" />
+        <div v-else v-for="quest in quests" :key="quest.id" style="min-height: 5rem; width: 90vw; margin-bottom: 3rem;">
             <div class="ql-toolbar"
                 style="color: var(--light) !important; display: flex; align-items: center; justify-content: space-between; font-weight: 700; padding: .625rem .5rem;">
                 No. {{ quest.index }}
                 <div class="action" style="display: flex; flex-direction: row;">
-                    <i class="fa-solid fa-arrow-rotate-left"
+                    <i v-if="!edit[quest.index - 1] && quest.question !== 'Soal belum dibuat.' && quest.question !== '<p>Soal belum dibuat.</p>'"
+                        class="fa-solid fa-arrow-rotate-left" @click="edit[quest.index - 1] = true; openModal();"></i>
+                    <i v-if="edit[quest.index - 1]" :ref="e => { hiden[quest.index - 1] = e }"
+                        class="fa-solid fa-arrow-rotate-left"
                         @click="reset(quest.id, { question: 'Soal belum dibuat.', score: 30 })"></i>
                     <i class="fa-solid fa-pen-to-square" @click="move(quest.id)"></i>
                 </div>
@@ -37,6 +72,12 @@ const move = (id) => setTimeout(() => { router.push(`/edit/${is.value}/${id}`) }
             </div>
         </div>
     </div>
+    <Overlay type="warning" :with-confirm="true" :container="modal[0].container" :box="modal[0].box"
+        @close-modal="closeModal(); edit[edit.indexOf(true)] = false;" @confirm="editit(edit.indexOf(true))"
+        title="Reset Soal" closeText="Jangan Reset" confirmText="Ya, Reset">Apakah kamu yakin mereset soal nomor {{
+        edit.indexOf(true) + 1
+        }} ?
+    </Overlay>
 </template>
 
 <style scoped>

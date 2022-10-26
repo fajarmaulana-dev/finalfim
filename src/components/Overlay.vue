@@ -66,6 +66,14 @@ const typeToastImage = computed(() => {
     if (type.value === 'error') { return image.value = base_drive('1-fzCNYiLa97CgsQ5AtP4mmLlYe1J2D-a') };
     if (type.value === 'primary') { return image.value = base_drive('1EWAzk9pf_SjF-zIoBZ6UYlEMER9G-7xa') };
 })
+
+const typeModalImage = computed(() => {
+    if (type.value === 'success') return image.value = base_drive('1x9Qf73ZjbCUUKeL8kGtriMOLS3rnFUm9');
+    if (type.value === 'warning') return image.value = base_drive('1PHJQj66rFhaz5-qbEDNfRCyXp9_gPClO');
+    if (type.value === 'error') return image.value = base_drive('1AWQ9DWgMXzEHle5zZRt6L3m-JcAi4-jj');
+    if (type.value === 'primary') return image.value = base_drive('1Zy_H_5OETAcFjLhPS6G_dDFPWiMHmDa1');
+})
+
 const col = `flex-direction: column; text-align: center;`;
 </script>
 
@@ -77,8 +85,7 @@ const col = `flex-direction: column; text-align: center;`;
             <Card style="width: 85vw; max-width: 30rem;" footer-style="width: 100%; margin: 1.5rem 0 .5rem;"
                 :content-style="`${col} width: 100%;`" is="form" :class="{ 'modal-disapp': !box, 'modal-app': box }">
                 <template #header>
-                    <img src="@/assets/fimojempol.png" alt="Type Indicator" style="min-width: 6rem;"
-                        class="gridcardImg" />
+                    <img :src="typeModalImage" alt="Type Indicator" style="min-width: 6rem;" class="gridcardImg" />
                 </template>
                 <template #body>
                     <p style="font-weight: 700; font-size: 1.25rem;">{{ title }}</p>
@@ -88,9 +95,9 @@ const col = `flex-direction: column; text-align: center;`;
                 </template>
                 <template #footer>
                     <Button v-if="withConfirm === true" :round="true" :color="type"
-                        style="margin-right: .6rem; width: 100%;" @click="$emit('confirm')">
+                        style="margin-right: .6rem; width: 100%; height: 100%;" @click="$emit('confirm')">
                         {{ confirmText }}</Button>
-                    <Button :color="type" :round="true" :dismiss="true" style="width: 100%;"
+                    <Button :color="type" :round="true" :dismiss="true" style="width: 100%; height: 100%;"
                         @click="$emit('closeModal')">{{ closeText }}</Button>
                 </template>
             </Card>
