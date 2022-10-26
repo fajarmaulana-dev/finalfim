@@ -106,11 +106,12 @@ const openToast = (i) => {
     }, 3100);
 }
 
+const na = ref()
+
 watch(countDown_var, () => {
     if (countDown_var.value === 0) {
         if (arrLength.value === meta.value[0].responses.length) {
-            notAnswered(selected.value);
-            arrLength.value += 1;
+            na.value.click()
         }
         closeModal(0);
         disAdd.value = [false, false, false, false, false, false];
@@ -119,6 +120,8 @@ watch(countDown_var, () => {
         if (b === 'NA') { openToast(0); arrLength.value = meta.value[0].responses.length; };
         if (b === 'A' || b === 'B' || b === 'C' || b === 'D' || b === 'E' || b === 'F') { openToast(1); arrLength.value = meta.value[0].responses.length; }
         if (b === 'JC') { arrLength.value = meta.value[0].responses.length; }
+
+
     }
 })
 
@@ -136,7 +139,6 @@ const arrLength = ref(meta.value.map(m => m.responses).length);
 let divider; is.value === 'mces' ? divider = 5 : divider = 4;
 const answer = (e, f, g, h) => {
     const a = meta.value[0].responses.map(k => k.answered);
-    console.log(a)
     if (a.includes(e)) {
         const z = contestants.value.map(k => k.name).indexOf(meta.value[0].responses[a.indexOf(e)].answerer)
         i_model.value[z] -= quests.value[e - 1].score;
@@ -434,7 +436,7 @@ const inputScore = (idx) => {
                                 </button>
                             </div>
                             <div>
-                                <button @click="notAnswered(filtered().map(e => e.index)[0]); arrLength += 1; countDown_var = 0; upRes({ responses: meta[0]?.responses, disMod: meta[0]?.disMod, disLess: meta[0]?.disLess, disDiag: meta[0]?.disDiag });
+                                <button ref="na" @click="notAnswered(filtered().map(e => e.index)[0]); arrLength += 1; countDown_var = 0; upRes({ responses: meta[0]?.responses, disMod: meta[0]?.disMod, disLess: meta[0]?.disLess, disDiag: meta[0]?.disDiag });
                                 answerItem(quests[filtered().map(e => e.index)[0] - 1]?.id, { value: 'NA', bg: '--light', border: '--primary', font: '--primary' });
                                 editScore({ scores: i_model })">Tak Terjawab</button>
                                 <button
