@@ -95,33 +95,6 @@ class DefaultService {
       }
     };
 
-    // const upMod = async (data) => {
-    //   try {
-    //     const res = await service.upMod(data);
-    //     return res;
-    //   } catch (err) {
-    //     console.log(err);
-    //   }
-    // };
-
-    // const upLess = async (data) => {
-    //   try {
-    //     const res = await service.upLess(data);
-    //     return res;
-    //   } catch (err) {
-    //     console.log(err);
-    //   }
-    // };
-
-    // const upDiag = async (data) => {
-    //   try {
-    //     const res = await service.upDiag(data);
-    //     return res;
-    //   } catch (err) {
-    //     console.log(err);
-    //   }
-    // };
-
     const getAllContestants = async () => {
       try {
         loading.contestant = true;

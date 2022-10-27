@@ -114,14 +114,13 @@ watch(countDown_var, () => {
             na.value.click()
         }
         closeModal(0);
-        disAdd.value = [false, false, false, false, false, false];
-        disBtn.value = [false, false, false, false, false, false];
+        disAdd.value = [...Array(6)].map((_, i) => false);
+        disBtn.value = [...Array(6)].map((_, i) => false);
+        dis_vi.value = []
         const b = meta.value[0].responses.map(a => a.answerer)[meta.value[0].responses.length - 1];
         if (b === 'NA') { openToast(0); arrLength.value = meta.value[0].responses.length; };
         if (b === 'A' || b === 'B' || b === 'C' || b === 'D' || b === 'E' || b === 'F') { openToast(1); arrLength.value = meta.value[0].responses.length; }
         if (b === 'JC') { arrLength.value = meta.value[0].responses.length; }
-
-
     }
 })
 
@@ -134,7 +133,6 @@ const mod61 = ref();
 const mod41 = ref();
 
 const filtered = () => quests.value.filter((e) => e.index === selected.value);
-
 const arrLength = ref(meta.value.map(m => m.responses).length);
 let divider; is.value === 'mces' ? divider = 5 : divider = 4;
 const answer = (e, f, g, h) => {
@@ -142,8 +140,10 @@ const answer = (e, f, g, h) => {
     if (a.includes(e)) {
         const z = contestants.value.map(k => k.name).indexOf(meta.value[0].responses[a.indexOf(e)].answerer)
         i_model.value[z] -= quests.value[e - 1].score;
-        undo_message.value = `Pemindahan ${quests.value[e - 1].score} poin dari peserta ${contestants.value[z].name} ke peserta ${f} telah sukses.`;
-        openToast(3);
+        if (quests.value[e - 1].value !== 'NA') {
+            undo_message.value = `Pemindahan ${quests.value[e - 1].score} poin dari peserta ${contestants.value[z].name} ke peserta ${f} telah sukses.`;
+            openToast(3);
+        }
         meta.value[0].responses.splice(a.indexOf(e), 1);
     }
     meta.value[0].responses.push({ answered: e, answerer: f });
@@ -224,8 +224,8 @@ const addDiag2 = () => {
     }
 }
 
-const disBtn = ref([false, false, false, false, false, false]);
-const disAdd = ref([false, false, false, false, false, false]);
+const disBtn = ref([...Array(6)].map((_, i) => false));
+const disAdd = ref([...Array(6)].map((_, i) => false));
 
 const notAnswered = (e) => {
     const a = meta.value[0].responses.map(k => k.answered);
@@ -242,18 +242,29 @@ const notAnswered = (e) => {
     arrLength.value += 1;
 }
 
-const different = ref(false)
 const justClose = () => {
-    if (JSON.stringify(i_model.value) !== JSON.stringify(contestants.value.map(c => c.score))) {
-        different.value = true
+    i_model.value.forEach((i, idx) => { if (disBtn.value[idx] === true) { i_model.value[idx] += 5 } })
+    if (dis_vi.value.length !== 0) {
+        const count = {};
+        dis_vi.value.forEach(i => { count[i] = (count[i] || 0) + 1; });
+        const index = Object.keys(count)
+        const many = Object.values(count)
+        const last = many[many.length - 1]
+        i_model.value.forEach((i, idx) => {
+            if (index.includes(idx.toString())) {
+                if (typeof (many[idx]) !== 'number') {
+                    i_model.value[idx] += (last * 10);
+                } else {
+                    i_model.value[idx] += (many[idx] * 10);
+                }
+            }
+        })
     }
-    i_model.value.forEach((m, idx) => i_model.value[idx] = contestants.value[idx].score)
     meta.value[0].responses.push({ answered: 'JC', answerer: 'JC' });
     arrLength.value += 1;
-    if (different.value === true) {
+    if (disBtn.value.includes(true) || dis_vi.value.length !== 0) {
         undo_message.value = 'Semua pengurangan poin telah dibatalkan';
         openToast(3);
-        different.value = false
     }
 }
 
@@ -275,10 +286,13 @@ const undoMin = (e, f) => {
     openToast(3);
 }
 
+const dis_vi = ref([])
 const violation = (e, f) => {
     i_model.value[e] -= vioscore.value;
+    dis_vi.value.push(e)
     err_message.value = `Pengurangan ${vioscore.value} poin untuk peserta ${f}`;
     openToast(2)
+    console.log(dis_vi.value)
 }
 
 const expand = ref(false);
@@ -307,7 +321,7 @@ const inputScore = (idx) => {
     <div :id="is" style="padding: 0 5vw; display: grid; place-items: center; width: 100%; height: 100%;">
         <div class="main">
             <h2 style="font-size: var(--title); line-height: 2rem;">Babak <span
-                    :style="`color: var(--${meta[0]?.responses.length === 0 ? 'primary' : 'warning'})`">Kuis</span></h2>
+                    :style="`color: var(--${meta[0]?.responses.length !== 0 ? 'primary' : 'warning'})`">Kuis</span></h2>
             <em>{{ title }}</em>
             <div>
                 <button v-for="i in divider" :key="i" :ref="e => { mod[i - 1] = e }" @click="addMod(i - 1);"
