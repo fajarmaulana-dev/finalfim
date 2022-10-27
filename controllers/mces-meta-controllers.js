@@ -27,10 +27,7 @@ const createMeta = async (req, res, next) => {
   try {
     await createdMeta.save();
   } catch (err) {
-    const error = new HttpError(
-      "Create contestant failed, please try again.",
-      500
-    );
+    const error = new HttpError("Create meta failed, please try again.", 500);
     return next(error);
   }
   res.status(201).json({ meta: createdMeta });
