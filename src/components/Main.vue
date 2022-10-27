@@ -321,7 +321,7 @@ const inputScore = (idx) => {
     <div :id="is" style="padding: 0 5vw; display: grid; place-items: center; width: 100%; height: 100%;">
         <div class="main">
             <h2 style="font-size: var(--title); line-height: 2rem;">Babak <span
-                    :style="`color: var(--${meta[0]?.responses.length !== 0 ? 'primary' : 'warning'})`">Kuis</span></h2>
+                    :style="`color: var(--${meta[0]?.responses.length === 0 ? 'primary' : 'warning'})`">Kuis</span></h2>
             <em>{{ title }}</em>
             <div>
                 <button v-for="i in divider" :key="i" :ref="e => { mod[i - 1] = e }" @click="addMod(i - 1);"
