@@ -323,7 +323,7 @@ const inputScore = (c_idx, param) => {
         openToast(3);
         param;
     } else {
-        err_message.value = `Skor harus berupa bilangan !`;
+        err_message.value = `Skor harus berupa bilangan atau dimulai dengan bilangan !`;
         openToast(2);
     }
 }
