@@ -2,14 +2,6 @@
 import { RouterView, RouterLink, useRoute } from 'vue-router';
 import router from './router/index';
 import { ref } from 'vue';
-import { useElementary } from '@/composables/mces';
-import { useJunior } from '@/composables/mcjhs';
-import { useSenior } from '@/composables/mcshs';
-import Overlay from '@/components/Overlay.vue'
-
-const { resetItems: e_item, resetMeta: e_meta, resetContestants: e_contest } = useElementary()
-const { resetItems: j_item, resetMeta: j_meta, resetContestants: j_contest } = useJunior()
-const { resetItems: s_item, resetMeta: s_meta, resetContestants: s_contest } = useSenior()
 
 const route = useRoute();
 const menus = ref([
@@ -23,40 +15,6 @@ const edit_menus = ref([
   { title: 'MCJHS', path: '/edit/mcjhs' },
   { title: 'MCSHS', path: '/edit/mcshs' },
 ])
-
-const modal = ref([
-  { container: false, box: false }
-])
-
-const openModal = () => {
-  modal.value[0].container = true;
-  setTimeout(() => {
-    modal.value[0].box = true;
-  }, 100);
-}
-
-const closeModal = () => {
-  modal.value[0].box = false;
-  setTimeout(() => {
-    modal.value[0].container = false;
-  }, 300);
-
-}
-
-const reset = async () => {
-  if (route.path === '/') {
-    e_item(); e_contest(); e_meta();
-    location.reload()
-  }
-  if (route.path === '/mcjhs') {
-    j_item(); j_contest(); j_meta();
-    location.reload()
-  }
-  if (route.path === '/mcshs') {
-    s_item(); s_contest(); s_meta();
-    location.reload()
-  }
-}
 </script>
 
 <template>
@@ -69,12 +27,8 @@ const reset = async () => {
       <p class="page-title2">FIMNAS</p>
     </div>
     <div class="action" style="display: flex; flex-direction: row; gap: .5rem;">
-      <i v-if="route.path.includes('edit')" class="fa-solid fa-house-chimney" style="background-color: var(--primary);"
-        @click="router.push('/')"></i>
-      <i v-if="!route.path.includes('edit')" class="fa-solid fa-arrow-rotate-left"
-        style="background-color: var(--error);" @click="openModal()"></i>
-      <i v-if="!route.path.includes('edit')" class="fa-solid fa-pen-to-square" style="background-color: var(--primary);"
-        @click="router.push('/edit/mces')"></i>
+      <i v-if="route.path.includes('edit')" class="fa-solid fa-house-chimney" @click="router.push('/')"></i>
+      <i v-if="!route.path.includes('edit')" class="fa-solid fa-pen-to-square" @click="router.push('/edit/mces')"></i>
     </div>
   </header>
   <RouterView />
@@ -88,11 +42,6 @@ const reset = async () => {
       <p>{{ menu.title }}</p>
     </router-link>
   </footer>
-  <Overlay type="warning" :with-confirm="true" :container="modal[0].container" :box="modal[0].box"
-    @close-modal="closeModal()" @confirm="reset()" title="Reset Hasil Kuis" closeText="Jangan Reset"
-    confirmText="Ya, Reset">
-    Apakah kamu yakin ingin mereset hasil kuis saat ini ?
-  </Overlay>
 </template>
 
 <style>
@@ -196,6 +145,7 @@ body {
   height: 2rem;
   border-radius: 50%;
   color: var(--light);
+  background-color: var(--primary);
   display: grid;
   place-items: center;
   cursor: pointer;

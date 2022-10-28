@@ -61,6 +61,9 @@ class DefaultService {
     const resetItems = async () => {
       try {
         const res = await service.resetQuests();
+        setTimeout(() => {
+          getItems();
+        }, 500);
         return res;
       } catch (err) {
         console.log(err);
@@ -80,6 +83,9 @@ class DefaultService {
     const resetMeta = async () => {
       try {
         const res = await service.resetMeta();
+        setTimeout(() => {
+          getMeta();
+        }, 500);
         return res;
       } catch (err) {
         console.log(err);
@@ -129,6 +135,9 @@ class DefaultService {
     const resetContestants = async () => {
       try {
         const res = await service.resetContestants();
+        setTimeout(() => {
+          getAllContestants();
+        }, 500);
         return res;
       } catch (err) {
         console.log(err);

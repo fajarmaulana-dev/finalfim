@@ -36,10 +36,13 @@ const props = defineProps({
     answerItem: Function,
     editScore: Function,
     upRes: Function,
+    resetM: Function,
+    resetC: Function,
+    resetQ: Function,
     loading: Object
 })
 
-const { quests, contestants, meta, bonus, countDown, minscore, vioscore, is, title, answerItem, editScore, upRes, loading } = toRefs(props);
+const { quests, contestants, meta, bonus, countDown, minscore, vioscore, is, title, answerItem, editScore, upRes, loading, resetM, resetC, resetQ } = toRefs(props);
 
 const countDown_var = ref();
 watch(countDown, () => countDown_var.value = countDown.value)
@@ -60,6 +63,7 @@ const percentage = () => {
 }
 
 const modal = ref([
+    { container: false, box: false },
     { container: false, box: false },
     { container: false, box: false },
 ])
@@ -135,48 +139,50 @@ const mod41 = ref();
 const filtered = () => quests.value.filter((e) => e.index === selected.value);
 const arrLength = ref(meta.value.map(m => m.responses).length);
 let divider; is.value === 'mces' ? divider = 5 : divider = 4;
-const answer = (e, f, g, h) => {
-    const a = meta.value[0].responses.map(k => k.answered);
-    if (a.includes(e)) {
-        const z = contestants.value.map(k => k.name).indexOf(meta.value[0].responses[a.indexOf(e)].answerer)
-        i_model.value[z] -= quests.value[e - 1].score;
-        if (quests.value[e - 1].value !== 'NA') {
-            undo_message.value = `Pemindahan ${quests.value[e - 1].score} poin dari peserta ${contestants.value[z].name} ke peserta ${f} telah sukses.`;
+
+const answer = (q_idx, c_name, c_color, c_idx) => {
+    const answered = meta.value[0].responses.map(k => k.answered);
+    if (answered.includes(q_idx)) {
+        const answerer = contestants.value.map(k => k.name).indexOf(meta.value[0].responses[answered.indexOf(q_idx)].answerer)
+        i_model.value[answerer] -= quests.value[q_idx - 1].score;
+        if (quests.value[q_idx - 1].value !== 'NA') {
+            undo_message.value = `Pemindahan ${quests.value[q_idx - 1].score} poin dari peserta ${contestants.value[answerer].name} ke peserta ${c_name} telah sukses.`;
             openToast(3);
         }
-        meta.value[0].responses.splice(a.indexOf(e), 1);
+        meta.value[0].responses.splice(answered.indexOf(q_idx), 1);
     }
-    meta.value[0].responses.push({ answered: e, answerer: f });
+    meta.value[0].responses.push({ answered: q_idx, answerer: c_name });
     arrLength.value += 1;
-    quests.value[e - 1].value = f;
-    quests.value[e - 1].bg = `${g}-400`;
-    quests.value[e - 1].font = `${g}-700`;
-    quests.value[e - 1].border = `${g}-600`;
-    i_model.value[h] += quests.value[e - 1].score;
+    quests.value[q_idx - 1].value = c_name;
+    quests.value[q_idx - 1].bg = `${c_color}-400`;
+    quests.value[q_idx - 1].font = `${c_color}-700`;
+    quests.value[q_idx - 1].border = `${c_color}-600`;
+    i_model.value[c_idx] += quests.value[q_idx - 1].score;
 
     const filt = (mod) => meta.value[0].responses.filter(a => a.answered % divider === mod);
     const ever = (mod) => filt(mod).length === divider && filt(mod).every(a => a.answerer === filt(mod).map(k => k.answerer)[0]);
-    for (let i = 0; i < 4; i++) {
-        if (ever(i)) { mod.value[i].click(); }
-    }
-
     const filt1 = (less) => meta.value[0].responses.filter(a => a.answered / divider > less && a.answered / divider <= (less + 1));
     const ever1 = (less) => filt1(less).length === divider && filt1(less).every(a => a.answerer === filt1(less).map(k => k.answerer)[0]);
-    for (let i = 0; i < 4; i++) {
-        if (ever1(i)) { less.value[i].click(); }
+    let filt41;
+    if (is.value === 'mces') {
+        filt41 = meta.value[0].responses.filter(a => a.answered % (divider - 1) === 1 && a.answered % (divider + 1) !== 1 || a.answered === 13);
+    } else {
+        filt41 = meta.value[0].responses.filter(a => a.answered % (divider - 1) === 1 && a.answered % (divider + 1) !== 1);
     }
-
+    const everd = () => filt41.length === divider && filt41.every(a => a.answerer === filt41.map(k => k.answerer)[0])
     const filt61 = meta.value[0].responses.filter(a => a.answered % (divider + 1) === 1);
-    if (filt61.length === divider && filt61.every(a => a.answerer === filt61.map(k => k.answerer)[0])) { mod61.value.click() }
+    const everd1 = () => filt61.length === divider && filt61.every(a => a.answerer === filt61.map(k => k.answerer)[0]);
+
+    for (let i = 0; i < 4; i++) { if (ever(i)) { mod.value[i].click() } }
+    for (let i = 0; i < 4; i++) { if (ever1(i)) { less.value[i].click() } }
     if (is.value === 'mces') {
         if (ever(4)) { mod.value[4].click() }
         if (ever1(4)) { less.value[4].click() }
-        const filt41 = meta.value[0].responses.filter(a => a.answered % (divider - 1) === 1 && a.answered % (divider + 1) !== 1 || a.answered === 13);
-        if (filt41.length === divider && filt41.every(a => a.answerer === filt41.map(k => k.answerer)[0])) { mod41.value.click() }
+        if (everd()) { mod41.value.click() }
     } else {
-        const filt42 = meta.value[0].responses.filter(a => a.answered % (divider - 1) === 1 && a.answered % (divider + 1) !== 1);
-        if (filt42.length === divider && filt42.every(a => a.answerer === filt42.map(k => k.answerer)[0])) { mod41.value.click() }
+        if (everd()) { mod41.value.click() }
     }
+    if (everd1()) { mod61.value.click() }
 }
 
 const disTriggered = ref(0)
@@ -227,18 +233,18 @@ const addDiag2 = () => {
 const disBtn = ref([...Array(6)].map((_, i) => false));
 const disAdd = ref([...Array(6)].map((_, i) => false));
 
-const notAnswered = (e) => {
-    const a = meta.value[0].responses.map(k => k.answered);
-    if (a.includes(e)) {
-        const h = contestants.value.map(k => k.name).indexOf(meta.value[0].responses[a.indexOf(e)].answerer)
-        i_model.value[h] -= quests.value[e - 1].score;
-        meta.value[0].responses.splice(a.indexOf(e), 1);
+const notAnswered = (q_idx) => {
+    const answered = meta.value[0].responses.map(k => k.answered);
+    if (answered.includes(q_idx)) {
+        const answerer = contestants.value.map(k => k.name).indexOf(meta.value[0].responses[answered.indexOf(q_idx)].answerer)
+        i_model.value[answerer] -= quests.value[e - 1].score;
+        meta.value[0].responses.splice(answered.indexOf(q_idx), 1);
     }
-    meta.value[0].responses.push({ answered: e, answerer: 'NA' });
-    quests.value[e - 1].value = 'NA';
-    quests.value[e - 1].bg = `--light`
-    quests.value[e - 1].font = `--primary`
-    quests.value[e - 1].border = `--primary`
+    meta.value[0].responses.push({ answered: q_idx, answerer: 'NA' });
+    quests.value[q_idx - 1].value = 'NA';
+    quests.value[q_idx - 1].bg = `--light`
+    quests.value[q_idx - 1].font = `--primary`
+    quests.value[q_idx - 1].border = `--primary`
     arrLength.value += 1;
 }
 
@@ -249,7 +255,7 @@ const justClose = () => {
         dis_vi.value.forEach(i => { count[i] = (count[i] || 0) + 1; });
         const index = Object.keys(count)
         const many = Object.values(count)
-        const last = many[many.length - 1]
+        const last = many[many.length - 1] // idk, but the raw last value often be undefined in if statement
         i_model.value.forEach((i, idx) => {
             if (index.includes(idx.toString())) {
                 if (typeof (many[idx]) !== 'number') {
@@ -287,10 +293,10 @@ const undoMin = (e, f) => {
 }
 
 const dis_vi = ref([])
-const violation = (e, f) => {
-    i_model.value[e] -= vioscore.value;
-    dis_vi.value.push(e)
-    err_message.value = `Pengurangan ${vioscore.value} poin untuk peserta ${f}`;
+const violation = (c_idx, c_name) => {
+    i_model.value[c_idx] -= vioscore.value;
+    dis_vi.value.push(c_idx)
+    err_message.value = `Pengurangan ${vioscore.value} poin untuk peserta ${c_name}`;
     openToast(2)
     console.log(dis_vi.value)
 }
@@ -310,18 +316,25 @@ const colorize = computed(() => {
     }
 })
 
-const inputScore = (idx) => {
-    contestants.value[idx].score = i_model.value[idx];
-    undo_message.value = `Poin peserta ${contestants.value[idx].name} telah berhasil diedit.`;
-    openToast(3);
+const inputScore = (c_idx, param) => {
+    if (typeof (i_model.value[c_idx]) === 'number') {
+        contestants.value[c_idx].score = i_model.value[c_idx];
+        undo_message.value = `Poin peserta ${contestants.value[c_idx].name} telah berhasil diedit.`;
+        openToast(3);
+        param;
+    } else {
+        err_message.value = `Skor harus berupa bilangan !`;
+        openToast(2);
+    }
 }
 </script>
 
 <template>
     <div :id="is" style="padding: 0 5vw; display: grid; place-items: center; width: 100%; height: 100%;">
+        <i v-if="meta[0]?.responses.length > 0 || quests.map(i => Number(i.value)).some(isNaN) || contestants.map(i => i.score).some(i => i !== 100)"
+            class="fa-solid fa-arrow-rotate-left reset" @click="openModal(2)"></i>
         <div class="main">
-            <h2 style="font-size: var(--title); line-height: 2rem;">Babak <span
-                    :style="`color: var(--${meta[0]?.responses.length === 0 ? 'primary' : 'warning'})`">Kuis</span></h2>
+            <h2 style="font-size: var(--title); line-height: 2rem;">Babak Kuis</h2>
             <em>{{ title }}</em>
             <div>
                 <button v-for="i in divider" :key="i" :ref="e => { mod[i - 1] = e }" @click="addMod(i - 1);"
@@ -339,7 +352,7 @@ const inputScore = (idx) => {
                     <div class="questions">
                         <Spinner v-if="loading.quest" is="bloks" :width="50" color1="primary" color2="warning"
                             color3="error" />
-                        <button v-else v-for="val in quests" :key="val.index" @click="openQuest(val.index)"
+                        <button v-else v-for="val in quests" :key="val.id" @click="openQuest(val.index)"
                             :style="`background-color: var(${val.bg}); color: var(${val.font}); border-color: var(${val.border}); width: ${is === 'mces' ? '15' : '18'}vw; height: ${is === 'mces' ? '15' : '18'}vw; max-width: ${is === 'mces' ? '3.5' : '4.5'}rem; max-height: ${is === 'mces' ? '3.5' : '4.5'}rem`">
                             {{ val.value }}</button>
                     </div>
@@ -352,11 +365,11 @@ const inputScore = (idx) => {
                                 color3="error" />
                             <Spinner v-else-if="loading.contestant" is="bloks" :width="50" color1="primary"
                                 color2="warning" color3="error" />
-                            <div v-else v-for="(i, index) in contestants" :key="i"
+                            <div v-else v-for="(i, index) in contestants" :key="i.id"
                                 style="height: calc(100%/8); position: relative;">
                                 <label>Peserta {{ i.name }}&nbsp;&nbsp;:</label>
                                 <input type="text" v-model.number="i_model[index]"
-                                    @keyup.enter="inputScore(index); editScore({ scores: i_model })" />
+                                    @keyup.enter="inputScore(index, editScore({ scores: i_model }));" />
                             </div>
                         </div>
                     </div>
@@ -367,7 +380,7 @@ const inputScore = (idx) => {
                                 color3="error" />
                             <Spinner v-else-if="loading.contestant" is="bloks" :width="50" color1="primary"
                                 color2="warning" color3="error" />
-                            <div v-else v-for="i in contestants" :key="i"
+                            <div v-else v-for="i in contestants" :key="i.id"
                                 style="height: calc(100%/8); border: 3px solid; border-radius: .5rem; width: 100%;"
                                 :style="`background: var(${i.color}-400); border-color: var(${i.color}-600)`">
                                 <p :style="`color: var(${i.color}-700) !important`">{{ i.name }}</p>
@@ -473,10 +486,39 @@ const inputScore = (idx) => {
             <b>Peserta {{ meta[0]?.responses.map(a => a.answerer)[meta[0]?.responses.length - 1] }}</b> memperoleh bonus
             poin sebanyak <b>{{ disTriggered * bonus }} poin</b>.
         </Overlay>
+        <Overlay type="warning" :with-confirm="true" :container="modal[2].container" :box="modal[2].box"
+            @close-modal="closeModal(2)" @confirm="resetM(); resetC(); resetQ(); closeModal(2);"
+            title="Reset Hasil Kuis" closeText="Jangan Reset" confirmText="Ya, Reset">Apakah kamu yakin ingin mereset
+            hasil kuis saat ini ?
+        </Overlay>
     </div>
 </template>
 
 <style scoped>
+.reset {
+    background-color: var(--error);
+    position: fixed;
+    top: .75rem;
+    right: 3.5rem;
+    z-index: 100;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    color: var(--light);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: .5s;
+}
+
+i:hover {
+    opacity: .8;
+}
+
+i:active {
+    opacity: 1;
+}
+
 .disButton {
     background-color: var(--gray-300) !important;
     color: var(--gray-600) !important;
