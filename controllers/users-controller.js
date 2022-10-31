@@ -32,7 +32,7 @@ const signup = async (req, res, next) => {
   if (errorParam[0] === "password") {
     return next(
       new HttpError(
-        "Password harus terdiri dari minimal 8 karakter dan terdiri dari minimal 1 huruf kapital, 1 huruf kecil, 1 angka, dan 1 karakter unik",
+        "Password baru harus terdiri dari minimal 8 karakter dan terdiri dari minimal 1 huruf kapital, 1 huruf kecil, 1 angka, dan 1 karakter unik",
         422
       )
     );
@@ -208,7 +208,7 @@ const changePass = async (req, res, next) => {
   if (errorParam[0] === "newPassword") {
     return next(
       new HttpError(
-        "Password harus terdiri dari minimal 8 karakter dan terdiri dari minimal 1 huruf kapital, 1 huruf kecil, 1 angka, dan 1 karakter unik",
+        "Password baru harus terdiri dari minimal 8 karakter dan terdiri dari minimal 1 huruf kapital, 1 huruf kecil, 1 angka, dan 1 karakter unik",
         422
       )
     );
