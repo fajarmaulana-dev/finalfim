@@ -37,7 +37,7 @@ router.patch(
   "/update/:uid",
   [
     check("name").not().isEmpty(),
-    check("password").matches(
+    check("newPassword").matches(
       /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/,
       "i"
     ),
