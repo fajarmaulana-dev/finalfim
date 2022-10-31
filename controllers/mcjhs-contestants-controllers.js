@@ -7,7 +7,7 @@ const getAllContestants = async (req, res, next) => {
     contestant = await MCJHSContestant.find({});
   } catch (err) {
     const error = new HttpError(
-      "Fetching contestant failed, please try again later.",
+      "Gagal memperoleh data peserta, silakan coba lagi",
       500
     );
     return next(error);
@@ -24,16 +24,13 @@ const getContestantById = async (req, res, next) => {
   try {
     contestant = await MCJHSContestant.findById(contestantId);
   } catch (err) {
-    const error = new HttpError(
-      "Something went wrong, could not find a contestant.",
-      500
-    );
+    const error = new HttpError("Kesalahan server, silakan coba lagi", 500);
     return next(error);
   }
 
   if (!contestant) {
     const error = new HttpError(
-      "Could not find contestant for the provided id.",
+      "Tidak dapat menemukan peserta yang diminta",
       404
     );
     return next(error);
@@ -52,10 +49,7 @@ const createContestant = async (req, res, next) => {
   try {
     await createdContestant.save();
   } catch (err) {
-    const error = new HttpError(
-      "Create contestant failed, please try again.",
-      500
-    );
+    const error = new HttpError("Kesalahan server, silakan coba lagi", 500);
     return next(error);
   }
   res.status(201).json({ contestant: createdContestant });
@@ -69,7 +63,7 @@ const updateContestant = async (req, res, next) => {
     contestant = await MCJHSContestant.find({});
   } catch (err) {
     const error = new HttpError(
-      "Fetching contestant failed, please try again later.",
+      "Kesalahan server, tidak dapat mengakses data peserta",
       500
     );
     return next(error);
@@ -85,7 +79,7 @@ const updateContestant = async (req, res, next) => {
     }
   } catch (err) {
     const error = new HttpError(
-      "Something when wrong, could not update contestant",
+      "Kesalahan server, tidak dapat memperbarui data peserta",
       500
     );
     return next(error);
@@ -101,7 +95,7 @@ const resetContestants = async (req, res, next) => {
     await MCJHSContestant.updateMany({}, [{ $set: { score: 100 } }]);
   } catch (err) {
     const error = new HttpError(
-      "Something when wrong, could not update contestant",
+      "Tidak dapat mereset data peserta, silakan coba lagi",
       500
     );
     return next(error);
@@ -112,7 +106,7 @@ const resetContestants = async (req, res, next) => {
     contestant = await MCJHSContestant.find({});
   } catch (err) {
     const error = new HttpError(
-      "Fetching contestant failed, please try again later.",
+      "Tidak dapat mereset data peserta, silakan coba lagi",
       500
     );
     return next(error);

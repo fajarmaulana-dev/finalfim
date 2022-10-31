@@ -17,6 +17,7 @@ const mcshsmRoutes = require("./routes/mcshs-meta-routes");
 const usersRoutes = require("./routes/users-routes");
 const app = express();
 app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use("/api/mces", mcesRoutes);
 app.use("/api/mcjhs", mcjhsRoutes);

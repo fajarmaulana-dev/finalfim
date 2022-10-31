@@ -8,7 +8,7 @@ const getAllQuestions = async (req, res, next) => {
     quest = await MCJHSQuest.find({});
   } catch (err) {
     const error = new HttpError(
-      "Fetching question failed, please try again later.",
+      "Gagal mendapatkan data soal, silakan coba lagi",
       500
     );
     return next(error);
@@ -23,18 +23,12 @@ const getQuestionById = async (req, res, next) => {
   try {
     quest = await MCJHSQuest.findById(questId);
   } catch (err) {
-    const error = new HttpError(
-      "Something went wrong, could not find a question.",
-      500
-    );
+    const error = new HttpError("Kesalahan server, silakan coba lagi", 500);
     return next(error);
   }
 
   if (!quest) {
-    const error = new HttpError(
-      "Could not find question for the provided id.",
-      404
-    );
+    const error = new HttpError("Tidak dapat menemukan soal yang diminta", 404);
     return next(error);
   }
 
@@ -43,8 +37,12 @@ const getQuestionById = async (req, res, next) => {
 
 const createQuestion = async (req, res, next) => {
   const error = validationResult(req);
-  if (!error.isEmpty()) {
-    throw new HttpError("Invalid inputs passed, please check your data.", 422);
+  const errorParam = error.errors.map((e) => e.param);
+  if (errorParam[0] === "question") {
+    return next(new HttpError("Soal tidak boleh kosong", 422));
+  }
+  if (errorParam[0] === "score") {
+    return next(new HttpError("Skor harus terdiri dari dua digit", 422));
   }
   const { index, question, score } = req.query;
   const createdQuestion = new MCJHSQuest({
@@ -59,10 +57,7 @@ const createQuestion = async (req, res, next) => {
   try {
     await createdQuestion.save();
   } catch (err) {
-    const error = new HttpError(
-      "Create question failed, please try again.",
-      500
-    );
+    const error = new HttpError("Gagal menyimpan soal, silakan coba lagi", 500);
     return next(error);
   }
   res.status(201).json({ quest: createdQuestion });
@@ -70,10 +65,12 @@ const createQuestion = async (req, res, next) => {
 
 const updateQuestion = async (req, res, next) => {
   const error = validationResult(req);
-  if (!error.isEmpty()) {
-    return next(
-      new HttpError("Invalid inputs passed, please check your data.", 422)
-    );
+  const errorParam = error.errors.map((e) => e.param);
+  if (errorParam[0] === "question") {
+    return next(new HttpError("Soal tidak boleh kosong", 422));
+  }
+  if (errorParam[0] === "score") {
+    return next(new HttpError("Skor harus terdiri dari dua digit", 422));
   }
   const { question, score } = req.body;
   const questId = req.params.qid;
@@ -82,10 +79,7 @@ const updateQuestion = async (req, res, next) => {
   try {
     quest = await MCJHSQuest.findById(questId);
   } catch (err) {
-    const error = new HttpError(
-      "Something when wrong, could not update question",
-      500
-    );
+    const error = new HttpError("Kesalahan server, silakan coba lagi", 500);
     return next(error);
   }
 
@@ -96,7 +90,7 @@ const updateQuestion = async (req, res, next) => {
     await quest.save();
   } catch (err) {
     const error = new HttpError(
-      "Something when wrong, could not update question",
+      "Tidak dapat memperbarui soal, silakan coba lagi",
       500
     );
     return next(error);
@@ -106,12 +100,6 @@ const updateQuestion = async (req, res, next) => {
 };
 
 const answerQuestion = async (req, res, next) => {
-  const error = validationResult(req);
-  if (!error.isEmpty()) {
-    return next(
-      new HttpError("Invalid inputs passed, please check your data.", 422)
-    );
-  }
   const { value, bg, border, font } = req.body;
   const questId = req.params.qid;
 
@@ -120,7 +108,7 @@ const answerQuestion = async (req, res, next) => {
     quest = await MCJHSQuest.findById(questId);
   } catch (err) {
     const error = new HttpError(
-      "Something when wrong, could not update question",
+      "Jawaban gagal tersimpan, silakan coba lagi",
       500
     );
     return next(error);
@@ -135,7 +123,7 @@ const answerQuestion = async (req, res, next) => {
     await quest.save();
   } catch (err) {
     const error = new HttpError(
-      "Something when wrong, could not update question",
+      "Jawaban gagal tersimpan, silakan coba lagi",
       500
     );
     return next(error);
@@ -160,7 +148,7 @@ const resetQuestions = async (req, res, next) => {
     ]);
   } catch (err) {
     const error = new HttpError(
-      "Something when wrong, could not update question",
+      "Gagal mereset data jawaban, silakan coba lagi",
       500
     );
     return next(error);
@@ -171,7 +159,7 @@ const resetQuestions = async (req, res, next) => {
     quest = await MCJHSQuest.find({});
   } catch (err) {
     const error = new HttpError(
-      "Fetching question failed, please try again later.",
+      "Gagal mereset data jawaban, silakan coba lagi",
       500
     );
     return next(error);

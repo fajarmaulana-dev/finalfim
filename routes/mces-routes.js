@@ -2,7 +2,9 @@ const express = require("express");
 const { check } = require("express-validator");
 const router = express.Router();
 const mcesControllers = require("../controllers/mces-controllers");
+const checkAuth = require("../middleware/check-auth");
 
+router.use(checkAuth);
 router.get("/", mcesControllers.getAllQuestions);
 router.get("/:qid", mcesControllers.getQuestionById);
 router.post(

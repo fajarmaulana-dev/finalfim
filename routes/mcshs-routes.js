@@ -2,7 +2,9 @@ const express = require("express");
 const { check } = require("express-validator");
 const router = express.Router();
 const mcshsControllers = require("../controllers/mcshs-controllers");
+const checkAuth = require("../middleware/check-auth");
 
+router.use(checkAuth);
 router.get("/", mcshsControllers.getAllQuestions);
 router.get("/:qid", mcshsControllers.getQuestionById);
 router.post(

@@ -7,7 +7,7 @@ const getMeta = async (req, res, next) => {
     meta = await MCJHSMeta.find({});
   } catch (err) {
     const error = new HttpError(
-      "Fetching meta failed, please try again later.",
+      "Gagal mendapatkan data meta, silakan coba lagi",
       500
     );
     return next(error);
@@ -27,7 +27,7 @@ const createMeta = async (req, res, next) => {
   try {
     await createdMeta.save();
   } catch (err) {
-    const error = new HttpError("Create meta failed, please try again.", 500);
+    const error = new HttpError("Gagal membuat meta, silakan coba lagi", 500);
     return next(error);
   }
   res.status(201).json({ meta: createdMeta });
@@ -41,7 +41,7 @@ const updateMeta = async (req, res, next) => {
     meta = temp[0];
   } catch (err) {
     const error = new HttpError(
-      "Fetching meta failed, please try again later.",
+      "Tidak dapat memperbarui meta, silakan coba lagi",
       500
     );
     return next(error);
@@ -56,7 +56,7 @@ const updateMeta = async (req, res, next) => {
     await meta.save();
   } catch (err) {
     const error = new HttpError(
-      "Something when wrong, could not update meta",
+      "Tidak dapat memperbarui meta, silakan coba lagi",
       500
     );
     return next(error);
@@ -71,10 +71,7 @@ const resetMeta = async (req, res, next) => {
     temp = await MCJHSMeta.find({});
     meta = temp[0];
   } catch (err) {
-    const error = new HttpError(
-      "Fetching meta failed, please try again later.",
-      500
-    );
+    const error = new HttpError("Gagal mereset meta, silakan coba lagi", 500);
     return next(error);
   }
   meta.responses = [];
@@ -84,10 +81,7 @@ const resetMeta = async (req, res, next) => {
   try {
     await meta.save();
   } catch (err) {
-    const error = new HttpError(
-      "Something when wrong, could not update meta",
-      500
-    );
+    const error = new HttpError("Gagal mereset meta, silakan coba lagi", 500);
     return next(error);
   }
 
