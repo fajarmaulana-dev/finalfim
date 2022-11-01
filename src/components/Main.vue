@@ -341,13 +341,11 @@ const inputScore = (c_idx, param) => {
             <em>{{ title }}</em>
             <div>
                 <button v-for="i in divider" :key="i" :ref="e => { mod[i - 1] = e }" @click="addMod(i - 1);"
-                    :disabled="meta[0]?.disMod[i - 1] === true ? true : false"></button>
+                    disabled></button>
                 <button v-for="i in divider" :key="i" :ref="e => { less[i - 1] = e }" @click="addLess(i - 1);"
-                    :disabled="meta[0]?.disLess[i - 1] === true ? true : false"></button>
-                <button ref="mod61" @click="addDiag1();"
-                    :disabled="meta[0]?.disDiag[0] === true ? true : false"></button>
-                <button ref="mod41" @click="addDiag2();"
-                    :disabled="meta[0]?.disDiag[1] === true ? true : false"></button>
+                    disabled></button>
+                <button ref="mod61" @click="addDiag1();" disabled></button>
+                <button ref="mod41" @click="addDiag2();" disabled></button>
             </div>
             <div class="content">
                 <div style="display: flex; flex-direction: column; align-items: center;">
