@@ -1,5 +1,6 @@
 <script setup>
 import { useElementary } from '@/composables/mces';
+import { useUser } from '@/composables/users';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import router from '../../../router';
 import { useRoute } from 'vue-router';
@@ -22,6 +23,7 @@ const modules = [
 const question = ref()
 
 onMounted(async () => {
+    await getEmail();
     if (user && !mails.value.includes(user?.email)) {
         TokenService.removeUser();
         location.reload()
@@ -36,6 +38,7 @@ onBeforeUnmount(() => {
 })
 
 const { item, getItem, editItem, loading } = useElementary();
+const { getEmail, mails } = useUser()
 
 const onSave = async (question, score) => {
     editItem(route.params.id, { question, score });

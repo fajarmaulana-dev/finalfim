@@ -8,7 +8,8 @@ import TokenService from "@/api/token";
 
 const user = TokenService.getUser()
 const exp = ref(false)
-onMounted(() => {
+onMounted(async () => {
+    await getEmail();
     if (user && !mails.value.includes(user?.email)) {
         TokenService.removeUser();
         location.reload()
@@ -21,6 +22,7 @@ onBeforeUnmount(() => {
 })
 
 const { message, update } = useUser();
+const { getEmail, mails } = useUser()
 </script>
 
 <template>

@@ -1,6 +1,7 @@
 <script setup>
 import Main from '@/components/Main.vue'
 import { useJunior } from '@/composables/mcjhs';
+import { useUser } from '@/composables/users';
 import { onMounted, onBeforeUnmount } from 'vue';
 import EventBus from "@/common/eventBus";
 import TokenService from "@/api/token";
@@ -8,6 +9,7 @@ import TokenService from "@/api/token";
 const user = TokenService.getUser()
 
 onMounted(async () => {
+    await getEmail();
     if (user && !mails.value.includes(user?.email)) {
         TokenService.removeUser();
         location.reload()
@@ -22,6 +24,7 @@ onBeforeUnmount(() => {
 })
 
 const { items, getItems, contestants, getAllContestants, meta, getMeta, answerItem, editScore, upRes, loading, resetItems, resetMeta, resetContestants } = useJunior();
+const { getEmail, mails } = useUser()
 </script>
 
 <template>
