@@ -9,22 +9,17 @@ const { nanoid } = require("nanoid");
 const Token = require("../models/token");
 const sendEmail = require("../utils/sendEmail");
 
-const clarify = async (req, res, next) => {
-  const uid = req.params.uid;
+const getUsers = async (req, res, next) => {
   let users;
   try {
-    users = await User.findById(uid);
+    users = await User.find({});
   } catch (err) {
-    const error = new HttpError("Kesalahan server", 404);
+    const error = new HttpError("Gagal memperoleh data pengguna", 500);
     return next(error);
   }
-
-  if (!users) {
-    const error = new HttpError("Pengguna tidak ditemukan", 404);
-    return next(error);
-  }
-
-  res.status(200).json({ message: "found" });
+  res.json({
+    emails: users.map((user) => user.email),
+  });
 };
 
 const signup = async (req, res, next) => {
@@ -351,7 +346,7 @@ const resetPass = async (req, res, next) => {
     .json({ message: "Passwordmu berhasil direset, silakan login kembali" });
 };
 
-exports.clarify = clarify;
+exports.getUsers = getUsers;
 exports.signup = signup;
 exports.login = login;
 exports.refresh = refresh;
