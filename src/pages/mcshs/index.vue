@@ -1,15 +1,27 @@
 <script setup>
-import { onMounted } from 'vue';
 import Main from '@/components/Main.vue'
 import { useSenior } from '@/composables/mcshs';
+import { onMounted, onBeforeUnmount } from 'vue';
+import EventBus from "@/common/eventBus";
+import TokenService from "@/api/token";
 
-const { items, getItems, contestants, getAllContestants, meta, getMeta, answerItem, editScore, upRes, loading, resetItems, resetMeta, resetContestants } = useSenior();
+const user = TokenService.getUser()
 
 onMounted(async () => {
+    if (user && !mails.value.includes(user?.email)) {
+        TokenService.removeUser();
+        location.reload()
+    }
     await getItems();
     await getAllContestants();
     await getMeta();
 })
+
+onBeforeUnmount(() => {
+    EventBus.remove("logout");
+})
+
+const { items, getItems, contestants, getAllContestants, meta, getMeta, answerItem, editScore, upRes, loading, resetItems, resetMeta, resetContestants } = useSenior();
 </script>
 
 <template>

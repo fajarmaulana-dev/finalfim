@@ -4,6 +4,7 @@ import Progress from '@/components/Progress.vue';
 import Overlay from '@/components/Overlay.vue';
 import Button from '@/components/Button.vue';
 import Spinner from '@/components/Spinner.vue';
+import TokenService from "@/api/token";
 
 const props = defineProps({
     ['quests']: Array,
@@ -39,10 +40,11 @@ const props = defineProps({
     resetM: Function,
     resetC: Function,
     resetQ: Function,
-    loading: Object
+    loading: Object,
+    exp: Boolean
 })
 
-const { quests, contestants, meta, bonus, countDown, minscore, vioscore, is, title, answerItem, editScore, upRes, loading, resetM, resetC, resetQ } = toRefs(props);
+const { quests, contestants, meta, bonus, countDown, minscore, vioscore, is, title, answerItem, editScore, upRes, loading, resetM, resetC, resetQ, exp } = toRefs(props);
 
 const countDown_var = ref();
 watch(countDown, () => countDown_var.value = countDown.value)
@@ -327,12 +329,18 @@ const inputScore = (c_idx, param) => {
         openToast(2);
     }
 }
+
+const user = TokenService.getUser();
+
+const userLen = user?.name.split(' ')[0].length
 </script>
 
 <template>
     <div :id="is" style="padding: 0 5vw; display: grid; place-items: center; width: 100%; height: 100%;">
-        <i v-if="meta[0]?.responses.length > 0 || quests.map(i => Number(i.value)).some(isNaN) || contestants.map(i => i.score).some(i => i !== 100)"
-            class="fa-solid fa-arrow-rotate-left reset" @click="openModal(2)"></i>
+        <button title="Reset Kuis"
+            :class="(meta[0]?.responses.length > 0 || quests.map(i => Number(i.value)).some(isNaN) || contestants.map(i => i.score).some(i => i !== 100)) ? 'active' : 'noactive'"
+            :disabled="(meta[0]?.responses.length > 0 || quests.map(i => Number(i.value)).some(isNaN) || contestants.map(i => i.score).some(i => i !== 100)) ? false : true"
+            class="fa-solid fa-arrow-rotate-left reset" @click="openModal(2)"></button>
         <div class="main">
             <h2 style="font-size: var(--title); line-height: 2rem;">Babak Kuis</h2>
             <em>{{ title }}</em>
@@ -487,7 +495,7 @@ const inputScore = (c_idx, param) => {
             poin sebanyak <b>{{ disTriggered * bonus }} poin</b>.
         </Overlay>
         <Overlay type="warning" :with-confirm="true" :container="modal[2].container" :box="modal[2].box"
-            @close-modal="closeModal(2)" @confirm="resetM(); resetC(); resetQ(); closeModal(2);"
+            @close-modal="closeModal(2)" @confirm="resetQ(); resetC(); resetM(); closeModal(2);"
             title="Reset Hasil Kuis" closeText="Jangan Reset" confirmText="Ya, Reset">Apakah kamu yakin ingin mereset
             hasil kuis saat ini ?
         </Overlay>
@@ -496,26 +504,40 @@ const inputScore = (c_idx, param) => {
 
 <style scoped>
 .reset {
-    background-color: var(--error);
     position: fixed;
     top: .75rem;
-    right: 3.5rem;
+    right: 6rem;
     z-index: 100;
     width: 2rem;
     height: 2rem;
     border-radius: 50%;
-    color: var(--light);
     display: grid;
     place-items: center;
-    cursor: pointer;
     transition: .5s;
+    border: none;
+    outline: none;
 }
 
-i:hover {
+.active {
+    background-color: var(--error);
+    color: var(--light);
+    cursor: pointer;
+}
+
+.noactive,
+.noactive:hover,
+.noactive:active {
+    cursor: not-allowed;
+    background-color: var(--gray-300);
+    color: var(--gray-600);
+    opacity: 1;
+}
+
+.active:hover {
     opacity: .8;
 }
 
-i:active {
+.active:active {
     opacity: 1;
 }
 

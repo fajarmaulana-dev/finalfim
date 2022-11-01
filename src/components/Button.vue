@@ -61,8 +61,8 @@ const { is, icon, type, color, dismiss, disabled, round, to } = toRefs(props);
 .btn-text {
     width: 100%;
     height: 100%;
-    padding: .5rem;
-    font-size: 1rem;
+    padding: calc(.4rem + .25vw);
+    font-size: var(--card-title);
     font-weight: 700;
     color: var(--light);
     border: 2px solid;

@@ -1,7 +1,9 @@
 <script setup>
 import { RouterView, RouterLink, useRoute } from 'vue-router';
 import router from './router/index';
-import { ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
+import EventBus from "./common/eventBus";
+import TokenService from "@/api/token";
 
 const route = useRoute();
 const menus = ref([
@@ -15,6 +17,23 @@ const edit_menus = ref([
   { title: 'MCJHS', path: '/edit/mcjhs' },
   { title: 'MCSHS', path: '/edit/mcshs' },
 ])
+
+const logOut = () => {
+  store.dispatch('auth/logout');
+  router.push('/auth/login')
+}
+
+onMounted(() => {
+  EventBus.on("logout", () => {
+    logOut();
+  });
+})
+
+onBeforeUnmount(() => {
+  EventBus.remove("logout");
+})
+
+const user = TokenService.getUser()
 </script>
 
 <template>
@@ -26,18 +45,32 @@ const edit_menus = ref([
       </p>
       <p class="page-title2">FIMNAS</p>
     </div>
-    <div class="action" style="display: flex; flex-direction: row; gap: .5rem;">
-      <i v-if="route.path.includes('edit')" class="fa-solid fa-house-chimney" @click="router.push('/')"></i>
-      <i v-if="!route.path.includes('edit')" class="fa-solid fa-pen-to-square" @click="router.push('/edit/mces')"></i>
+    <div class="action-i" style="display: flex; flex-direction: row; gap: .5rem; align-items: center;">
+      <p v-if="!route.path.includes('auth')" title="Edit Profil" @click="router.push('/auth/profile')"
+        :style="`margin-right: ${(route.path === '/' || route.path === '/mcjhs' || route.path === '/mcshs') ? 3 : 0}rem`">
+        Halo, {{
+            user?.name.split(' ')[0]
+        }}</p>
+      <i v-if="!route.path.includes('auth')" class="fa-solid fa-user users-logo" title="Edit Profil"
+        @click="router.push('/auth/profile')"
+        :style="`margin-right: ${(route.path === '/' || route.path === '/mcjhs' || route.path === '/mcshs') ? 2.5 : 0}rem`"></i>
+      <i v-if="!route.path.includes('auth')" title="Logout" class="fa-solid fa-right-from-bracket"
+        @click="TokenService.removeUser(); router.push('/auth/login')"></i>
+      <i v-if="!route.path.includes('auth') && !route.path.includes('edit')" title="Edit Soal"
+        class="fa-solid fa-pen-to-square" @click="router.push('/edit/mces')"></i>
+      <i title="Home"
+        v-if="!route.path.includes('auth') && route.path !== '/' && route.path !== '/mcjhs' && route.path !== '/mcshs'"
+        class="fa-solid fa-house-chimney" @click="router.push('/')"></i>
     </div>
   </header>
   <RouterView />
-  <footer v-if="route.path.includes('edit')">
+  <footer
+    v-if="route.path.includes('edit/mces') || route.path.includes('edit/mcjhs') || route.path.includes('edit/mcshs')">
     <router-link v-for="menu in edit_menus" :key="menu.title" :to="menu.path" class="foot-menu">
       <p>{{ menu.title }}</p>
     </router-link>
   </footer>
-  <footer v-else>
+  <footer v-if="route.path === '/' || route.path === '/mcjhs' || route.path === '/mcshs'">
     <router-link v-for="menu in menus" :key="menu.title" :to="menu.path" class="foot-menu">
       <p>{{ menu.title }}</p>
     </router-link>
@@ -104,13 +137,13 @@ const edit_menus = ref([
 
   /* clamp */
   --card-title: clamp(.85rem, 2.25vw, 1.2rem);
-  --card-detail: clamp(.665rem, 2.5vw, .85rem);
+  --card-detail: clamp(.6rem, 2vw, .85rem);
   --icon: clamp(.75rem, 2.5vw, 1rem);
-  --title: clamp(1.1rem, 2.25vw, 1.6rem);
-  --sub-title: clamp(.7rem, 3.5vw, 1.05rem);
-  --mini-icon: clamp(.6rem, 2.5vw, .8rem);
+  --title: clamp(1.1rem, 2.75vw, 1.6rem);
+  --sub-title: clamp(.7rem, 2.35vw, 1.05rem);
+  --mini-icon: clamp(.6rem, 3vw, .8rem);
   --logo: clamp(.735rem, 4.5vw, 1.05rem);
-  --footer-cap: clamp(.55rem, 1.5vw, .65rem);
+  --footer-cap: clamp(.5rem, 2vw, .85rem);
   --subtitle: clamp(.9rem, 2.75vw, 1.25rem);
   --sidebar-maxwidth: 21rem;
 }
@@ -140,7 +173,7 @@ body {
   background-color: var(--blue-700);
 }
 
-.action i {
+.action-i i {
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
@@ -152,11 +185,25 @@ body {
   transition: .5s;
 }
 
-.action i:hover {
+.action-i p {
+  font-weight: 700;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  text-align: right;
+  text-transform: lowercase;
+}
+
+.action-i p {
+  text-transform: capitalize;
+}
+
+.action-i *:hover {
   opacity: .8;
 }
 
-.action i:active {
+.action-i *:active {
   opacity: 1;
 }
 
@@ -206,11 +253,26 @@ footer {
   box-shadow: 2px 0 0 0 var(--warning);
 }
 
-@media all and (min-width: 360px) {
-  .page-title {
+@media all and (min-width: 640px) {
+
+  .page-title,
+  .action-i p {
     display: flex !important;
   }
 
+  .page-title2,
+  .users-logo {
+    display: none !important
+  }
+}
+
+@media all and (max-width: 640px) {
+  .action-i p {
+    display: none !important;
+  }
+}
+
+@media all and (max-width: 360px) {
   .page-title2 {
     display: none !important
   }
@@ -337,5 +399,16 @@ footer .foot-menu p {
 
 .ql-font-monospace {
   font-family: monospace !important;
+}
+
+.basic-radio input,
+.basic-checkbox input,
+.switch input,
+.tab input,
+.option input,
+.select input,
+.radio-box input {
+  position: absolute;
+  opacity: 0;
 }
 </style>

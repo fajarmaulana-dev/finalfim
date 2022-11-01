@@ -1,14 +1,17 @@
 <script setup>
-import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router'
-import router from '@/router/index'
+import { useJunior } from '@/composables/mcjhs';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import router from '../../../router';
+import { useRoute } from 'vue-router';
 import katex from 'katex';
 import ImageResize from 'quill-image-resize-vue';
 import QuillImageDropAndPaste from 'quill-image-drop-and-paste';
 import Rich from '@/components/Rich.vue';
-import { useJunior } from '@/composables/mcjhs';
 import Spinner from '@/components/Spinner.vue';
-onMounted(() => window.katex = katex);
+import EventBus from "@/common/eventBus";
+import TokenService from "@/api/token";
+
+const user = TokenService.getUser()
 const route = useRoute();
 
 const modules = [
@@ -16,8 +19,23 @@ const modules = [
     { name: 'quillImageDropAndPaste', module: QuillImageDropAndPaste }
 ]
 
-const { item, getItem, editItem, loading } = useJunior();
 const question = ref()
+
+onMounted(async () => {
+    if (user && !mails.value.includes(user?.email)) {
+        TokenService.removeUser();
+        location.reload()
+    }
+    window.katex = katex
+    await getItem(route.params.id);
+    question.value = [item.value]
+})
+
+onBeforeUnmount(() => {
+    EventBus.remove("logout");
+})
+
+const { item, getItem, editItem, loading } = useJunior();
 
 const onSave = async (question, score) => {
     editItem(route.params.id, { question, score });
@@ -25,11 +43,6 @@ const onSave = async (question, score) => {
         router.push('/edit/mcjhs');
     }, 1000)
 }
-
-onMounted(async () => {
-    await getItem(route.params.id);
-    question.value = [item.value]
-})
 </script>
 
 <template>

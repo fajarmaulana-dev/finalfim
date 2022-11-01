@@ -1,45 +1,43 @@
-import axios from "axios";
+import api from "@/api/api";
 import { CrudService } from "@gits-id/ui";
-
-const BASE_API = import.meta.env.VITE_BASE_URL;
 
 export class SeniorService extends CrudService {
   getAllQuests() {
-    return axios.get(`${BASE_API}/api/mcshs`);
+    return api.get(`/mcshs`);
   }
   getQuest(id) {
-    return axios.get(`${BASE_API}/api/mcshs/${id}`);
+    return api.get(`/mcshs/${id}`);
   }
   editQuest(id, data) {
-    return axios.patch(`${BASE_API}/api/mcshs/${id}`, data);
+    return api.patch(`/mcshs/${id}`, data);
   }
   answerQuest(id, data) {
-    return axios.patch(`${BASE_API}/api/mcshs/answer/${id}`, data);
+    return api.patch(`/mcshs/answer/${id}`, data);
   }
   resetQuests() {
-    return axios.patch(`${BASE_API}/api/mcshs/reset/all`);
+    return api.patch(`/mcshs/reset/all`);
   }
 
   getMeta() {
-    return axios.get(`${BASE_API}/api/mcshsm`);
+    return api.get(`/mcshsm`);
   }
   resetMeta() {
-    return axios.patch(`${BASE_API}/api/mcshsm/reset`);
+    return api.patch(`/mcshsm/reset`);
   }
   upRes(data) {
-    return axios.patch(`${BASE_API}/api/mcshsm/update`, data);
+    return api.patch(`/mcshsm/update`, data);
   }
 
   getAllContestants() {
-    return axios.get(`${BASE_API}/api/mcshsc`);
+    return api.get(`/mcshsc`);
   }
   getContestant(id) {
-    return axios.get(`${BASE_API}/api/mcshsc/${id}`);
+    return api.get(`/mcshsc/${id}`);
   }
   editScore(data) {
-    return axios.patch(`${BASE_API}/api/mcshsc/update/score`, data);
+    return api.patch(`/mcshsc/update/score`, data);
   }
   resetContestants() {
-    return axios.patch(`${BASE_API}/api/mcshsc/reset/all`);
+    return api.patch(`/mcshsc/reset/all`);
   }
 }

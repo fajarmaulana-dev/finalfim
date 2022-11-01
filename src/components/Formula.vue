@@ -1,57 +1,70 @@
 <script setup>
-import { useSenior } from '@/composables/mcshs';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import router from '../../../router';
+import router from '../router';
 import { useRoute } from 'vue-router';
 import katex from 'katex';
 import ImageResize from 'quill-image-resize-vue';
 import QuillImageDropAndPaste from 'quill-image-drop-and-paste';
 import Rich from '@/components/Rich.vue';
+import { useElementary } from '@/composables/mces';
 import Spinner from '@/components/Spinner.vue';
-import EventBus from "@/common/eventBus";
-import TokenService from "@/api/token";
-
-const user = TokenService.getUser()
 const route = useRoute();
+
+const emit = defineEmits(['reset'])
+
+const props = defineProps({
+    is: String,
+    ['quests']: Array,
+    reset: Function,
+    loading: Object
+})
 
 const modules = [
     { name: 'imageResize', module: ImageResize },
     { name: 'quillImageDropAndPaste', module: QuillImageDropAndPaste }
 ]
 
+const { item, getItem, editItem, loading } = useElementary();
 const question = ref()
 
+const onSave = async (question, score) => {
+    editItem(route.params.id, { question, score });
+    setTimeout(() => {
+        router.push('/edit/mces');
+    }, 1000)
+}
+
+const logOut = () => {
+    store.dispatch('auth/logout');
+    router.push('/auth/login')
+}
+
+const accessTime = JSON.parse(localStorage.getTimeAccessToken("user"));
+
 onMounted(async () => {
-    if (user && !mails.value.includes(user?.email)) {
-        TokenService.removeUser();
-        location.reload()
+    if (Date.now() >= (accessTime - 100)) {
+        EventBus.on("logout", () => {
+            logOut();
+        });
+        router.push('/auth/login');
+    } else {
+        window.katex = katex
+        await getItem(route.params.id);
+        question.value = [item.value]
     }
-    window.katex = katex
-    await getItem(route.params.id);
-    question.value = [item.value]
 })
 
 onBeforeUnmount(() => {
     EventBus.remove("logout");
 })
-
-const { item, getItem, editItem, loading } = useSenior();
-
-const onSave = async (question, score) => {
-    editItem(route.params.id, { question, score });
-    setTimeout(() => {
-        router.push('/edit/mcshs');
-    }, 1000)
-}
 </script>
 
 <template>
-    <div class="main">
-        <h2 style="font-size: var(--title); line-height: 2rem; margin-bottom: 3rem;">Edit Soal MCSHS</h2>
+    <div class="main" :id="is">
+        <h2 style="font-size: var(--title); line-height: 2rem; margin-bottom: 3rem;">Edit Soal {{is.toUpperCase()}}</h2>
         <Spinner v-if="loading.quest" is="bloks" :width="50" color1="primary" color2="warning" color3="error"
             style="position: absolute; top: 50%; left: 50%" />
-        <div v-else v-for="quest in question" :key="quest.id"
-            style="min-height: 5rem; width: 90vw; margin-bottom: 3rem;">
+        <div v-else v-for="quest in quests" :key="quest.id" style="min-height: 5rem; width: 90vw; margin-bottom: 3rem;">
             <QuillEditor theme="snow" toolbar="#rich" v-model:content="quest.question" contentType="html"
                 :modules="modules" placeholder="Ketikkan soal disini ..." spellcheck="false">
                 <template #toolbar>

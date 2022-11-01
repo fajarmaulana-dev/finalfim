@@ -1,4 +1,5 @@
 import { ref, reactive } from "vue";
+import { noAuth } from "@/api/auth";
 class DefaultService {
   constructor(newService) {
     const service = newService;
@@ -12,13 +13,16 @@ class DefaultService {
       quest: false,
       contestant: false,
     });
+    const exp = ref(false);
 
     const getItems = async () => {
+      noAuth(exp);
       try {
         loading.quest = true;
         const res = await service.getAllQuests();
         items.value = res.data.quest;
         loading.quest = false;
+        exp.value = false;
         return res;
       } catch (err) {
         console.log(err);
@@ -26,11 +30,13 @@ class DefaultService {
     };
 
     const getItem = async (id) => {
+      noAuth(exp);
       try {
         loading.quest = true;
         const res = await service.getQuest(id);
         item.value = res.data.quest;
         loading.quest = false;
+        exp.value = false;
         return res;
       } catch (err) {
         console.log(err);
@@ -38,11 +44,13 @@ class DefaultService {
     };
 
     const editItem = async (id, data) => {
+      noAuth(exp);
       try {
         const res = await service.editQuest(id, data);
         setTimeout(() => {
           getItems();
         }, 500);
+        exp.value = false;
         return res;
       } catch (err) {
         console.log(err);
@@ -50,8 +58,10 @@ class DefaultService {
     };
 
     const answerItem = async (id, data) => {
+      noAuth(exp);
       try {
         const res = await service.answerQuest(id, data);
+        exp.value = false;
         return res;
       } catch (err) {
         console.log(err);
@@ -59,11 +69,13 @@ class DefaultService {
     };
 
     const resetItems = async () => {
+      noAuth(exp);
       try {
         const res = await service.resetQuests();
         setTimeout(() => {
           getItems();
         }, 500);
+        exp.value = false;
         return res;
       } catch (err) {
         console.log(err);
@@ -74,6 +86,7 @@ class DefaultService {
       try {
         const res = await service.getMeta();
         meta.value = res.data.meta;
+        exp.value = false;
         return res;
       } catch (err) {
         console.log(err);
@@ -86,6 +99,7 @@ class DefaultService {
         setTimeout(() => {
           getMeta();
         }, 500);
+        exp.value = false;
         return res;
       } catch (err) {
         console.log(err);
@@ -95,6 +109,7 @@ class DefaultService {
     const upRes = async (data) => {
       try {
         const res = await service.upRes(data);
+        exp.value = false;
         return res;
       } catch (err) {
         console.log(err);
@@ -107,6 +122,7 @@ class DefaultService {
         const res = await service.getAllContestants();
         contestants.value = res.data.contestant;
         loading.contestant = false;
+        exp.value = false;
         return res;
       } catch (err) {
         console.log(err);
@@ -117,6 +133,7 @@ class DefaultService {
       try {
         const res = await service.getContestant(id);
         contestant.value = res.data.contestant;
+        exp.value = false;
         return res;
       } catch (err) {
         console.log(err);
@@ -124,8 +141,10 @@ class DefaultService {
     };
 
     const editScore = async (data) => {
+      noAuth(exp);
       try {
         const res = await service.editScore(data);
+        exp.value = false;
         return res;
       } catch (err) {
         console.log(err);
@@ -138,6 +157,7 @@ class DefaultService {
         setTimeout(() => {
           getAllContestants();
         }, 500);
+        exp.value = false;
         return res;
       } catch (err) {
         console.log(err);
@@ -148,6 +168,7 @@ class DefaultService {
       items,
       item,
       meta,
+      exp,
       loading,
       contestants,
       contestant,

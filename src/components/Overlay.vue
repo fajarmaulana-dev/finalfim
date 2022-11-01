@@ -19,11 +19,9 @@ const props = defineProps({
     },
     title: {
         type: String,
-        default: 'Delete User'
     },
     message: {
         type: String,
-        default: 'Delete user successfully'
     },
     clr: {
         type: String,
