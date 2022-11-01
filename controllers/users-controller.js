@@ -17,7 +17,9 @@ const getUsers = async (req, res, next) => {
     const error = new HttpError("Gagal memperoleh data pengguna", 500);
     return next(error);
   }
-  res.json({ users: users.map((user) => user.toObject({ getters: true })) });
+  res.json({
+    emails: users.map((user) => user.email),
+  });
 };
 
 const signup = async (req, res, next) => {
