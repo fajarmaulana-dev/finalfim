@@ -31,7 +31,7 @@ router.post(
 router.post("/refresh", usersControllers.refresh);
 router.post("/sendmail", usersControllers.sendLink);
 router.patch("/reset/:uid/:token", usersControllers.resetPass);
-router.get("/", usersControllers.getUsers);
+router.get("/clarify/:uid", usersControllers.clarify);
 router.use(checkAuth);
 router.patch(
   "/update/:uid",
