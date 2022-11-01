@@ -14,12 +14,10 @@ export const useUser = () => {
     try {
       const res = await service.login(data);
       message.value = [res?.data.message, 200];
-      if (res.data.accessToken) {
-        TokenService.setUser(res.data);
-      }
+      TokenService.setUser(res.data);
       setTimeout(() => {
         location.assign("/");
-      }, 1500);
+      }, 500);
       return res;
     } catch (err) {
       message.value = [err.response?.data.message, 400];

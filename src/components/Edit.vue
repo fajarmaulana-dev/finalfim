@@ -14,7 +14,7 @@ const props = defineProps({
 })
 
 const { is, quests, reset, loading } = toRefs(props);
-const move = (id) => setTimeout(() => { router.push(`/edit/${is.value}/${id}`) }, 1000)
+const move = (id) => setTimeout(() => { router.push(`/edit/${is.value}/${id}`) }, 10)
 
 const modal = ref([
     { container: false, box: false }

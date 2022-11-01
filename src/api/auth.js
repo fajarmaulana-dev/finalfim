@@ -22,7 +22,7 @@ export const noAuth = (exp) => {
   if (exist) {
     const accessTime = jwtDecode(exist?.accessToken).exp * 1000;
     const refreshTime = jwtDecode(exist?.refreshToken).exp * 1000;
-    if (Date.now() < refreshTime && Date.now() >= accessTime) {
+    if (Date.now() < refreshTime && Date.now() >= accessTime - 300000) {
       refresh({
         userId: exist?.userId,
         email: exist?.email,
@@ -30,7 +30,7 @@ export const noAuth = (exp) => {
       });
       exp = false;
     }
-    if (Date.now() >= refreshTime && Date.now() >= accessTime) {
+    if (Date.now() >= refreshTime && Date.now() >= accessTime - 300000) {
       TokenService.removeUser();
       EventBus.on("logout", () => {
         logOut();

@@ -46,26 +46,25 @@ const user = TokenService.getUser()
       <p class="page-title2">FIMNAS</p>
     </div>
     <div class="action-i" style="display: flex; flex-direction: row; gap: .5rem; align-items: center;">
-      <p v-if="!route.path.includes('auth')" title="Edit Profil" @click="router.push('/auth/profile')"
+      <p v-if="user && !route.path.includes('auth')" title="Edit Profil" @click="router.push('/auth/profile')"
         :style="`margin-right: ${(route.path === '/' || route.path === '/mcjhs' || route.path === '/mcshs') ? 3 : 0}rem`">
         Halo, {{
             user?.name.split(' ')[0]
         }}</p>
-      <i v-if="!route.path.includes('auth')" class="fa-solid fa-user users-logo" title="Edit Profil"
+      <i v-if="user && !route.path.includes('auth')" class="fa-solid fa-user users-logo" title="Edit Profil"
         @click="router.push('/auth/profile')"
         :style="`margin-right: ${(route.path === '/' || route.path === '/mcjhs' || route.path === '/mcshs') ? 2.5 : 0}rem`"></i>
-      <i v-if="!route.path.includes('auth')" title="Logout" class="fa-solid fa-right-from-bracket"
+      <i v-if="user && !route.path.includes('auth')" title="Logout" class="fa-solid fa-right-from-bracket"
         @click="TokenService.removeUser(); router.push('/auth/login')"></i>
-      <i v-if="!route.path.includes('auth') && !route.path.includes('edit')" title="Edit Soal"
+      <i v-if="user && !route.path.includes('auth') && !route.path.includes('edit')" title="Edit Soal"
         class="fa-solid fa-pen-to-square" @click="router.push('/edit/mces')"></i>
       <i title="Home"
-        v-if="!route.path.includes('auth') && route.path !== '/' && route.path !== '/mcjhs' && route.path !== '/mcshs'"
+        v-if="user && !route.path.includes('auth') && route.path !== '/' && route.path !== '/mcjhs' && route.path !== '/mcshs'"
         class="fa-solid fa-house-chimney" @click="router.push('/')"></i>
     </div>
   </header>
   <RouterView />
-  <footer
-    v-if="route.path.includes('edit/mces') || route.path.includes('edit/mcjhs') || route.path.includes('edit/mcshs')">
+  <footer v-if="route.path === '/edit/mces' || route.path === '/edit/mcjhs' || route.path === '/edit/mcshs'">
     <router-link v-for="menu in edit_menus" :key="menu.title" :to="menu.path" class="foot-menu">
       <p>{{ menu.title }}</p>
     </router-link>

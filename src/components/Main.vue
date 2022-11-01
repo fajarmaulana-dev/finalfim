@@ -329,10 +329,6 @@ const inputScore = (c_idx, param) => {
         openToast(2);
     }
 }
-
-const user = TokenService.getUser();
-
-const userLen = user?.name.split(' ')[0].length
 </script>
 
 <template>
