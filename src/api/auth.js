@@ -17,7 +17,6 @@ export const noAuth = () => {
       logOut();
     });
     router.push("/auth/login");
-    exp = true;
   }
   if (exist) {
     const accessTime = jwtDecode(exist?.accessToken).exp * 1000;

@@ -15,9 +15,11 @@ const question = ref()
 
 onMounted(async () => {
     await getEmail();
-    if (user && !mails.value.includes(user?.email)) {
-        TokenService.removeUser();
-        location.reload()
+    if (user) {
+        if (!mails.value.includes(user?.email)) {
+            TokenService.removeUser();
+            location.reload()
+        }
     }
     window.katex = katex
     await getItem(route.params.id);

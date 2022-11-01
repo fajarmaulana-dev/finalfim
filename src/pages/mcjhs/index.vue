@@ -10,9 +10,11 @@ const user = TokenService.getUser()
 
 onMounted(async () => {
     await getEmail();
-    if (user && !mails.value.includes(user?.email)) {
-        TokenService.removeUser();
-        location.reload()
+    if (user) {
+        if (!mails.value.includes(user?.email)) {
+            TokenService.removeUser();
+            location.reload()
+        }
     }
     await getItems();
     await getAllContestants();
