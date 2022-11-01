@@ -12,7 +12,6 @@ class TokenService {
   updateLocalAccessToken(token) {
     let user = JSON.parse(localStorage.getItem("user"));
     user.accessToken = token;
-    console.log(token);
     localStorage.setItem("user", JSON.stringify(user));
   }
 

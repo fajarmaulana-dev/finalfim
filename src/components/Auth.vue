@@ -14,11 +14,6 @@ const props = defineProps({
         type: String,
         default: 'login'
     },
-    email: String,
-    name: String,
-    oldPass: String,
-    newPass: String,
-    confirmPass: String,
     login: Function,
     update: Function,
     sendmail: Function,
@@ -46,6 +41,11 @@ const btn_title = computed(() => {
 const seen = ref(false);
 const seen1 = ref(false);
 const seen2 = ref(false);
+const name = ref('')
+const email = ref('')
+const oldPass = ref('')
+const newPass = ref('')
+const confirmPass = ref('')
 
 const user = TokenService.getUser()
 </script>

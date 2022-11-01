@@ -21,13 +21,8 @@ onBeforeUnmount(() => {
 })
 
 const { message, update } = useUser();
-const name = ref('')
-const reset1 = ref('')
-const reset2 = ref('')
-const reset3 = ref('')
 </script>
 
 <template>
-    <Auth is="profile" :name="name" :update="update" :message="message" :old-pass="reset1" :new-pass="reset2"
-        :confirm-pass="reset3" />
+    <Auth is="profile" :update="update" :message="message" />
 </template>
