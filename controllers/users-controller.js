@@ -127,7 +127,7 @@ const login = async (req, res, next) => {
     accessToken = jwt.sign(
       { userId: hasUser.id, email: hasUser.email },
       process.env.SECRET_KEY,
-      { expiresIn: "10m" }
+      { expiresIn: "15m" }
     );
     refreshToken = jwt.sign(
       { userId: hasUser.id, email: hasUser.email },
@@ -164,7 +164,7 @@ const refresh = async (req, res, next) => {
       accessToken = jwt.sign(
         { userId: userId, email: email },
         process.env.SECRET_KEY,
-        { expiresIn: "10m" }
+        { expiresIn: "15m" }
       );
     } catch (err) {
       const error = new HttpError(
