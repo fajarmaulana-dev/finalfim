@@ -7,14 +7,13 @@ import { noAuth } from '@/api/auth'
 import TokenService from "@/api/token";
 
 const user = TokenService.getUser()
-const exp = ref(false)
 onMounted(async () => {
     await getEmail();
     if (user && !mails.value.includes(user?.email)) {
         TokenService.removeUser();
         location.reload()
     }
-    noAuth(exp.value)
+    noAuth()
 })
 
 onBeforeUnmount(() => {

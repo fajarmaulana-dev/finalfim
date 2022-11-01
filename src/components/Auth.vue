@@ -66,12 +66,12 @@ const user = TokenService.getUser()
             <template #body>
                 <div style="width: 100%; text-align: center; padding: 1rem; display: flex; flex-direction: column;">
                     <div>
-                        <p v-if="is === 'forgot'" :style="`color: var(--${message[1] === 200 ? 'primary' : 'error'})`"
+                        <p v-if="is === 'forgot'" :style="`color: var(--${message[1] === 400 ? 'error' : 'primary'})`"
                             style="font-weight: 500; text-align: left; font-size: var(--card-detail); margin-bottom: calc(.5rem + .65vw);">
-                            {{ message[0] !== '' ? `✓ ${message[0]}!` :
+                            {{ message[0] !== undefined ? `${message[0]}` :
                                     "Kirimkan emailmu untuk menerima tautan penggantian password"
                             }}</p>
-                        <p v-if="is !== 'forgot'" :style="`color: var(--${message[1] === 200 ? 'primary' : 'error'})`"
+                        <p v-if="is !== 'forgot'" :style="`color: var(--${message[1] === 400 ? 'error' : 'primary'})`"
                             style="font-weight: 500; text-align: left; font-size: var(--card-detail); margin-bottom: calc(.5rem + .65vw); min-height: var(--card-detail);">
                             {{ message[0] }}</p>
                         <InputText v-if="is === 'profile'" id="nama" name="nama" placeholder="Nama baru" v-model="name"
@@ -100,7 +100,7 @@ const user = TokenService.getUser()
                                 <!-- <InputCheck type="binnercheck" name="in" label="Ingat kata sandi" v-model="check" /> -->
                             </section>
                             <p class="forgot" @click="router.push('/auth/forgot')"
-                                style="color: var(--primary); font-size: var(--footer-cap); line-height: 1rem; cursor: pointer;">
+                                style="color: var(--primary); font-size: var(--sub-title); cursor: pointer; margin: .35vw 0 calc(.25rem + .35vw) 0">
                                 Lupa kata sandi ?</p>
                         </div>
                     </div>

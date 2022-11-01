@@ -1,67 +1,38 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import router from '../router';
-import { useRoute } from 'vue-router';
-import katex from 'katex';
+import router from '@/router';
 import ImageResize from 'quill-image-resize-vue';
 import QuillImageDropAndPaste from 'quill-image-drop-and-paste';
 import Rich from '@/components/Rich.vue';
-import { useElementary } from '@/composables/mces';
 import Spinner from '@/components/Spinner.vue';
-const route = useRoute();
-
-const emit = defineEmits(['reset'])
-
-const props = defineProps({
-    is: String,
-    ['quests']: Array,
-    reset: Function,
-    loading: Object
-})
+import { toRefs } from 'vue';
 
 const modules = [
     { name: 'imageResize', module: ImageResize },
     { name: 'quillImageDropAndPaste', module: QuillImageDropAndPaste }
 ]
 
-const { item, getItem, editItem, loading } = useElementary();
-const question = ref()
+const props = defineProps({
+    is: String,
+    ['quests']: Array,
+    update: Function,
+    loading: Object,
+    id: String
+})
 
-const onSave = async (question, score) => {
-    editItem(route.params.id, { question, score });
+const { is, quests, update, loading, id } = toRefs(props)
+
+const onSave = (param) => {
+    param;
     setTimeout(() => {
-        router.push('/edit/mces');
+        router.push(`/edit/${is.value}`);
     }, 1000)
 }
-
-const logOut = () => {
-    store.dispatch('auth/logout');
-    router.push('/auth/login')
-}
-
-const accessTime = JSON.parse(localStorage.getTimeAccessToken("user"));
-
-onMounted(async () => {
-    if (Date.now() >= (accessTime - 100)) {
-        EventBus.on("logout", () => {
-            logOut();
-        });
-        router.push('/auth/login');
-    } else {
-        window.katex = katex
-        await getItem(route.params.id);
-        question.value = [item.value]
-    }
-})
-
-onBeforeUnmount(() => {
-    EventBus.remove("logout");
-})
 </script>
 
 <template>
     <div class="main" :id="is">
-        <h2 style="font-size: var(--title); line-height: 2rem; margin-bottom: 3rem;">Edit Soal {{is.toUpperCase()}}</h2>
+        <h2 style="font-size: var(--title); line-height: 2rem; margin-bottom: 3rem;">Edit Soal {{ is.toUpperCase() }}
+        </h2>
         <Spinner v-if="loading.quest" is="bloks" :width="50" color1="primary" color2="warning" color3="error"
             style="position: absolute; top: 50%; left: 50%" />
         <div v-else v-for="quest in quests" :key="quest.id" style="min-height: 5rem; width: 90vw; margin-bottom: 3rem;">
@@ -69,7 +40,7 @@ onBeforeUnmount(() => {
                 :modules="modules" placeholder="Ketikkan soal disini ..." spellcheck="false">
                 <template #toolbar>
                     <Rich :disable="quest.question === '<p><br></p>' || quest.score.toString().length !== 2"
-                        @save="quest.question === '<p><br></p>' || quest.score.toString().length !== 2 ? false : onSave(question[0].question, question[0].score)"
+                        @save="quest.question === '<p><br></p>' || quest.score.toString().length !== 2 ? false : onSave(update(id, { question: quests[0].question, score: quests[0].score }))"
                         @cancel="router.push('/edit/mces')">
                         No. {{ quest.index }}
                     </Rich>

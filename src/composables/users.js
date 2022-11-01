@@ -57,6 +57,7 @@ export const useUser = () => {
       message.value = [res?.data.message, 200];
       return res;
     } catch (err) {
+      loading.value = false;
       message.value = [err.response?.data.message, 400];
       return err;
     }

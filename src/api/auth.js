@@ -10,7 +10,7 @@ const logOut = () => {
 
 const { refresh } = useUser();
 
-export const noAuth = (exp) => {
+export const noAuth = () => {
   if (!exist) {
     TokenService.removeUser();
     EventBus.on("logout", () => {
@@ -28,7 +28,6 @@ export const noAuth = (exp) => {
         email: exist?.email,
         refreshToken: exist?.refreshToken,
       });
-      exp = false;
     }
     if (Date.now() >= refreshTime && Date.now() >= accessTime - 300000) {
       TokenService.removeUser();
@@ -36,7 +35,6 @@ export const noAuth = (exp) => {
         logOut();
       });
       router.push("/auth/login");
-      exp = true;
     }
   }
 };

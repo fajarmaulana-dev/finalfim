@@ -40,11 +40,10 @@ const props = defineProps({
     resetM: Function,
     resetC: Function,
     resetQ: Function,
-    loading: Object,
-    exp: Boolean
+    loading: Object
 })
 
-const { quests, contestants, meta, bonus, countDown, minscore, vioscore, is, title, answerItem, editScore, upRes, loading, resetM, resetC, resetQ, exp } = toRefs(props);
+const { quests, contestants, meta, bonus, countDown, minscore, vioscore, is, title, answerItem, editScore, upRes, loading, resetM, resetC, resetQ } = toRefs(props);
 
 const countDown_var = ref();
 watch(countDown, () => countDown_var.value = countDown.value)
