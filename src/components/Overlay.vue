@@ -2,6 +2,14 @@
 import { computed, toRefs, watch, ref } from 'vue';
 import Card from '@/components/Card.vue';
 import Button from '@/components/Button.vue';
+import success from '@/assets/circle-check-solid.svg'
+import error from '@/assets/circle-exclamation-solid.svg'
+import info from '@/assets/circle-info-solid.svg'
+import warning from '@/assets/triangle-exclamation-solid.svg'
+import csuccess from '@/assets/color-circle-check-solid.svg'
+import cerror from '@/assets/color-circle-exclamation-solid.svg'
+import cinfo from '@/assets/color-circle-info-solid.svg'
+import cwarning from '@/assets/color-triangle-exclamation-solid.svg'
 
 const emit = defineEmits(['openModal', 'openToast', 'closeModal', 'confirm'])
 const props = defineProps({
@@ -57,19 +65,19 @@ const typeColor = computed(() => {
     if (type.value === 'primary') { return color.value = 'primary' };
 })
 
-const base_drive = (id) => `https://drive.google.com/u/0/uc?id=${id}&export=download`
+// const base_drive = (id) => `https://drive.google.com/uc?export=view&id=${id}`
 const typeToastImage = computed(() => {
-    if (type.value === 'success') { return image.value = base_drive('13gE5ido6N5vaajm9vhGZiS8mfnvkJlht') };
-    if (type.value === 'warning') { return image.value = base_drive('1Fgei4jaXU7YCq-bZTtaoP0V_JBQJx-C9') };
-    if (type.value === 'error') { return image.value = base_drive('1-fzCNYiLa97CgsQ5AtP4mmLlYe1J2D-a') };
-    if (type.value === 'primary') { return image.value = base_drive('1EWAzk9pf_SjF-zIoBZ6UYlEMER9G-7xa') };
+    if (type.value === 'success') { return image.value = success };
+    if (type.value === 'warning') { return image.value = warning };
+    if (type.value === 'error') { return image.value = error };
+    if (type.value === 'primary') { return image.value = info };
 })
 
 const typeModalImage = computed(() => {
-    if (type.value === 'success') return image.value = base_drive('1x9Qf73ZjbCUUKeL8kGtriMOLS3rnFUm9');
-    if (type.value === 'warning') return image.value = base_drive('1PHJQj66rFhaz5-qbEDNfRCyXp9_gPClO');
-    if (type.value === 'error') return image.value = base_drive('1AWQ9DWgMXzEHle5zZRt6L3m-JcAi4-jj');
-    if (type.value === 'primary') return image.value = base_drive('1Zy_H_5OETAcFjLhPS6G_dDFPWiMHmDa1');
+    if (type.value === 'success') return image.value = csuccess;
+    if (type.value === 'warning') return image.value = cwarning;
+    if (type.value === 'error') return image.value = cerror;
+    if (type.value === 'primary') return image.value = cinfo;
 })
 
 const col = `flex-direction: column; text-align: center;`;
