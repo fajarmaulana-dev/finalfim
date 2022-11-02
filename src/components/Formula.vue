@@ -41,7 +41,7 @@ const onSave = (param) => {
                 <template #toolbar>
                     <Rich :disable="quest.question === '<p><br></p>' || quest.score.toString().length !== 2"
                         @save="quest.question === '<p><br></p>' || quest.score.toString().length !== 2 ? false : onSave(update(id, { question: quests[0].question, score: quests[0].score }))"
-                        @cancel="router.push('/edit/mces')">
+                        @cancel="router.push(`/edit/${is}`)">
                         No. {{ quest.index }}
                     </Rich>
                 </template>
