@@ -16,7 +16,14 @@ const mcjhsmRoutes = require("./routes/mcjhs-meta-routes");
 const mcshsmRoutes = require("./routes/mcshs-meta-routes");
 const usersRoutes = require("./routes/users-routes");
 const app = express();
-app.use(cors());
+
+const corsOptions = {
+  origin: "*",
+  credentials: true, //access-control-allow-credentials:true
+  optionSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use("/api/mces", mcesRoutes);
