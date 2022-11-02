@@ -14,6 +14,5 @@ const app = createApp(App);
 
 app.use(router);
 app.use(store);
-app.use();
 app.component("QuillEditor", QuillEditor);
 app.mount("#app");
