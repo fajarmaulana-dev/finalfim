@@ -18,9 +18,18 @@ const usersRoutes = require("./routes/users-routes");
 const app = express();
 
 const corsOptions = {
-  origin: "*",
   credentials: true, //access-control-allow-credentials:true
-  optionSuccessStatus: 200,
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "Content-Type",
+    "Content-Length",
+    "Host",
+    "User-Agent",
+    "Accept",
+    "Accept-Encoding",
+    "Connection",
+  ],
 };
 
 app.use(cors(corsOptions));
