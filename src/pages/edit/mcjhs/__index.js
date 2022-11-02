@@ -1,6 +1,7 @@
 import api from "@/api/api";
+import { CrudService } from "@gits-id/ui";
 
-export class JuniorService {
+export class JuniorService extends CrudService {
   getAllQuests() {
     return api.get(`/mcjhs`);
   }
