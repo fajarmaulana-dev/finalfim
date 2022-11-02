@@ -1,5 +1,8 @@
 import { ref, reactive } from "vue";
 import { noAuth } from "@/api/auth";
+import TokenService from "@/api/token";
+import router from "@/router";
+const user = TokenService.getUser();
 class DefaultService {
   constructor(newService) {
     const service = newService;
@@ -23,6 +26,9 @@ class DefaultService {
         loading.quest = false;
         return res;
       } catch (err) {
+        if (user && err.response.status === 403) {
+          router.go(0);
+        }
         console.log(err);
       }
     };
@@ -36,6 +42,9 @@ class DefaultService {
         loading.quest = false;
         return res;
       } catch (err) {
+        if (user && err.response.status === 403) {
+          router.go(0);
+        }
         console.log(err);
       }
     };

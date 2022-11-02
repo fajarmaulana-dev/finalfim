@@ -5,6 +5,7 @@ import { useUser } from '@/composables/users';
 import { onMounted, onBeforeUnmount } from 'vue';
 import EventBus from "@/common/eventBus";
 import TokenService from "@/api/token";
+import router from '@/router'
 
 const user = TokenService.getUser()
 
@@ -13,7 +14,7 @@ onMounted(async () => {
     if (user) {
         if (!mails.value.includes(user?.email)) {
             TokenService.removeUser();
-            location.reload()
+            router.go(0)
         }
     }
     await getItems();

@@ -6,6 +6,7 @@ import katex from 'katex';
 import Formula from '@/components/Formula.vue'
 import EventBus from "@/common/eventBus";
 import TokenService from "@/api/token";
+import router from '@/router'
 import { useRoute } from 'vue-router';
 const route = useRoute();
 
@@ -18,7 +19,7 @@ onMounted(async () => {
     if (user) {
         if (!mails.value.includes(user?.email)) {
             TokenService.removeUser();
-            location.reload()
+            router.go(0)
         }
     }
     window.katex = katex
