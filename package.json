@@ -7,7 +7,6 @@
     "preview": "vite preview --port 4000"
   },
   "dependencies": {
-    "@gits-id/ui": "^0.11.11-alpha.0",
     "@vueup/vue-quill": "^1.0.0-beta.9",
     "axios": "^1.1.3",
     "jwt-decode": "^3.1.2",

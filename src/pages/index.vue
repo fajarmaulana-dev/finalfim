@@ -17,9 +17,9 @@ onMounted(async () => {
             router.go(0)
         }
     }
+    await getMeta();
     await getItems();
     await getAllContestants();
-    await getMeta();
 })
 
 onBeforeUnmount(() => {
