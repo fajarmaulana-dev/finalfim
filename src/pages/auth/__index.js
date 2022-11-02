@@ -1,7 +1,6 @@
 import api from "@/api/api";
-import { CrudService } from "@gits-id/ui";
 
-export class UserService extends CrudService {
+export class UserService {
   login(data) {
     return api.post(`/users/login`, data);
   }
