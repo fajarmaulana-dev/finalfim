@@ -46,6 +46,7 @@ export const useUser = () => {
     try {
       const res = await service.refresh(data);
       message.value = [res?.data.message, 200];
+      store.dispatch("auth/refreshToken");
       TokenService.updateLocalAccessToken(res.data.accessToken);
       return res;
     } catch (err) {
