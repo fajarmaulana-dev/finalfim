@@ -269,21 +269,25 @@ footer {
   .action-i p {
     display: none !important;
   }
-}
 
-@media all and (max-width: 360px) {
-  .page-title2 {
-    display: none !important
+  .users-logo {
+    display: grid !important;
   }
 }
 
-.page-title {
-  display: none
+@media all and (min-width: 360px) and (max-width: 640px) {
+  .page-title2 {
+    display: flex !important;
+  }
+
+  .page-title {
+    display: none !important;
+  }
 }
 
+.page-title,
 .page-title2 {
-  display: flex;
-  font-size: 1.65rem;
+  display: none
 }
 
 .page-title,
