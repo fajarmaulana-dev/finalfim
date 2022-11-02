@@ -238,7 +238,7 @@ const notAnswered = (q_idx) => {
     const answered = meta.value[0].responses.map(k => k.answered);
     if (answered.includes(q_idx)) {
         const answerer = contestants.value.map(k => k.name).indexOf(meta.value[0].responses[answered.indexOf(q_idx)].answerer)
-        i_model.value[answerer] -= quests.value[e - 1].score;
+        i_model.value[answerer] -= quests.value[q_idx - 1].score;
         meta.value[0].responses.splice(answered.indexOf(q_idx), 1);
     }
     meta.value[0].responses.push({ answered: q_idx, answerer: 'NA' });
@@ -328,6 +328,7 @@ const inputScore = (c_idx, param) => {
         openToast(2);
     }
 }
+const jc = ref()
 </script>
 
 <template>
@@ -395,9 +396,8 @@ const inputScore = (c_idx, param) => {
             <div class="time" :class="{ 'quest-disapp': !modal[0].box, 'quest-app': modal[0].box }">
                 <h4 :style="`color: var(--${colorize})`">Sisa Waktu (s)</h4>
                 <Progress :withImage="false" :percent="percentage()" :current="countDown_var" :color="colorize" />
-                <div class="opt" style="left: -2.5rem"
-                    @click="notAnswered(filtered().map(e => e.index)[0]); arrLength += 1; countDown_var = 0">NA</div>
-                <div class="opt" style="left: 7rem" @click="justClose(); arrLength += 1; countDown_var = 0">✕</div>
+                <div class="opt" style="left: -2.5rem" @click="na.click()">NA</div>
+                <div class="opt" style="left: 7rem" @click="jc.click()">✕</div>
             </div>
             <div class="question" :class="{ 'quest-disapp': !modal[0].box, 'quest-app': modal[0].box }">
                 <div class="pend" style="left: 0;">
@@ -467,7 +467,7 @@ const inputScore = (c_idx, param) => {
                                 <button ref="na" @click="notAnswered(filtered().map(e => e.index)[0]); arrLength += 1; countDown_var = 0; upRes({ responses: meta[0]?.responses, disMod: meta[0]?.disMod, disLess: meta[0]?.disLess, disDiag: meta[0]?.disDiag });
                                 answerItem(quests[filtered().map(e => e.index)[0] - 1]?.id, { value: 'NA', bg: '--light', border: '--primary', font: '--primary' });
                                 editScore({ scores: i_model })">Tak Terjawab</button>
-                                <button
+                                <button ref="jc"
                                     @click="justClose(); arrLength += 1; countDown_var = 0; upRes({ responses: meta[0]?.responses, disMod: meta[0]?.disMod, disLess: meta[0]?.disLess, disDiag: meta[0]?.disDiag });">Kembali</button>
                             </div>
                         </div>
