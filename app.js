@@ -18,7 +18,7 @@ const usersRoutes = require("./routes/users-routes");
 const app = express();
 
 const corsOptions = {
-  origin: ["https://fimunnes.netlify.app/", "http://localhost:3000"],
+  origin: ["https://fimunnes.netlify.app", "http://localhost:3000"],
   credentials: true, //access-control-allow-credentials:true
   allowedHeaders: [
     "Content-Type",
