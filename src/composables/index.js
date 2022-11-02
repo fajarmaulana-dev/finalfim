@@ -26,8 +26,12 @@ class DefaultService {
         loading.quest = false;
         return res;
       } catch (err) {
-        if (user && err.response.status === 403) {
-          router.go(0);
+        if (err.response) {
+          if (user && err.response.status === 403) {
+            router.go(0);
+          }
+        } else {
+          router.push("/auth/login");
         }
         console.log(err);
       }
@@ -42,8 +46,12 @@ class DefaultService {
         loading.quest = false;
         return res;
       } catch (err) {
-        if (user && err.response.status === 403) {
-          router.go(0);
+        if (err.response) {
+          if (user && err.response.status === 403) {
+            router.go(0);
+          }
+        } else {
+          router.push("/auth/login");
         }
         console.log(err);
       }
