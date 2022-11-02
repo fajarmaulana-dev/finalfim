@@ -6,18 +6,6 @@ const usersControllers = require("../controllers/users-controller");
 const checkAuth = require("../middleware/check-auth");
 
 router.post(
-  "/signup",
-  [
-    check("name").not().isEmpty(),
-    check("email").isEmail(),
-    check("password").matches(
-      /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/,
-      "i"
-    ),
-  ],
-  usersControllers.signup
-);
-router.post(
   "/login",
   [
     check("email").isEmail(),
@@ -33,6 +21,18 @@ router.post("/sendmail", usersControllers.sendLink);
 router.patch("/reset/:uid/:token", usersControllers.resetPass);
 router.get("/", usersControllers.getUsers);
 router.use(checkAuth);
+router.post(
+  "/signup",
+  [
+    check("name").not().isEmpty(),
+    check("email").isEmail(),
+    check("password").matches(
+      /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/,
+      "i"
+    ),
+  ],
+  usersControllers.signup
+);
 router.patch(
   "/update/:uid",
   [
