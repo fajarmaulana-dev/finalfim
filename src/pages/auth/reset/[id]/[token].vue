@@ -1,11 +1,10 @@
 <script setup>
-import { ref } from 'vue';
 import { useUser } from '@/composables/users';
 import Auth from '@/components/Auth.vue'
 
-const { message, reset } = useUser();
+const { message, reset, loading } = useUser();
 </script>
 
 <template>
-    <Auth is="reset" :reset="reset" :message="message" />
+    <Auth is="reset" :reset="reset" :message="message" :loading="loading" />
 </template>

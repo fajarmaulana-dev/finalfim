@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from 'vue';
 import { useUser } from '@/composables/users';
 import Auth from '@/components/Auth.vue'
 
