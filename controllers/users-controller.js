@@ -14,20 +14,17 @@ const bad = "Kesalahan server/koneksi, silakan coba lagi.";
 const accessCookie = {
   expires: new Date(Date.now() + 15 * 60 * 1000),
   maxAge: 15 * 60 * 1000,
-  sameSite: "lax",
+  httpOnly: true,
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  secure: process.env.NODE_ENV === "production",
 };
 
 const refreshCookie = {
   expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
   maxAge: 24 * 60 * 60 * 1000,
-  sameSite: "lax",
+  httpOnly: true,
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
 };
-
-if (process.env.NODE_ENV === "production") {
-  accessCookie.secure = true;
-  accessCookie.domain = ".vercel.app";
-  refreshCookie.domain = ".vercel.app";
-}
 
 const getUsers = async (req, res, next) => {
   let users;
