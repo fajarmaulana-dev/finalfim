@@ -16,6 +16,7 @@ const accessCookie = {
   maxAge: 15 * 60 * 1000,
   httpOnly: true,
   sameSite: "lax",
+  // secure: true,
 };
 
 const refreshCookie = {
@@ -117,16 +118,12 @@ const login = async (req, res, next) => {
   });
 };
 
-const logout = async (req, res, next) => {
-  try {
-    res.cookie("access_token", "", { maxAge: -1 });
-    res.cookie("refresh_token", "", { maxAge: -1 });
-    res.cookie("logged_in", "", { maxAge: -1 });
-    res.cookie("user", "", { maxAge: -1 });
-    res.status(200).json({ message: "Logout berhasil." });
-  } catch (err) {
-    next(err);
-  }
+const logout = (req, res, next) => {
+  res.cookie("access_token", "", { maxAge: -1 });
+  res.cookie("refresh_token", "", { maxAge: -1 });
+  res.cookie("logged_in", "", { maxAge: -1 });
+  res.cookie("user", "", { maxAge: -1 });
+  res.status(200).json({ message: "Logout berhasil." });
 };
 
 const refresh = async (req, res, next) => {
