@@ -27,8 +27,8 @@ const refreshCookie = {
 
 if (process.env.NODE_ENV === "production") {
   accessCookie.secure = true;
-  accessCookie.domain = process.env.BASE_URL;
-  refreshCookie.domain = process.env.BASE_URL;
+  accessCookie.domain = "http://localhost:3000";
+  refreshCookie.domain = "http://localhost:3000";
 } else {
   accessCookie.domain = "http://localhost:3000";
   refreshCookie.domain = "http://localhost:3000";
