@@ -13,6 +13,5 @@ module.exports = async (user) => {
     process.env.REFRESH_KEY,
     { expiresIn: "1d" }
   );
-
   return { accessToken: access_token, refreshToken: refresh_token };
 };
