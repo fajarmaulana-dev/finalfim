@@ -27,11 +27,11 @@ const refreshCookie = {
 
 if (process.env.NODE_ENV === "production") {
   accessCookie.secure = true;
-  accessCookie.domain = "http://localhost:3000";
-  refreshCookie.domain = "http://localhost:3000";
+  accessCookie.domain = "https://finalfim.vercel.app";
+  refreshCookie.domain = "https://finalfim.vercel.app";
 } else {
-  accessCookie.domain = "http://localhost:3000";
-  refreshCookie.domain = "http://localhost:3000";
+  accessCookie.domain = "https://finalfim.vercel.app";
+  refreshCookie.domain = "https://finalfim.vercel.app";
 }
 
 const getUsers = async (req, res, next) => {
