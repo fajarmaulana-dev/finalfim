@@ -1,8 +1,6 @@
+require("dotenv").config();
 const { createClient } = require("redis");
-
-const redisUrl =
-  "redis://Minerva21!@redis-12291.c295.ap-southeast-1-1.ec2.cloud.redislabs.com:12291";
-const redisClient = createClient({ url: redisUrl });
+const redisClient = createClient({ url: process.env.REDIS });
 
 const connectRedis = async () => {
   try {
