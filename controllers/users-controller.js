@@ -17,6 +17,7 @@ const accessCookie = {
   httpOnly: true,
   sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   secure: process.env.NODE_ENV === "production",
+  domain: ".vercel.app",
 };
 
 const refreshCookie = {
@@ -24,6 +25,7 @@ const refreshCookie = {
   maxAge: 24 * 60 * 60 * 1000,
   httpOnly: true,
   sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  domain: ".vercel.app",
 };
 
 const getUsers = async (req, res, next) => {
