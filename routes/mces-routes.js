@@ -2,15 +2,18 @@ const express = require("express");
 const { check } = require("express-validator");
 const router = express.Router();
 const mcesControllers = require("../controllers/mces-controllers");
-const checkAuth = require("../middleware/check-auth");
+const deserializer = require("../middlewares/deserializer");
+const requireUser = require("../middlewares/require-user");
 
-router.use(checkAuth);
+router.use(deserializer, requireUser);
 router.get("/", mcesControllers.getAllQuestions);
 router.get("/:qid", mcesControllers.getQuestionById);
 router.post(
   "/",
   [
-    check("question").not().isEmpty(),
+    check("question")
+      .not()
+      .isEmpty(),
     check("score").isLength({ min: 2, max: 2 }),
   ],
   mcesControllers.createQuestion
@@ -18,7 +21,9 @@ router.post(
 router.patch(
   "/:qid",
   [
-    check("question").not().isEmpty(),
+    check("question")
+      .not()
+      .isEmpty(),
     check("score").isLength({ min: 2, max: 2 }),
   ],
   mcesControllers.updateQuestion

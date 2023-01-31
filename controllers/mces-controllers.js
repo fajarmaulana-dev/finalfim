@@ -1,4 +1,4 @@
-const HttpError = require("../models/http-error");
+const HttpError = require("../utils/http-error");
 const MCESQuest = require("../models/mces");
 const { validationResult } = require("express-validator");
 
@@ -159,7 +159,7 @@ const resetQuestions = async (req, res, next) => {
     quest = await MCESQuest.find({});
   } catch (err) {
     const error = new HttpError(
-      "Fetching question failed, please try again later.",
+      "Gagal mereset data jawaban, silakan coba lagi",
       500
     );
     return next(error);

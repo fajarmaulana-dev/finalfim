@@ -2,20 +2,45 @@ require("dotenv").config();
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const jwtDecode = require("jwt-decode");
-const HttpError = require("../models/http-error");
+const HttpError = require("../utils/http-error");
 const User = require("../models/user");
 const { nanoid } = require("nanoid");
 const Token = require("../models/token");
 const sendEmail = require("../utils/sendEmail");
+const signToken = require("../utils/sign-token");
+const redisClient = require("../utils/connect-redis");
+
+const bad = "Kesalahan server/koneksi, silakan coba lagi.";
+
+const out = (res) => {
+  res.cookie("access_token", "", { maxAge: -1 });
+  res.cookie("refresh_token", "", { maxAge: -1 });
+  res.cookie("logged_in", "", { maxAge: -1 });
+  res.cookie("user", "", { maxAge: -1 });
+};
+
+const accessCookie = {
+  expires: new Date(Date.now() + 15 * 60 * 1000),
+  maxAge: 15 * 60 * 1000,
+  httpOnly: true,
+  sameSite: "lax",
+};
+
+const refreshCookie = {
+  expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+  maxAge: 24 * 60 * 60 * 1000,
+  httpOnly: true,
+  sameSite: "lax",
+};
+
+if (process.env.NODE_ENV === "production") accessCookie.secure = true;
 
 const getUsers = async (req, res, next) => {
   let users;
   try {
     users = await User.find({});
   } catch (err) {
-    const error = new HttpError("Gagal memperoleh data pengguna", 500);
-    return next(error);
+    return next(new HttpError(bad, 500));
   }
   res.json({
     emails: users.map((user) => user.email),
@@ -24,332 +49,264 @@ const getUsers = async (req, res, next) => {
 
 const signup = async (req, res, next) => {
   const error = validationResult(req);
-  const errorParam = error.errors.map((e) => e.param);
-  if (errorParam[0] === "name") {
-    return next(new HttpError("Nama tidak boleh kosong", 422));
-  }
-  if (errorParam[0] === "email") {
-    return next(new HttpError("Email tidak valid", 422));
-  }
-  if (errorParam[0] === "password") {
-    return next(
-      new HttpError(
-        "Password baru harus terdiri dari minimal 8 karakter dan terdiri dari minimal 1 huruf kapital, 1 huruf kecil, 1 angka, dan 1 karakter unik",
-        422
-      )
-    );
-  }
-  const { name, email, password } = req.body;
-  let hasUser;
-  try {
-    hasUser = await User.findOne({ email });
-  } catch (err) {
-    const error = new HttpError("Registrasi gagal, silakan coba lagi", 500);
-    return next(error);
-  }
+  const errorMsg = error.errors.map((e) => e.msg);
+  if (errorMsg.length > 0) return next(new HttpError(errorMsg[0], 422));
 
-  if (hasUser) {
-    const error = new HttpError("Pengguna ini telah ada", 422);
-    return next(error);
-  }
-  let hashedPassword;
+  const { email, password } = req.body;
+  let exist;
   try {
-    hashedPassword = await bcrypt.hash(password, 12);
+    exist = await User.findOne({ email });
   } catch (err) {
-    const error = new HttpError("Registrasi gagal, silakan coba lagi", 500);
-    return next(error);
+    return next(new HttpError(bad, 500));
   }
+  if (exist) return next(new HttpError("Email ini telah terdaftar.", 409));
+
+  const hashedPass = await bcrypt.hash(password, 12);
   const createdUser = new User({
-    name,
+    name: email.split("@")[0],
     email,
-    password: hashedPassword,
+    password: hashedPass,
   });
 
   try {
     await createdUser.save();
   } catch (err) {
-    const error = new HttpError("Registrasi gagal, silakan coba lagi", 500);
-    return next(error);
+    return next(new HttpError(bad, 500));
   }
 
   res.status(201).json({
-    userId: createdUser.id,
-    name: createdUser.name,
-    email: createdUser.email,
+    message: "Registrasi berhasil.",
+    data: {
+      userId: createdUser.id,
+      name: createdUser.name,
+      email: createdUser.email,
+    },
   });
 };
 
 const login = async (req, res, next) => {
   const error = validationResult(req);
-  const errorParam = error.errors.map((e) => e.param);
-  if (errorParam[0] === "email") {
-    return next(new HttpError("Email tidak valid.", 422));
-  }
+  const errorMsg = error.errors.map((e) => e.msg);
+  if (errorMsg.length > 0) return next(new HttpError(errorMsg[0], 422));
+
   const { email, password } = req.body;
-  let hasUser;
+  let exist;
   try {
-    hasUser = await User.findOne({ email });
+    exist = await User.findOne({ email });
   } catch (err) {
-    const error = new HttpError(
-      "Kesalahan server, silakan coba login kembali",
-      500
-    );
-    return next(error);
+    return next(new HttpError(bad, 500));
   }
+  if (!exist)
+    return next(
+      new HttpError(
+        "Kamu belum terdaftar sebagai member FIM, silakan daftarkan diri terlebih dahulu.",
+        401
+      )
+    );
 
-  if (!hasUser) {
-    const error = new HttpError(
-      "Kamu belum terdaftar sebagai panitia FIM",
-      403
-    );
-    return next(error);
-  }
+  const isValidPass = await bcrypt.compare(password, exist.password);
+  if (!isValidPass)
+    return next(new HttpError("Password yang kamu masukkan salah.", 401));
 
-  let isValidPassword = false;
-  try {
-    isValidPassword = await bcrypt.compare(password, hasUser.password);
-  } catch (err) {
-    const error = new HttpError(
-      "Kesalahan server, silakan coba login kembali",
-      500
-    );
-    return next(error);
-  }
+  const { accessToken, refreshToken } = await signToken(exist);
 
-  if (!isValidPassword) {
-    const error = new HttpError("Password yang kamu masukkan salah", 403);
-    return next(error);
-  }
-
-  let accessToken;
-  let refreshToken;
-  try {
-    accessToken = jwt.sign(
-      { userId: hasUser.id, email: hasUser.email },
-      process.env.SECRET_KEY,
-      { expiresIn: "15m" }
-    );
-    refreshToken = jwt.sign(
-      { userId: hasUser.id, email: hasUser.email },
-      process.env.REFRESH_KEY,
-      { expiresIn: "2d" }
-    );
-  } catch (err) {
-    const error = new HttpError(
-      "Kesalahan server, silakan coba login kembali",
-      500
-    );
-    return next(error);
-  }
+  res.cookie("access_token", accessToken, accessCookie);
+  res.cookie("refresh_token", refreshToken, refreshCookie);
+  res.cookie("logged_in", true, {
+    ...accessCookie,
+    httpOnly: false,
+  });
+  res.cookie(
+    "user",
+    JSON.stringify({ userId: exist.id, name: exist.name, email: exist.email }),
+    {
+      ...refreshCookie,
+      httpOnly: false,
+    }
+  );
 
   res.status(200).json({
-    message: "Login berhasil",
-    userId: hasUser.id,
-    name: hasUser.name,
-    email: hasUser.email,
-    accessToken,
-    refreshToken,
+    message: "Login berhasil.",
+    data: {
+      userId: exist.id,
+    },
   });
 };
 
-const refresh = async (req, res, next) => {
-  const { refreshToken, userId, email } = req.body;
-  if (Date.now() >= jwtDecode(refreshToken).exp * 1000) {
-    res.status(403).json({
-      message: "Sesimu telah berakhir, silakan login kembali",
-    });
-  } else {
-    let accessToken;
-    try {
-      accessToken = jwt.sign(
-        { userId: userId, email: email },
-        process.env.SECRET_KEY,
-        { expiresIn: "15m" }
-      );
-    } catch (err) {
-      const error = new HttpError(
-        "Tidak dapat merefresh token, silakan login kembali",
-        500
-      );
-      return next(error);
-    }
-    res.status(200).json({ userId: userId, email: email, accessToken });
+const logout = async (req, res, next) => {
+  try {
+    const user = res.locals.user;
+    await redisClient.del(user._id.toString());
+    out(res);
+    res.status(200).json({ message: "Logout berhasil." });
+  } catch (err) {
+    next(err);
   }
 };
 
+const refresh = async (req, res, next) => {
+  const refresh_token = req.cookies.refresh_token;
+  const decoded = jwt.verify(refresh_token, process.env.REFRESH_KEY);
+  if (!decoded) return next(new HttpError("Tidak dapat merefresh token.", 403));
+
+  let session;
+  try {
+    session = await redisClient.get(decoded.userId);
+  } catch (err) {
+    return next(new HttpError(bad, 500));
+  }
+
+  if (!session) return next(new HttpError("Tidak dapat merefresh token.", 403));
+
+  let exist;
+  try {
+    exist = await User.findById(JSON.parse(session)._id);
+  } catch (err) {
+    return next(new HttpError(bad, 500));
+  }
+  if (!exist) return next(new HttpError("Tidak dapat merefresh token.", 403));
+
+  const accessToken = jwt.sign(
+    { userId: exist.id, email: exist.email },
+    process.env.SECRET_KEY,
+    { expiresIn: "10m" }
+  );
+  res.cookie("access_token", accessToken, accessCookie);
+  res.cookie("logged_in", true, {
+    ...accessCookie,
+    httpOnly: false,
+  });
+
+  res.status(200).json({ message: "Refresh token berhasil." });
+};
+
 const changePass = async (req, res, next) => {
-  const { name, password, newPassword } = req.body;
+  const error = validationResult(req);
+  const errorMsg = error.errors.map((e) => e.msg);
+  if (errorMsg.length > 0) return next(new HttpError(errorMsg[0], 422));
+
+  const { password, newPassword } = req.body;
   const userId = req.params.uid;
   let user;
   try {
     user = await User.findById(userId);
   } catch (err) {
-    const error = new HttpError("Kesalahan server, silakan coba lagi", 500);
-    return next(error);
-  }
-  const error = validationResult(req);
-  const errorParam = error.errors.map((e) => e.param);
-  if (errorParam[0] === "name") {
-    return next(new HttpError("Nama tidak boleh kosong", 422));
-  }
-  let isValidPassword = false;
-  try {
-    isValidPassword = await bcrypt.compare(password, user.password);
-  } catch (err) {
-    const error = new HttpError(
-      "Kesalahan server, silakan coba login kembali",
-      500
-    );
-    return next(error);
+    return next(new HttpError(bad, 500));
   }
 
-  if (!isValidPassword) {
-    const error = new HttpError("Password lama yang kamu masukkan salah", 403);
-    return next(error);
+  const isValidPass = await bcrypt.compare(password, user.password);
+  if (!isValidPass)
+    return next(new HttpError("Password lama yang kamu masukkan salah.", 422));
+
+  const hashedPass = await bcrypt.hash(newPassword, 12);
+  user.password = hashedPass;
+  try {
+    await user.save();
+  } catch (err) {
+    return next(new HttpError(bad, 500));
   }
-  if (errorParam[0] === "newPassword") {
+
+  res.status(200).json({ message: "Pembaruan password berhasil." });
+};
+
+const sendLink = async (req, res, next) => {
+  const { email } = req.body;
+  let exist;
+  try {
+    exist = await User.findOne({ email });
+  } catch (err) {
+    return next(new HttpError(bad, 500));
+  }
+  if (!exist) {
     return next(
       new HttpError(
-        "Password baru harus terdiri dari minimal 8 karakter dan terdiri dari minimal 1 huruf kapital, 1 huruf kecil, 1 angka, dan 1 karakter unik",
+        "Pengguna dengan email yang diberikan belum terdaftar di FIM.",
         422
       )
     );
   }
 
-  let hashedPassword;
-  try {
-    hashedPassword = await bcrypt.hash(newPassword, 12);
-  } catch (err) {
-    const error = new HttpError(
-      "Tidak dapat memperbarui data, silakan coba lagi",
-      500
-    );
-    return next(error);
-  }
-
-  user.name = name;
-  user.password = hashedPassword;
-
-  try {
-    await user.save();
-  } catch (err) {
-    const error = new HttpError(
-      "Tidak dapat memperbarui data, silakan coba lagi",
-      500
-    );
-    return next(error);
-  }
-
-  res.status(200).json({ message: "Berhasil memperbarui data" });
-};
-
-const sendLink = async (req, res, next) => {
-  const { email } = req.body;
-  let hasUser;
-  try {
-    hasUser = await User.findOne({ email });
-  } catch (err) {
-    const error = new HttpError("Kesalahan server, silakan coba lagi", 500);
-    return next(error);
-  }
-
-  if (!hasUser) {
-    const error = new HttpError(
-      "Pengguna dengan email yang diberikan tidak ada di database",
-      422
-    );
-    return next(error);
-  }
-
   const createdToken = new Token({
-    userId: hasUser.id,
+    userId: exist.id,
     token: nanoid(30),
   });
-
   try {
     await createdToken.save();
   } catch (err) {
-    const error = new HttpError(
-      "Gagal mendapatkan token, silakan coba lagi",
-      500
-    );
-    return next(error);
+    return next(new HttpError(bad, 500));
   }
+
   const link = `${process.env.BASE_URL}/auth/reset/${createdToken.userId}/${createdToken.token}`;
   try {
     await sendEmail(
-      hasUser.email,
-      "Password reset",
-      `Klik link ini untuk reset password: ${link}`
+      exist.email,
+      "Reset Password FIM",
+      `Link akan kadaluarsa setelah 15 menit. Segera klik link berikut untuk melakukan reset password: ${link}`
     );
   } catch (err) {
-    const error = new HttpError("Email gagal terkirim", 500);
-    return next(error);
+    return next(new HttpError("Email gagal terkirim, silakan coba lagi.", 500));
   }
 
   res.status(200).json({
     message:
-      "Email berhasil dikirim ke akun emailmu, segera akses tautan pada email sebelum 20 menit",
+      "Email berhasil dikirim ke akun emailmu, segera akses tautan pada email sebelum 15 menit.",
   });
 };
 
 const resetPass = async (req, res, next) => {
+  const error = validationResult(req);
+  const errorMsg = error.errors.map((e) => e.msg);
+  if (errorMsg.length > 0) return next(new HttpError(errorMsg[0], 422));
+
   const uid = req.params.uid;
   const token = req.params.token;
   const { password } = req.body;
-  let hasToken;
+  let isValidToken;
   try {
-    hasToken = await Token.findOne({
-      userId: uid,
-      token: token,
-    });
+    isValidToken = await Token.findOne({ userId: uid, token });
   } catch (err) {
-    const error = new HttpError("Kesalahan server, silakan coba lagi", 500);
-    return next(error);
+    return next(new HttpError(bad, 500));
   }
-  if (!hasToken) {
-    const error = new HttpError("Link tidak valid atau telah kadaluwarsa", 400);
-    return next(error);
-  }
+  if (!isValidToken)
+    return next(
+      new HttpError(
+        "Token reset password tidak valid atau telah kadaluwarsa. Silakan ajukan permintaan email baru melalui halaman Lupa Password.",
+        410
+      )
+    );
+
   let user;
   try {
     user = await User.findById(uid);
   } catch (err) {
-    const error = new HttpError("Kesalahan server, silakan coba lagi", 500);
-    return next(error);
-  }
-  let hashedPassword;
-  try {
-    hashedPassword = await bcrypt.hash(password, 12);
-  } catch (err) {
-    const error = new HttpError(
-      "Gagal mereset password, silakan coba lagi",
-      500
-    );
-    return next(error);
+    return next(new HttpError(bad, 500));
   }
 
-  user.password = hashedPassword;
-
+  const hashedPass = await bcrypt.hash(password, 12);
+  user.password = hashedPass;
   try {
     await user.save();
   } catch (err) {
-    const error = new HttpError(
-      "Gagal mereset password, silakan coba lagi",
-      500
-    );
-    return next(error);
+    return next(new HttpError(bad, 500));
+  }
+
+  try {
+    await Token.deleteOne({ token });
+  } catch (err) {
+    return next(new HttpError(bad, 500));
   }
 
   res
     .status(200)
-    .json({ message: "Passwordmu berhasil direset, silakan login kembali" });
+    .json({ message: "Pembaruan password berhasil, silakan login kembali." });
 };
 
 exports.getUsers = getUsers;
 exports.signup = signup;
 exports.login = login;
+exports.logout = logout;
 exports.refresh = refresh;
 exports.changePass = changePass;
 exports.sendLink = sendLink;
 exports.resetPass = resetPass;
+exports.excludeFields = ["password"];

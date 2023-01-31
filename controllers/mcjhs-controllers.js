@@ -1,4 +1,4 @@
-const HttpError = require("../models/http-error");
+const HttpError = require("../utils/http-error");
 const MCJHSQuest = require("../models/mcjhs");
 const { validationResult } = require("express-validator");
 

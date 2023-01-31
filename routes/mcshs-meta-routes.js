@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const mcshsMeta = require("../controllers/mcshs-meta-controllers");
-const checkAuth = require("../middleware/check-auth");
+const deserializer = require("../middlewares/deserializer");
+const requireUser = require("../middlewares/require-user");
 
 router.get("/", mcshsMeta.getMeta);
 
-router.use(checkAuth);
+router.use(deserializer, requireUser);
 router.post("/", mcshsMeta.createMeta);
 router.patch("/update", mcshsMeta.updateMeta);
 router.patch("/reset", mcshsMeta.resetMeta);

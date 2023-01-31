@@ -1,7 +1,8 @@
 require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
-const HttpError = require("./models/http-error");
+const cookieParser = require("cookie-parser");
+const HttpError = require("./utils/http-error");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
@@ -17,25 +18,10 @@ const mcshsmRoutes = require("./routes/mcshs-meta-routes");
 const usersRoutes = require("./routes/users-routes");
 const app = express();
 
-const corsOptions = {
-  origin: [process.env.BASE_URL, "http://localhost:3000"],
-  credentials: true, //access-control-allow-credentials:true
-  allowedHeaders: [
-    "Content-Type",
-    "Authorization",
-    "Content-Type",
-    "Content-Length",
-    "Host",
-    "User-Agent",
-    "Accept",
-    "Accept-Encoding",
-    "Connection",
-  ],
-};
-
-app.use(cors(corsOptions));
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use("/api/mces", mcesRoutes);
 app.use("/api/mcjhs", mcjhsRoutes);
 app.use("/api/mcshs", mcshsRoutes);
@@ -46,6 +32,13 @@ app.use("/api/mcesm", mcesmRoutes);
 app.use("/api/mcjhsm", mcjhsmRoutes);
 app.use("/api/mcshsm", mcshsmRoutes);
 app.use("/api/users", usersRoutes);
+
+app.get("/", (req, res, next) => {
+  res.status(200).json({
+    message: "Success to build backend app",
+  });
+});
+
 app.use((req, res, next) => {
   throw new HttpError("Could not find this route.", 404);
 });
@@ -57,6 +50,7 @@ app.use((error, req, res, next) => {
     .status(error.code || 500)
     .json({ message: error.message || "An unknown error occurred!" });
 });
+
 mongoose
   .connect(process.env.DATABASE_URL, { useNewUrlParser: true })
   .then(() => app.listen(5000))

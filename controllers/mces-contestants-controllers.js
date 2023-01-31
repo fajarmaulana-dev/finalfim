@@ -1,4 +1,4 @@
-const HttpError = require("../models/http-error");
+const HttpError = require("../utils/http-error");
 const MCESContestant = require("../models/mces-contestants");
 
 const getAllContestants = async (req, res, next) => {

@@ -1,4 +1,4 @@
-const HttpError = require("../models/http-error");
+const HttpError = require("../utils/http-error");
 const MCSHSMeta = require("../models/mcshs-meta");
 
 const getMeta = async (req, res, next) => {

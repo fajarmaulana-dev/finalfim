@@ -20,7 +20,7 @@ const sendEmail = async (email, subject, text) => {
     });
 
     await transporter.sendMail({
-      from: process.env.USER,
+      from: `FIM <${process.env.USER}>`,
       to: email,
       subject: subject,
       text: text,
