@@ -76,11 +76,6 @@ const signup = async (req, res, next) => {
 
   res.status(201).json({
     message: "Registrasi berhasil.",
-    data: {
-      userId: createdUser.id,
-      name: createdUser.name,
-      email: createdUser.email,
-    },
   });
 };
 
@@ -127,9 +122,6 @@ const login = async (req, res, next) => {
 
   res.status(200).json({
     message: "Login berhasil.",
-    data: {
-      userId: exist.id,
-    },
   });
 };
 
