@@ -16,7 +16,6 @@ const accessCookie = {
   maxAge: 15 * 60 * 1000,
   httpOnly: true,
   sameSite: "lax",
-  // secure: true,
 };
 
 const refreshCookie = {
@@ -26,7 +25,14 @@ const refreshCookie = {
   sameSite: "lax",
 };
 
-if (process.env.NODE_ENV === "production") accessCookie.secure = true;
+if (process.env.NODE_ENV === "production") {
+  accessCookie.secure = true;
+  accessCookie.domain = process.env.BASE_URL;
+  refreshCookie.domain = process.env.BASE_URL;
+} else {
+  accessCookie.domain = "http://localhost:3000";
+  refreshCookie.domain = "http://localhost:3000";
+}
 
 const getUsers = async (req, res, next) => {
   let users;
