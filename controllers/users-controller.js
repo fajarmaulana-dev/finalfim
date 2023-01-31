@@ -8,16 +8,8 @@ const { nanoid } = require("nanoid");
 const Token = require("../models/token");
 const sendEmail = require("../utils/sendEmail");
 const signToken = require("../utils/sign-token");
-const redisClient = require("../utils/connect-redis");
 
 const bad = "Kesalahan server/koneksi, silakan coba lagi.";
-
-const out = (res) => {
-  res.cookie("access_token", "", { maxAge: -1 });
-  res.cookie("refresh_token", "", { maxAge: -1 });
-  res.cookie("logged_in", "", { maxAge: -1 });
-  res.cookie("user", "", { maxAge: -1 });
-};
 
 const accessCookie = {
   expires: new Date(Date.now() + 15 * 60 * 1000),
@@ -127,9 +119,10 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
   try {
-    const user = res.locals.user;
-    await redisClient.del(user._id.toString());
-    out(res);
+    res.cookie("access_token", "", { maxAge: -1 });
+    res.cookie("refresh_token", "", { maxAge: -1 });
+    res.cookie("logged_in", "", { maxAge: -1 });
+    res.cookie("user", "", { maxAge: -1 });
     res.status(200).json({ message: "Logout berhasil." });
   } catch (err) {
     next(err);
@@ -138,25 +131,12 @@ const logout = async (req, res, next) => {
 
 const refresh = async (req, res, next) => {
   const refresh_token = req.cookies.refresh_token;
+  const user = req.cookies.user;
+  if (!user) return next(new HttpError("Tidak dapat merefresh token.", 403));
   const decoded = jwt.verify(refresh_token, process.env.REFRESH_KEY);
   if (!decoded) return next(new HttpError("Tidak dapat merefresh token.", 403));
 
-  let session;
-  try {
-    session = await redisClient.get(decoded.userId);
-  } catch (err) {
-    return next(new HttpError(bad, 500));
-  }
-
-  if (!session) return next(new HttpError("Tidak dapat merefresh token.", 403));
-
-  let exist;
-  try {
-    exist = await User.findById(JSON.parse(session)._id);
-  } catch (err) {
-    return next(new HttpError(bad, 500));
-  }
-  if (!exist) return next(new HttpError("Tidak dapat merefresh token.", 403));
+  const exist = JSON.parse(user);
 
   const accessToken = jwt.sign(
     { userId: exist.id, email: exist.email },

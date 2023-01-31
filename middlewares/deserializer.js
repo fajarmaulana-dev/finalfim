@@ -1,7 +1,6 @@
 require("dotenv").config();
 const HttpError = require("../utils/http-error");
 const jwt = require("jsonwebtoken");
-const redisClient = require("../utils/connect-redis");
 const User = require("../models/user");
 
 module.exports = async (req, res, next) => {
@@ -24,12 +23,8 @@ module.exports = async (req, res, next) => {
           401
         )
       );
-    const session = await redisClient.get(decoded.userId);
-    if (!session)
-      return next(
-        new HttpError("Sesimu telah berakhir, silakan login kembali.", 401)
-      );
-    const exist = await User.findById(JSON.parse(session)._id);
+    const user = req.cookies.user;
+    const exist = await User.findById(JSON.parse(user).userId);
     if (!exist)
       return next(
         new HttpError(
