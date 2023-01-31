@@ -15,10 +15,7 @@ module.exports = async (req, res, next) => {
     } else if (req.cookies.access_token) {
       access_token = req.cookies.access_token;
     }
-    if (!access_token)
-      return next(
-        new HttpError("Autentikasi gagal, silakan login terlebih dahulu.", 401)
-      );
+    if (!access_token) return next(new HttpError("Autentikasi gagal", 401));
     const decoded = jwt.verify(access_token, process.env.SECRET_KEY);
     if (!decoded)
       return next(
