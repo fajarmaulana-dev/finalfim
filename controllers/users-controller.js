@@ -14,15 +14,17 @@ const bad = "Kesalahan server/koneksi, silakan coba lagi.";
 const accessCookie = {
   expires: new Date(Date.now() + 15 * 60 * 1000),
   maxAge: 15 * 60 * 1000,
-  httpOnly: false,
-  sameSite: "lax",
+  httpOnly: true,
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  secure: process.env.NODE_ENV === "production",
 };
 
 const refreshCookie = {
   expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
   maxAge: 24 * 60 * 60 * 1000,
-  httpOnly: false,
-  sameSite: "lax",
+  httpOnly: true,
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  secure: process.env.NODE_ENV === "production",
 };
 
 const getUsers = async (req, res, next) => {
@@ -97,18 +99,6 @@ const login = async (req, res, next) => {
 
   res.cookie("access_token", accessToken, accessCookie);
   res.cookie("refresh_token", refreshToken, refreshCookie);
-  res.cookie("logged_in", true, {
-    ...accessCookie,
-    httpOnly: false,
-  });
-  res.cookie(
-    "user",
-    JSON.stringify({ userId: exist.id, name: exist.name, email: exist.email }),
-    {
-      ...refreshCookie,
-      httpOnly: false,
-    }
-  );
 
   res.status(200).json({
     message: "Login berhasil.",
@@ -118,31 +108,20 @@ const login = async (req, res, next) => {
 const logout = (req, res, next) => {
   res.cookie("access_token", "", { maxAge: -1 });
   res.cookie("refresh_token", "", { maxAge: -1 });
-  res.cookie("logged_in", "", { maxAge: -1 });
-  res.cookie("user", "", { maxAge: -1 });
   res.status(200).json({ message: "Logout berhasil." });
 };
 
 const refresh = async (req, res, next) => {
   const refresh_token = req.cookies.refresh_token;
-  const user = req.cookies.user;
-  if (!user) return next(new HttpError("Tidak dapat merefresh token.", 403));
   const decoded = jwt.verify(refresh_token, process.env.REFRESH_KEY);
   if (!decoded) return next(new HttpError("Tidak dapat merefresh token.", 403));
 
-  const exist = JSON.parse(user);
-
   const accessToken = jwt.sign(
-    { userId: exist.id, email: exist.email },
+    { userId: decoded.id, email: decoded.email },
     process.env.SECRET_KEY,
     { expiresIn: "10m" }
   );
   res.cookie("access_token", accessToken, accessCookie);
-  res.cookie("logged_in", true, {
-    ...accessCookie,
-    httpOnly: false,
-  });
-
   res.status(200).json({ message: "Refresh token berhasil." });
 };
 

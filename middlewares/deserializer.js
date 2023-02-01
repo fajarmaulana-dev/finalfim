@@ -23,8 +23,7 @@ module.exports = async (req, res, next) => {
           401
         )
       );
-    const user = req.cookies.user;
-    const exist = await User.findById(JSON.parse(user).userId);
+    const exist = await User.findById(decoded.userId);
     if (!exist)
       return next(
         new HttpError(
