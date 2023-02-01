@@ -102,8 +102,6 @@ const login = async (req, res, next) => {
   res.cookie("logged_in", true, {
     ...accessCookie,
     httpOnly: false,
-    secure: false,
-    sameSite: "lax",
   });
   res.cookie(
     "user",
@@ -111,8 +109,6 @@ const login = async (req, res, next) => {
     {
       ...refreshCookie,
       httpOnly: false,
-      secure: false,
-      sameSite: "lax",
     }
   );
 
@@ -147,8 +143,6 @@ const refresh = async (req, res, next) => {
   res.cookie("logged_in", true, {
     ...accessCookie,
     httpOnly: false,
-    secure: false,
-    sameSite: "lax",
   });
 
   res.status(200).json({ message: "Refresh token berhasil." });
