@@ -14,17 +14,17 @@ const bad = "Kesalahan server/koneksi, silakan coba lagi.";
 const accessCookie = {
   expires: new Date(Date.now() + 15 * 60 * 1000),
   maxAge: 15 * 60 * 1000,
-  httpOnly: true,
-  sameSite: "none",
-  secure: true,
+  httpOnly: false,
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  secure: process.env.NODE_ENV === "production",
 };
 
 const refreshCookie = {
   expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
   maxAge: 24 * 60 * 60 * 1000,
-  httpOnly: true,
-  sameSite: "none",
-  secure: true,
+  httpOnly: false,
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  secure: process.env.NODE_ENV === "production",
 };
 
 const getUsers = async (req, res, next) => {
@@ -99,16 +99,12 @@ const login = async (req, res, next) => {
 
   res.cookie("access_token", accessToken, accessCookie);
   res.cookie("refresh_token", refreshToken, refreshCookie);
-  res.cookie("logged_in", true, {
-    ...accessCookie,
-    httpOnly: false,
-  });
+  res.cookie("logged_in", true, { ...accessCookie });
   res.cookie(
     "user",
     JSON.stringify({ userId: exist.id, name: exist.name, email: exist.email }),
     {
       ...refreshCookie,
-      httpOnly: false,
     }
   );
 
@@ -120,8 +116,6 @@ const login = async (req, res, next) => {
 const logout = (req, res, next) => {
   res.cookie("access_token", "", { maxAge: -1 });
   res.cookie("refresh_token", "", { maxAge: -1 });
-  res.cookie("logged_in", "", { maxAge: -1 });
-  res.cookie("user", "", { maxAge: -1 });
   res.status(200).json({ message: "Logout berhasil." });
 };
 
@@ -136,10 +130,7 @@ const refresh = async (req, res, next) => {
     { expiresIn: "10m" }
   );
   res.cookie("access_token", accessToken, accessCookie);
-  res.cookie("logged_in", true, {
-    ...accessCookie,
-    httpOnly: false,
-  });
+  res.cookie("logged_in", true, { ...accessCookie });
   res.status(200).json({ message: "Refresh token berhasil." });
 };
 
