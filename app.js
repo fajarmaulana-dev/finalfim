@@ -18,12 +18,7 @@ const mcshsmRoutes = require("./routes/mcshs-meta-routes");
 const usersRoutes = require("./routes/users-routes");
 const app = express();
 
-app.use(
-  cors({
-    origin: ["http://localhost:3000", "https://fimunnes.netlify.app"],
-    credentials: true,
-  })
-);
+app.use(cors({ origin: true, credentials: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
