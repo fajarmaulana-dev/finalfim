@@ -111,10 +111,11 @@ const logout = (req, res, next) => {
 const refresh = async (req, res, next) => {
   const refresh_token = req.cookies.refresh_token;
   const decoded = jwt.verify(refresh_token, process.env.REFRESH_KEY);
+  console.log(decoded);
   if (!decoded) return next(new HttpError("Tidak dapat merefresh token.", 403));
 
   const accessToken = jwt.sign(
-    { userId: decoded.id, email: decoded.email },
+    { userId: decoded.userId, email: decoded.email },
     process.env.SECRET_KEY,
     { expiresIn: "10m" }
   );
