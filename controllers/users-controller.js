@@ -14,17 +14,15 @@ const bad = "Kesalahan server/koneksi, silakan coba lagi.";
 const accessCookie = {
   expires: new Date(Date.now() + 15 * 60 * 1000),
   maxAge: 15 * 60 * 1000,
-  httpOnly: true,
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-  secure: process.env.NODE_ENV === "production",
+  httpOnly: false,
+  sameSite: "lax",
 };
 
 const refreshCookie = {
   expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
   maxAge: 24 * 60 * 60 * 1000,
-  httpOnly: true,
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-  secure: process.env.NODE_ENV === "production",
+  httpOnly: false,
+  sameSite: "lax",
 };
 
 const getUsers = async (req, res, next) => {
