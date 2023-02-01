@@ -15,16 +15,16 @@ const accessCookie = {
   expires: new Date(Date.now() + 15 * 60 * 1000),
   maxAge: 15 * 60 * 1000,
   httpOnly: true,
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-  secure: process.env.NODE_ENV === "production",
+  sameSite: "none",
+  secure: true,
 };
 
 const refreshCookie = {
   expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
   maxAge: 24 * 60 * 60 * 1000,
   httpOnly: true,
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-  secure: process.env.NODE_ENV === "production",
+  sameSite: "none",
+  secure: true,
 };
 
 const getUsers = async (req, res, next) => {
@@ -102,8 +102,6 @@ const login = async (req, res, next) => {
   res.cookie("logged_in", true, {
     ...accessCookie,
     httpOnly: false,
-    sameSite: "strict",
-    secure: false,
   });
   res.cookie(
     "user",
@@ -111,8 +109,6 @@ const login = async (req, res, next) => {
     {
       ...refreshCookie,
       httpOnly: false,
-      sameSite: "strict",
-      secure: false,
     }
   );
 
@@ -143,8 +139,6 @@ const refresh = async (req, res, next) => {
   res.cookie("logged_in", true, {
     ...accessCookie,
     httpOnly: false,
-    sameSite: "strict",
-    secure: false,
   });
   res.status(200).json({ message: "Refresh token berhasil." });
 };
