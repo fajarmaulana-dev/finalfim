@@ -107,7 +107,6 @@ const login = async (req, res, next) => {
       ...refreshCookie,
     }
   );
-
   res.status(200).json({
     message: "Login berhasil.",
   });
