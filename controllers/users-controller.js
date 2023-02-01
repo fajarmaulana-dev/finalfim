@@ -11,14 +11,6 @@ const signToken = require("../utils/sign-token");
 
 const bad = "Kesalahan server/koneksi, silakan coba lagi.";
 
-const accessCookie = {
-  expires: new Date(Date.now() + 15 * 60 * 1000),
-  maxAge: 15 * 60 * 1000,
-  httpOnly: true,
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-  secure: process.env.NODE_ENV === "production",
-};
-
 const refreshCookie = {
   expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
   maxAge: 24 * 60 * 60 * 1000,
@@ -97,23 +89,21 @@ const login = async (req, res, next) => {
 
   const { accessToken, refreshToken } = await signToken(exist);
 
-  res.cookie("access_token", accessToken, accessCookie);
   res.cookie("refresh_token", refreshToken, refreshCookie);
-  // res.cookie("logged_in", true, { ...accessCookie });
-  // res.cookie(
-  //   "user",
-  //   JSON.stringify({ userId: exist.id, name: exist.name, email: exist.email }),
-  //   {
-  //     ...refreshCookie,
-  //   }
-  // );
   res.status(200).json({
     message: "Login berhasil.",
+    data: {
+      user: {
+        userId: exist.id,
+        name: exist.name,
+        email: exist.email,
+      },
+      token: accessToken,
+    },
   });
 };
 
 const logout = (req, res, next) => {
-  res.cookie("access_token", "", { maxAge: -1 });
   res.cookie("refresh_token", "", { maxAge: -1 });
   res.status(200).json({ message: "Logout berhasil." });
 };
@@ -128,9 +118,12 @@ const refresh = async (req, res, next) => {
     process.env.SECRET_KEY,
     { expiresIn: "10m" }
   );
-  res.cookie("access_token", accessToken, accessCookie);
-  // res.cookie("logged_in", true, { ...accessCookie });
-  res.status(200).json({ message: "Refresh token berhasil." });
+  res.status(200).json({
+    message: "Refresh token berhasil.",
+    data: {
+      token: accessToken,
+    },
+  });
 };
 
 const changePass = async (req, res, next) => {
