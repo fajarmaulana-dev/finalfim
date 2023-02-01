@@ -99,13 +99,18 @@ const login = async (req, res, next) => {
 
   res.cookie("access_token", accessToken, accessCookie);
   res.cookie("refresh_token", refreshToken, refreshCookie);
-  res.cookie("logged_in", true, { ...accessCookie, httpOnly: false });
+  res.cookie("logged_in", true, {
+    ...accessCookie,
+    httpOnly: false,
+    secure: false,
+  });
   res.cookie(
     "user",
     JSON.stringify({ userId: exist.id, name: exist.name, email: exist.email }),
     {
       ...refreshCookie,
       httpOnly: false,
+      secure: false,
     }
   );
 
@@ -117,6 +122,8 @@ const login = async (req, res, next) => {
 const logout = (req, res, next) => {
   res.cookie("access_token", "", { maxAge: -1 });
   res.cookie("refresh_token", "", { maxAge: -1 });
+  res.cookie("logged_in", "", { maxAge: -1 });
+  res.cookie("user", "", { maxAge: -1 });
   res.status(200).json({ message: "Logout berhasil." });
 };
 
@@ -130,8 +137,12 @@ const refresh = async (req, res, next) => {
     process.env.SECRET_KEY,
     { expiresIn: "10m" }
   );
-  res.cookie("logged_in", true, { ...accessCookie, httpOnly: false });
   res.cookie("access_token", accessToken, accessCookie);
+  res.cookie("logged_in", true, {
+    ...accessCookie,
+    httpOnly: false,
+    secure: false,
+  });
   res.status(200).json({ message: "Refresh token berhasil." });
 };
 
