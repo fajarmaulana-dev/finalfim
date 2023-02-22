@@ -23,6 +23,11 @@ const createMeta = async (req, res, next) => {
     disMod: [false, false, false, false, false],
     disLess: [false, false, false, false, false],
     disDiag: [false, false],
+    disBtn: [
+      ["NA", "NA", "NA", "NA", "NA"],
+      ["NA", "NA", "NA", "NA", "NA"],
+      ["NA", "NA"],
+    ],
   });
   try {
     await createdMeta.save();
@@ -34,7 +39,7 @@ const createMeta = async (req, res, next) => {
 };
 
 const updateMeta = async (req, res, next) => {
-  const { responses, disMod, disLess, disDiag } = req.body;
+  const { responses, disMod, disLess, disDiag, disBtn } = req.body;
   let meta;
   try {
     temp = await MCSHSMeta.find({});
@@ -51,6 +56,7 @@ const updateMeta = async (req, res, next) => {
   meta.disMod = disMod;
   meta.disLess = disLess;
   meta.disDiag = disDiag;
+  meta.disBtn = disBtn;
 
   try {
     await meta.save();
@@ -78,6 +84,12 @@ const resetMeta = async (req, res, next) => {
   meta.disMod = [false, false, false, false, false];
   meta.disLess = [false, false, false, false, false];
   meta.disDiag = [false, false];
+  meta.disBtn = [
+    ["NA", "NA", "NA", "NA", "NA"],
+    ["NA", "NA", "NA", "NA", "NA"],
+    ["NA", "NA"],
+  ];
+
   try {
     await meta.save();
   } catch (err) {

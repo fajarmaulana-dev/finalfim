@@ -6,6 +6,7 @@ const metaSchema = new Schema({
   disMod: { type: Array, default: [false, false, false, false, false] },
   disLess: { type: Array, default: [false, false, false, false, false] },
   disDiag: { type: Array, default: [false, false] },
+  disBtn: { type: Array, required: true },
 });
 
 module.exports = mongoose.model("MCJHSMeta", metaSchema);

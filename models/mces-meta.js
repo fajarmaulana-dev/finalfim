@@ -6,6 +6,7 @@ const metaSchema = new Schema({
   disMod: { type: Array, required: true },
   disLess: { type: Array, required: true },
   disDiag: { type: Array, required: true },
+  disBtn: { type: Array, required: true },
 });
 
 module.exports = mongoose.model("MCESMeta", metaSchema);

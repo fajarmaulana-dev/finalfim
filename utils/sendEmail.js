@@ -20,7 +20,7 @@ const sendEmail = async (email, subject, text) => {
     });
 
     await transporter.sendMail({
-      from: `FIM <${process.env.USER}>`,
+      from: `Forum Ilmiah Matematika Nasional <${process.env.USER}>`,
       to: email,
       subject: subject,
       text: text,
