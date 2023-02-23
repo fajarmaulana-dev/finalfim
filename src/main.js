@@ -5,7 +5,7 @@ import { QuillEditor } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import "katex/dist/katex.min.css";
 import "nprogress/nprogress.css";
-import store from "./store";
+import store from "./global";
 import setupInterceptors from "./api/setupInterceptors";
 
 setupInterceptors();

@@ -1,38 +1,20 @@
 <script setup>
 import { useJunior } from '@/composables/mcjhs';
-import { useUser } from '@/composables/users';
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted } from 'vue';
 import katex from 'katex';
 import Formula from '@/components/Formula.vue'
-import EventBus from "@/common/eventBus";
-import TokenService from "@/api/token";
 import { useRoute } from 'vue-router';
-import router from '@/router'
 const route = useRoute();
-
-const user = TokenService.getUser()
 
 const question = ref()
 
 onMounted(async () => {
-    await getEmail();
-    if (user) {
-        if (!mails.value.includes(user?.email)) {
-            TokenService.removeUser();
-            router.go(0)
-        }
-    }
     window.katex = katex
     await getItem(route.params.id);
     question.value = [item.value]
 })
 
-onBeforeUnmount(() => {
-    EventBus.remove("logout");
-})
-
 const { item, getItem, editItem, loading } = useJunior();
-const { getEmail, mails } = useUser()
 </script>
 
 <template>

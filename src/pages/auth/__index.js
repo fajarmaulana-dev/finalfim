@@ -1,22 +1,39 @@
-import api from "@/api/api";
+import Api from "@/api/api";
 
 export class UserService {
-  login(data) {
-    return api.post(`/users/login`, data);
+  async login(data) {
+    try {
+      return await Api.post(`/users/login`, data);
+    } catch (err) {
+      return err.response;
+    }
   }
-  edit(id, data) {
-    return api.patch(`/users/update/${id}`, data);
+  async sendmail(data) {
+    try {
+      return await Api.post("/users/sendmail", data);
+    } catch (err) {
+      return err.response;
+    }
   }
-  refresh(data) {
-    return api.post("/users/refresh", data);
+  async reset(id, token, data) {
+    try {
+      return await Api.patch(`/users/reset/${id}/${token}`, data);
+    } catch (err) {
+      return err.response;
+    }
   }
-  sendmail(data) {
-    return api.post("/users/sendmail", data);
+  async edit(id, data) {
+    try {
+      return await Api.patch(`/users/update/${id}`, data);
+    } catch (err) {
+      return err.response;
+    }
   }
-  reset(id, token, data) {
-    return api.patch(`/users/reset/${id}/${token}`, data);
-  }
-  getEmail() {
-    return api.get("/users");
+  async logout() {
+    try {
+      return await Api.get("/users/logout");
+    } catch (err) {
+      return err.response;
+    }
   }
 }

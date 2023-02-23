@@ -1,11 +1,11 @@
 <script setup>
-import { ref, computed, toRefs } from 'vue';
+import { ref, computed, toRefs, watch } from 'vue';
 import Card from '@/components/Card.vue';
 import InputText from '@/components/InputText.vue';
-import TokenService from "@/api/token";
 import Button from '@/components/Button.vue';
 import Spinner from '@/components/Spinner.vue';
 import { useRoute } from 'vue-router';
+import { useStore } from 'vuex';
 import router from '../router';
 const route = useRoute()
 
@@ -14,40 +14,89 @@ const props = defineProps({
         type: String,
         default: 'login'
     },
+    message: {
+        type: Object,
+        default: { success: '', error: '', code: 0 }
+    },
+    loading: {
+        type: Object,
+        default: { load: false }
+    },
     login: Function,
-    update: Function,
+    edit: Function,
     sendmail: Function,
     reset: Function,
-    ['message']: Array,
-    loading: Boolean
-
 })
-const { is, login, message, update, sendmail, reset, loading } = toRefs(props);
+const { is, login, message, edit, sendmail, reset, loading } = toRefs(props);
+
+const store = useStore()
 
 const title = computed(() => {
     if (is.value === 'login') return 'Login';
-    else if (is.value === 'profile') return 'Edit Profil';
+    else if (is.value === 'profile') return 'Edit Password';
     else if (is.value === 'forgot') return 'Lupa Password';
     else return 'Perbarui Password';
 })
 
 const btn_title = computed(() => {
     if (is.value === 'login') return 'Login';
-    else if (is.value === 'profile') return 'Perbarui profil';
+    else if (is.value === 'profile') return 'Perbarui password';
     else if (is.value === 'forgot') return 'Kirimi saya email';
     else return 'Perbarui';
 })
 
-const seen = ref(false);
-const seen1 = ref(false);
-const seen2 = ref(false);
-const name = ref('')
+const seen = ref(false)
+const newSeen = ref(false)
+const confSeen = ref(false)
 const email = ref('')
-const oldPass = ref('')
-const newPass = ref('')
-const confirmPass = ref('')
+const password = ref('')
+const newPassword = ref('')
+const confPassword = ref('')
 
-const user = TokenService.getUser()
+const user = computed(() => store.state.user)
+
+const load = ref(false)
+const mess = ref(0)
+
+watch(loading.value, () => {
+    load.value = loading.value.load
+})
+
+watch(message.value, () => {
+    mess.value = message.value.code
+})
+
+const to = (page) => {
+    if (load.value === false) {
+        setTimeout(() => {
+            router.push(page)
+        }, 1500)
+    }
+}
+
+const logged = async (login) => {
+    load.value = true;
+    await login({ email: email.value.toLowerCase(), password: password.value });
+    store.dispatch('login')
+    if (mess.value < 300) to('/')
+}
+
+const reseted = async (reset) => {
+    load.value = true;
+    await reset(route.params.id, route.params.token, { password: confPassword.value });
+    if (mess.value < 300) to('/auth/login')
+}
+
+const mail = async (sendmail) => {
+    load.value = true;
+    await sendmail({ email: email.value.toLowerCase() })
+}
+
+const edited = async (edit) => {
+    load.value = true;
+    await edit(user.value.userId, { password: password.value, newPassword: confPassword.value })
+    if (mess.value < 300) to('/')
+}
 </script>
 <template>
     <div class="main">
@@ -66,52 +115,51 @@ const user = TokenService.getUser()
             <template #body>
                 <div style="width: 100%; text-align: center; padding: 1rem; display: flex; flex-direction: column;">
                     <div>
-                        <p v-if="is === 'forgot'" :style="`color: var(--${message[1] === 400 ? 'error' : 'primary'})`"
+                        <p v-if="is === 'forgot'" :style="`color: var(--${mess >= 300 ? 'error' : 'primary'})`"
                             style="font-weight: 500; text-align: left; font-size: var(--card-detail); margin-bottom: calc(.5rem + .65vw);">
-                            {{ message[0] !== undefined ? `${message[0]}` :
-                                    "Kirimkan emailmu untuk menerima tautan penggantian password"
-                            }}</p>
-                        <p v-if="is !== 'forgot'" :style="`color: var(--${message[1] === 400 ? 'error' : 'primary'})`"
-                            style="font-weight: 500; text-align: left; font-size: var(--card-detail); margin-bottom: calc(.5rem + .65vw); min-height: var(--card-detail);">
-                            {{ message[0] }}</p>
-                        <InputText v-if="is === 'profile'" id="nama" name="nama" placeholder="Nama baru" v-model="name"
-                            prepend-icon="fa-solid fa-user" style="margin-bottom: calc(.5rem + .65vw)" />
-                        <InputText v-if="is === 'login' || is === 'forgot'" id="email" name="email" type="email"
-                            placeholder="Email" v-model="email" prepend-icon="fa-solid fa-at"
-                            style="margin-bottom: calc(.5rem + .65vw)" />
-                        <InputText v-if="is === 'login' || is === 'profile'" id="password" name="password"
-                            :type="seen ? 'text' : 'password'" placeholder="Password" prepend-icon="fa-solid fa-lock"
-                            :append-icon="seen ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'" append-cursor="pointer"
-                            style="margin-bottom: calc(.5rem + .65vw)" @append-click="seen = !seen" v-model="oldPass" />
-                        <InputText v-if="is === 'reset' || is === 'profile'" id="password2" name="password2"
-                            :type="seen1 ? 'text' : 'password'" placeholder="Password baru"
-                            prepend-icon="fa-solid fa-lock"
-                            :append-icon="seen1 ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'" append-cursor="pointer"
-                            style="margin-bottom: calc(.5rem + .65vw)" @append-click="seen1 = !seen1"
-                            v-model="newPass" />
-                        <InputText v-if="is === 'reset' || is === 'profile'" id="password3" name="password3"
-                            :type="seen2 ? 'text' : 'password'" placeholder="Password baru (lagi)"
-                            prepend-icon="fa-solid fa-lock"
-                            :append-icon="seen2 ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'" append-cursor="pointer"
-                            style="margin-bottom: calc(.5rem + .65vw)" @append-click="seen2 = !seen2"
-                            v-model="confirmPass" />
-                        <div class="checkdiv" v-if="is === 'login'">
-                            <section class="checkbox">
-                                <!-- <InputCheck type="binnercheck" name="in" label="Ingat kata sandi" v-model="check" /> -->
-                            </section>
-                            <p class="forgot" @click="router.push('/auth/forgot')"
-                                style="color: var(--primary); font-size: var(--sub-title); cursor: pointer; margin: .35vw 0 calc(.25rem + .35vw) 0">
-                                Lupa kata sandi ?</p>
-                        </div>
+                            {{ mess === 0 ? "Kirimkan emailmu untuk menerima tautan penggantian password" :
+                            mess > 0 && mess < 300 ? message.success : message.error }}</p>
+                                <p v-if="is !== 'forgot'" :style="`color: var(--${mess >= 300 ? 'error' : 'primary'})`"
+                                    style="font-weight: 500; text-align: left; font-size: var(--card-detail); margin-bottom: calc(.5rem + .65vw); min-height: var(--card-detail);">
+                                    {{ mess === 0 ? "" : mess > 0 && mess < 300 ? message.success : message.error }}</p>
+                                        <InputText v-if="is === 'login' || is === 'forgot'" id="email" name="email"
+                                            type="email" placeholder="Email" v-model="email"
+                                            prepend-icon="fa-solid fa-at" style="margin-bottom: calc(.5rem + .65vw)" />
+                                        <InputText v-if="is === 'login' || is === 'profile'" id="password"
+                                            name="password" :type="seen ? 'text' : 'password'" placeholder="Password"
+                                            prepend-icon="fa-solid fa-lock"
+                                            :append-icon="seen ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"
+                                            append-cursor="pointer" style="margin-bottom: calc(.5rem + .65vw)"
+                                            @append-click="seen = !seen" v-model="password" />
+                                        <InputText v-if="is === 'reset' || is === 'profile'" id="password2"
+                                            name="password2" :type="newSeen ? 'text' : 'password'"
+                                            placeholder="Password baru" prepend-icon="fa-solid fa-lock"
+                                            :append-icon="newSeen ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"
+                                            append-cursor="pointer" style="margin-bottom: calc(.5rem + .65vw)"
+                                            @append-click="newSeen = !newSeen" v-model="newPassword" />
+                                        <InputText v-if="is === 'reset' || is === 'profile'" id="password3"
+                                            name="password3" :type="confSeen ? 'text' : 'password'"
+                                            placeholder="Password baru (lagi)" prepend-icon="fa-solid fa-lock"
+                                            :append-icon="confSeen ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"
+                                            append-cursor="pointer" style="margin-bottom: calc(.5rem + .65vw)"
+                                            @append-click="confSeen = !confSeen" v-model="confPassword" />
+                                        <div class="checkdiv" v-if="is === 'login'">
+                                            <section class="checkbox">
+                                                <!-- <InputCheck type="binnercheck" name="in" label="Ingat kata sandi" v-model="check" /> -->
+                                            </section>
+                                            <p class="forgot" @click="router.push('/auth/forgot')"
+                                                style="color: var(--primary); font-size: var(--sub-title); cursor: pointer; margin: .35vw 0 calc(.25rem + .35vw) 0">
+                                                Lupa kata sandi ?</p>
+                                        </div>
                     </div>
-                    <Button :round="true"
-                        @click="is === 'login' ? login({ email: email.toLowerCase(), password: oldPass }) :
-                    is === 'profile' ? update(user?.userId, { name: name, password: oldPass, newPassword: confirmPass }) :
-                        is === 'forgot' ? sendmail({ email: email.toLowerCase() }) : reset(route.params.id, route.params.token, { password: confirmPass });"
-                        style="margin-top: calc(1vw)" :disabled="newPass !== confirmPass ? true : false">
-                        <p v-if="!loading">{{ newPass !== confirmPass ? 'Kedua password baru belum sama' : btn_title }}
+                    <Button :round="true" @click="is === 'login' ? logged(login) :
+                is === 'profile' ? edited(edit) :
+                    is === 'forgot' ? mail(sendmail) : reseted(reset);" style="margin-top: calc(1vw)"
+                        :disabled="newPassword !== confPassword ? true : false">
+                        <p v-if="!load">{{ newPassword !== confPassword ? 'Kedua password baru belum sama' : btn_title
+                        }}
                         </p>
-                        <Spinner v-if="loading" is="lazy-ring" :width="20" color="light" />
+                        <Spinner v-if="load" is="lazy-ring" :width="20" color="light" />
                     </Button>
                     <Button v-if="is === 'forgot' || is === 'profile'" :round="true" :dismiss="true"
                         @click="router.push(`/${is === 'forgot' ? 'auth/login' : ''}`)"

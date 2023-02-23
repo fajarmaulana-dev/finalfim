@@ -1,4 +1,4 @@
-<script  setup>
+<script setup>
 import Button from '../components/Button.vue';
 import router from '../router';
 </script>

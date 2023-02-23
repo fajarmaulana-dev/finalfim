@@ -4,7 +4,6 @@ import Progress from '@/components/Progress.vue';
 import Overlay from '@/components/Overlay.vue';
 import Button from '@/components/Button.vue';
 import Spinner from '@/components/Spinner.vue';
-import TokenService from "@/api/token";
 
 const props = defineProps({
     ['quests']: Array,
@@ -60,7 +59,7 @@ const countDownTimer = () => {
 }
 
 const percentage = () => {
-    return countDown_var.value / 120;
+    return countDown_var.value / countDown.value;
 }
 
 const modal = ref([
@@ -140,15 +139,48 @@ const mod41 = ref();
 const filtered = () => quests.value.filter((e) => e.index === selected.value);
 const arrLength = ref(meta.value.map(m => m.responses).length);
 let divider; is.value === 'mces' ? divider = 5 : divider = 4;
+const minPoint = ref(0)
+const diagParam = ref(2)
 
 const answer = (q_idx, c_name, c_color, c_idx) => {
     const answered = meta.value[0].responses.map(k => k.answered);
     if (answered.includes(q_idx)) {
-        const answerer = contestants.value.map(k => k.name).indexOf(meta.value[0].responses[answered.indexOf(q_idx)].answerer)
+        const answerer = contestants.value.map(k => k.name).indexOf(meta.value[0].responses[answered.indexOf(q_idx)].answerer);
+        const modBtn = meta.value[0].disBtn[0].map((a, i) => a !== 'NA' ? i : a)
+        const lessBtn = meta.value[0].disBtn[1].map((a, i) => a !== 'NA' ? i : a)
+        const diagBtn = meta.value[0].disBtn[2].map((a, i) => a !== 'NA' ? i : a)
+        const modParam = q_idx % divider;
+        const lessParam = Math.ceil(q_idx / divider) - 1;
+        if (is.value === 'mces') {
+            diagParam.value = q_idx % (divider + 1) === 1 ? 0 : (q_idx % (divider - 1) === 1 && q_idx % (divider + 1) !== 1 || q_idx === 13) ? 1 : 2
+        } else {
+            diagParam.value = q_idx % (divider + 1) === 1 ? 0 : (q_idx % (divider - 1) === 1 && q_idx % (divider + 1) !== 1) ? 1 : 2
+        }
         i_model.value[answerer] -= quests.value[q_idx - 1].score;
-        if (quests.value[q_idx - 1].value !== 'NA') {
-            undo_message.value = `Pemindahan ${quests.value[q_idx - 1].score} poin dari peserta ${contestants.value[answerer].name} ke peserta ${c_name} telah sukses.`;
+        if (modBtn.includes(modParam) && contestants.value[answerer].name !== c_name) {
+            minPoint.value += bonus.value
+            meta.value[0].disMod[modParam] = false;
+        }
+        if (lessBtn.includes(lessParam) && contestants.value[answerer].name !== c_name) {
+            minPoint.value += bonus.value
+            meta.value[0].disLess[lessParam] = false;
+        }
+        if (diagBtn.includes(diagParam.value) && contestants.value[answerer].name !== c_name) {
+            minPoint.value += bonus.value
+            meta.value[0].disDiag[diagParam.value] = false;
+        }
+        i_model.value[answerer] -= minPoint.value;
+        if (quests.value[q_idx - 1].value !== 'NA' && contestants.value[answerer].name !== c_name) {
+            if (modBtn.includes(modParam) || lessBtn.includes(lessParam) || diagBtn.includes(diagParam.value)) {
+                undo_message.value = `Pemindahan ${quests.value[q_idx - 1].score} poin dari peserta ${contestants.value[answerer].name} ke peserta ${c_name} dan pengurangan bonus ${minPoint.value} poin telah sukses.`;
+                if (modBtn.includes(modParam)) meta.value[0].disBtn[0][modParam] = 'NA'
+                if (lessBtn.includes(lessParam)) meta.value[0].disBtn[1][lessParam] = 'NA'
+                if (diagBtn.includes(diagParam.value)) meta.value[0].disBtn[2][diagParam.value] = 'NA'
+            } else {
+                undo_message.value = `Pemindahan ${quests.value[q_idx - 1].score} poin dari peserta ${contestants.value[answerer].name} ke peserta ${c_name} telah sukses.`;
+            }
             openToast(3);
+            minPoint.value = 0
         }
         meta.value[0].responses.splice(answered.indexOf(q_idx), 1);
     }
@@ -170,20 +202,20 @@ const answer = (q_idx, c_name, c_color, c_idx) => {
     } else {
         filt41 = meta.value[0].responses.filter(a => a.answered % (divider - 1) === 1 && a.answered % (divider + 1) !== 1);
     }
-    const everd = () => filt41.length === divider && filt41.every(a => a.answerer === filt41.map(k => k.answerer)[0])
+    const everd = () => filt41.length === divider && filt41.every(a => a.answerer === filt41.map(k => k.answerer)[0]);
     const filt61 = meta.value[0].responses.filter(a => a.answered % (divider + 1) === 1);
     const everd1 = () => filt61.length === divider && filt61.every(a => a.answerer === filt61.map(k => k.answerer)[0]);
 
-    for (let i = 0; i < 4; i++) { if (ever(i)) { mod.value[i].click() } }
-    for (let i = 0; i < 4; i++) { if (ever1(i)) { less.value[i].click() } }
+    for (let i = 0; i < 4; i++) { if (ever(i)) mod.value[i].click() }
+    for (let i = 0; i < 4; i++) { if (ever1(i)) less.value[i].click() }
     if (is.value === 'mces') {
-        if (ever(4)) { mod.value[4].click() }
-        if (ever1(4)) { less.value[4].click() }
-        if (everd()) { mod41.value.click() }
+        if (ever(4)) mod.value[4].click();
+        if (ever1(4)) less.value[4].click();
+        if (everd()) mod41.value.click();
     } else {
-        if (everd()) { mod41.value.click() }
+        if (everd()) mod41.value.click();
     }
-    if (everd1()) { mod61.value.click() }
+    if (everd1()) mod61.value.click();
 }
 
 const disTriggered = ref(0)
@@ -191,6 +223,7 @@ const addMod = (mod) => {
     const ans = meta.value[0].responses.filter(a => a.answered % divider === mod);
     i_model.value[contestants.value.map(a => a.name).indexOf(ans.map(k => k.answerer)[0])] += bonus.value;
     meta.value[0].disMod[mod] = true;
+    meta.value[0].disBtn[0][mod] = contestants.value.map(a => a.name).indexOf(ans[0].answerer);
     if (ans[0].answerer !== 'NA') {
         disTriggered.value += 1;
         openModal(1);
@@ -201,6 +234,7 @@ const addLess = (less) => {
     const ans = meta.value[0].responses.filter(a => a.answered / divider > less && a.answered / divider <= (less + 1));
     i_model.value[contestants.value.map(a => a.name).indexOf(ans.map(k => k.answerer)[0])] += bonus.value;
     meta.value[0].disLess[less] = true;
+    meta.value[0].disBtn[1][less] = contestants.value.map(a => a.name).indexOf(ans[0].answerer);
     if (ans[0].answerer !== 'NA') {
         disTriggered.value += 1;
         openModal(1);
@@ -211,6 +245,7 @@ const addDiag1 = () => {
     const ans = meta.value[0].responses.filter(a => a.answered % (divider + 1) === 1);
     i_model.value[contestants.value.map(a => a.name).indexOf(ans.map(k => k.answerer)[0])] += bonus.value;
     meta.value[0].disDiag[0] = true;
+    meta.value[0].disBtn[2][0] = contestants.value.map(a => a.name).indexOf(ans[0].answerer);
     if (ans[0].answerer !== 'NA') {
         disTriggered.value += 1;
         openModal(1);
@@ -225,6 +260,7 @@ const addDiag2 = () => {
         i_model.value[contestants.value.map(a => a.name).indexOf(ans1.map(k => k.answerer)[0])] += bonus.value;
     }
     meta.value[0].disDiag[1] = true;
+    meta.value[0].disBtn[2][1] = contestants.value.map(a => a.name).indexOf(ans[0].answerer);
     if (ans[0].answerer !== 'NA' || ans1[0].answerer !== 'NA') {
         disTriggered.value += 1;
         openModal(1);
@@ -342,11 +378,13 @@ const jc = ref()
             <em>{{ title }}</em>
             <div>
                 <button v-for="i in divider" :key="i" :ref="e => { mod[i - 1] = e }" @click="addMod(i - 1);"
-                    disabled></button>
+                    :disabled="meta[0]?.disMod[i - 1] === true ? true : false"></button>
                 <button v-for="i in divider" :key="i" :ref="e => { less[i - 1] = e }" @click="addLess(i - 1);"
-                    disabled></button>
-                <button ref="mod61" @click="addDiag1();" disabled></button>
-                <button ref="mod41" @click="addDiag2();" disabled></button>
+                    :disabled="meta[0]?.disLess[i - 1] === true ? true : false"></button>
+                <button ref="mod61" @click="addDiag1();"
+                    :disabled="meta[0]?.disDiag[0] === true ? true : false"></button>
+                <button ref="mod41" @click="addDiag2();"
+                    :disabled="meta[0]?.disDiag[1] === true ? true : false"></button>
             </div>
             <div class="content">
                 <div style="display: flex; flex-direction: column; align-items: center;">
@@ -406,7 +444,8 @@ const jc = ref()
                 </div>
                 <div class="pend" style="right: 0;">
                     <img src="@/assets/keping.png" alt="poin" style="transform: scaleX(-1);">
-                    <span style="right: -.6rem; text-align: center;">{{ filtered().map(e => e.score)[0]
+                    <span style="right: -.6rem; text-align: center;">{{
+                        filtered().map(e => e.score)[0]
                     }}<br />pt</span>
                 </div>
                 <div
@@ -446,7 +485,13 @@ const jc = ref()
                                             border: `${contestant.color}-600`,
                                             font: `${contestant.color}-700`
                                         });
-                                    upRes({ responses: meta[0]?.responses, disMod: meta[0]?.disMod, disLess: meta[0]?.disLess, disDiag: meta[0]?.disDiag });
+                                    upRes({
+                                        responses: meta[0]?.responses,
+                                        disMod: meta[0]?.disMod,
+                                        disLess: meta[0]?.disLess,
+                                        disDiag: meta[0]?.disDiag,
+                                        disBtn: meta[0]?.disBtn
+                                    });
                                     editScore({ scores: i_model });">{{ contestant.name }}+</button>
                             </div>
                             <div>
@@ -464,11 +509,11 @@ const jc = ref()
                                 </button>
                             </div>
                             <div>
-                                <button ref="na" @click="notAnswered(filtered().map(e => e.index)[0]); arrLength += 1; countDown_var = 0; upRes({ responses: meta[0]?.responses, disMod: meta[0]?.disMod, disLess: meta[0]?.disLess, disDiag: meta[0]?.disDiag });
+                                <button ref="na" @click="notAnswered(filtered().map(e => e.index)[0]); arrLength += 1; countDown_var = 0; upRes({ responses: meta[0]?.responses, disMod: meta[0]?.disMod, disLess: meta[0]?.disLess, disDiag: meta[0]?.disDiag, disBtn: meta[0]?.disBtn });
                                 answerItem(quests[filtered().map(e => e.index)[0] - 1]?.id, { value: 'NA', bg: '--light', border: '--primary', font: '--primary' });
                                 editScore({ scores: i_model })">Tak Terjawab</button>
                                 <button ref="jc"
-                                    @click="justClose(); arrLength += 1; countDown_var = 0; upRes({ responses: meta[0]?.responses, disMod: meta[0]?.disMod, disLess: meta[0]?.disLess, disDiag: meta[0]?.disDiag });">Kembali</button>
+                                    @click="justClose(); arrLength += 1; countDown_var = 0; upRes({ responses: meta[0]?.responses, disMod: meta[0]?.disMod, disLess: meta[0]?.disLess, disDiag: meta[0]?.disDiag, disBtn: meta[0]?.disBtn });">Kembali</button>
                             </div>
                         </div>
                     </div>

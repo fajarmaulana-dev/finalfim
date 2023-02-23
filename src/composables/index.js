@@ -1,8 +1,5 @@
 import { ref, reactive } from "vue";
-import { noAuth } from "@/api/auth";
-import TokenService from "@/api/token";
-import router from "@/router";
-const user = TokenService.getUser();
+
 class DefaultService {
   constructor(newService) {
     const service = newService;
@@ -18,7 +15,6 @@ class DefaultService {
     });
 
     const getItems = async () => {
-      noAuth();
       try {
         loading.quest = true;
         const res = await service.getAllQuests();
@@ -26,19 +22,11 @@ class DefaultService {
         loading.quest = false;
         return res;
       } catch (err) {
-        if (err.response) {
-          if (user && err.response.status === 403) {
-            router.go(0);
-          }
-        } else {
-          router.push("/auth/login");
-        }
         console.log(err);
       }
     };
 
     const getItem = async (id) => {
-      noAuth();
       try {
         loading.quest = true;
         const res = await service.getQuest(id);
@@ -46,19 +34,11 @@ class DefaultService {
         loading.quest = false;
         return res;
       } catch (err) {
-        if (err.response) {
-          if (user && err.response.status === 403) {
-            router.go(0);
-          }
-        } else {
-          router.push("/auth/login");
-        }
         console.log(err);
       }
     };
 
     const editItem = async (id, data) => {
-      noAuth();
       try {
         const res = await service.editQuest(id, data);
         setTimeout(() => {
@@ -71,7 +51,6 @@ class DefaultService {
     };
 
     const answerItem = async (id, data) => {
-      noAuth();
       try {
         const res = await service.answerQuest(id, data);
         return res;
@@ -81,7 +60,6 @@ class DefaultService {
     };
 
     const resetItems = async () => {
-      noAuth();
       try {
         const res = await service.resetQuests();
         setTimeout(() => {
@@ -147,10 +125,8 @@ class DefaultService {
     };
 
     const editScore = async (data) => {
-      noAuth();
       try {
         const res = await service.editScore(data);
-
         return res;
       } catch (err) {
         console.log(err);

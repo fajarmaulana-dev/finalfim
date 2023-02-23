@@ -1,10 +1,12 @@
 <script setup>
 import { RouterView, RouterLink, useRoute } from 'vue-router';
 import router from './router/index';
-import { onBeforeUnmount, onMounted, ref } from 'vue';
-import EventBus from "./common/eventBus";
-import TokenService from "@/api/token";
-
+import { computed, onMounted, ref } from 'vue';
+import { useStore } from 'vuex';
+import { useUser } from '@/composables/users';
+import Local from "./api/local";
+const store = useStore()
+const { logout } = useUser();
 const route = useRoute();
 const menus = ref([
   { title: 'MCES', path: '/' },
@@ -18,22 +20,15 @@ const edit_menus = ref([
   { title: 'MCSHS', path: '/edit/mcshs' },
 ])
 
-const logOut = () => {
-  store.dispatch('auth/logout');
-  router.push('/auth/login')
-}
+const user = computed(() => store.state.user)
 
-onMounted(() => {
-  EventBus.on("logout", () => {
-    logOut();
-  });
+onMounted(async () => {
+  if (Object.keys(user.value).length !== 3) Local.removeLocalData('user')
+  await router.isReady()
+  if (!route.path.includes('auth') && !Local.getLocalData('user')) {
+    logout()
+  }
 })
-
-onBeforeUnmount(() => {
-  EventBus.remove("logout");
-})
-
-const user = TokenService.getUser()
 </script>
 
 <template>
@@ -49,13 +44,13 @@ const user = TokenService.getUser()
       <p v-if="user && !route.path.includes('auth')" title="Edit Profil" @click="router.push('/auth/profile')"
         :style="`margin-right: ${(route.path === '/' || route.path === '/mcjhs' || route.path === '/mcshs') ? 3 : 0}rem`">
         Halo, {{
-            user?.name.split(' ')[0]
+          user?.name.split(' ')[0]
         }}</p>
       <i v-if="user && !route.path.includes('auth')" class="fa-solid fa-user users-logo" title="Edit Profil"
         @click="router.push('/auth/profile')"
         :style="`margin-right: ${(route.path === '/' || route.path === '/mcjhs' || route.path === '/mcshs') ? 2.5 : 0}rem`"></i>
       <i v-if="user && !route.path.includes('auth')" title="Logout" class="fa-solid fa-right-from-bracket"
-        @click="TokenService.removeUser(); router.push('/auth/login')"></i>
+        @click="logout()"></i>
       <i v-if="user && !route.path.includes('auth') && !route.path.includes('edit')" title="Edit Soal"
         class="fa-solid fa-pen-to-square" @click="router.push('/edit/mces')"></i>
       <i title="Home"

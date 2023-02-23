@@ -1,110 +1,67 @@
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { UserService } from "../pages/auth/__index";
+import Local from "../api/local";
 import router from "../router";
-import TokenService from "@/api/token";
-const user = TokenService.getUser();
+import { useStore } from "vuex";
+const store = useStore();
 
 export const useUser = () => {
   const service = new UserService();
-  const message = ref([]);
-  const loading = ref(false);
-  const mails = ref([]);
+  const message = reactive({
+    success: "",
+    error: "",
+    code: 0,
+  });
+  const loading = reactive({
+    load: false,
+  });
+  const data = ref();
 
-  const login = async (data) => {
+  const composs = (serv) => {
+    loading.load = true;
+    const res = serv;
+    if (res.data.data) {
+      if (res.data.data.token) {
+        Local.setLocalData("token", res.data.data.token);
+      }
+      if (res.data.data.user) {
+        Local.setLocalData("user", res.data.data.user);
+      }
+    }
+    if (res.status < 300) {
+      message.success = res.data.message;
+    } else {
+      message.error = res.data.message;
+    }
+    message.code = res.status;
+    loading.load = false;
+  };
+
+  const logout = async () => {
     try {
-      loading.value = true;
-      const res = await service.login(data);
-      loading.value = false;
-      message.value = [res?.data.message, 200];
-      TokenService.setUser(res.data);
-      setTimeout(() => {
-        location.assign("/");
-      }, 500);
-      return res;
+      store.dispatch("logout");
+      await service.logout();
+      Local.removeLocalData("user");
+      Local.removeLocalData("token");
+      router.push("/auth/login");
     } catch (err) {
-      loading.value = false;
-      message.value = [err.response?.data.message, 400];
-      return err;
+      router.push("/auth/login");
     }
   };
 
-  const update = async (id, data) => {
-    try {
-      loading.value = true;
-      const res = await service.edit(id, data);
-      message.value = [res?.data.message, 200];
-      login({ email: user?.email, password: data?.newPassword });
-      return res;
-    } catch (err) {
-      loading.value = false;
-      message.value = [err.response?.data.message, 400];
-      return err;
-    }
-  };
-
-  const refresh = async (data) => {
-    try {
-      const res = await service.refresh(data);
-      message.value = [res?.data.message, 200];
-      TokenService.updateLocalAccessToken(res.data.accessToken);
-      return res;
-    } catch (err) {
-      message.value = [err.response?.data.message, 400];
-      return err;
-    }
-  };
-
-  const sendmail = async (data) => {
-    try {
-      loading.value = true;
-      const res = await service.sendmail(data);
-      loading.value = false;
-      message.value = [res?.data.message, 200];
-      return res;
-    } catch (err) {
-      loading.value = false;
-      message.value = [err.response?.data.message, 400];
-      return err;
-    }
-  };
-
-  const reset = async (id, token, data) => {
-    try {
-      loading.value = true;
-      const res = await service.reset(id, token, data);
-      loading.value = false;
-      message.value = [res?.data.message, 200];
-      setTimeout(() => {
-        router.push("/auth/login");
-      }, 1500);
-      return res;
-    } catch (err) {
-      loading.value = false;
-      message.value = [err.response?.data.message, 400];
-      return err;
-    }
-  };
-
-  const getEmail = async () => {
-    try {
-      const res = await service.getEmail();
-      mails.value = res.data.emails;
-      return res;
-    } catch (err) {
-      message.value = [err.response?.data.message, 400];
-      return err;
-    }
-  };
+  const login = async (data) => composs(await service.login(data));
+  const sendmail = async (data) => composs(await service.sendmail(data));
+  const reset = async (id, token, data) =>
+    composs(await service.reset(id, token, data));
+  const edit = async (id, data) => composs(await service.edit(id, data));
 
   return {
     message,
+    loading,
     login,
-    update,
-    refresh,
     sendmail,
     reset,
-    loading,
-    mails,
-    getEmail,
+    edit,
+    logout,
   };
 };

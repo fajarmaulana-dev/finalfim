@@ -1,33 +1,17 @@
 <script setup>
 import Main from '@/components/Main.vue'
 import { useJunior } from '@/composables/mcjhs';
-import { useUser } from '@/composables/users';
-import { onMounted, onBeforeUnmount } from 'vue';
-import EventBus from "@/common/eventBus";
-import TokenService from "@/api/token";
-import router from '@/router'
-
-const user = TokenService.getUser()
+import { onMounted } from 'vue';
+import { useStore } from 'vuex';
+const store = useStore()
 
 onMounted(async () => {
-    await getEmail();
-    if (user) {
-        if (!mails.value.includes(user?.email)) {
-            TokenService.removeUser();
-            router.go(0)
-        }
-    }
     await getItems();
     await getAllContestants();
     await getMeta();
 })
 
-onBeforeUnmount(() => {
-    EventBus.remove("logout");
-})
-
 const { items, getItems, contestants, getAllContestants, meta, getMeta, answerItem, editScore, upRes, loading, resetItems, resetMeta, resetContestants } = useJunior();
-const { getEmail, mails } = useUser()
 </script>
 
 <template>
