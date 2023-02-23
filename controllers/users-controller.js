@@ -184,11 +184,7 @@ const sendLink = async (req, res, next) => {
 
   const link = `${process.env.BASE_URL}/auth/reset/${createdToken.userId}/${createdToken.token}`;
   try {
-    await sendEmail(
-      exist.email,
-      "Reset Password FIM",
-      `Link akan kadaluarsa setelah 15 menit. Segera klik link berikut untuk melakukan reset password: ${link}`
-    );
+    await sendEmail(exist.email, "Reset Password FIM", link, exist.name);
   } catch (err) {
     return next(new HttpError("Email gagal terkirim, silakan coba lagi.", 500));
   }
