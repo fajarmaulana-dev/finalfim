@@ -33,7 +33,7 @@ const store = useStore()
 
 const title = computed(() => {
     if (is.value === 'login') return 'Login';
-    else if (is.value === 'profile') return 'Edit Password';
+    else if (is.value === 'profile') return 'Ubah Password';
     else if (is.value === 'forgot') return 'Lupa Password';
     else return 'Perbarui Password';
 })

@@ -46,7 +46,7 @@ onMounted(async () => {
         Halo, {{
           user?.name.split(' ')[0]
         }}</p>
-      <i v-if="user && !route.path.includes('auth')" class="fa-solid fa-user users-logo" title="Edit Profil"
+      <i v-if="user && !route.path.includes('auth')" class="fa-solid fa-user users-logo" title="Ubah Password"
         @click="router.push('/auth/profile')"
         :style="`margin-right: ${(route.path === '/' || route.path === '/mcjhs' || route.path === '/mcshs') ? 2.5 : 0}rem`"></i>
       <i v-if="user && !route.path.includes('auth')" title="Logout" class="fa-solid fa-right-from-bracket"
