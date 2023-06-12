@@ -34,6 +34,7 @@ const setup = (store: any, router: any) => {
               router.replace('/auth/login');
             }
             if (error.response) {
+              console.log(error.response.status);
               if (error.response.status === 403) {
                 if (Local.getLocalData('user')) {
                   Local.removeLocalData('user');
