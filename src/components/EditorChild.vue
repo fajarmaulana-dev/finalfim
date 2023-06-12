@@ -18,11 +18,13 @@ const toast: any = reactive({ info: false, error: false });
 const loading = ref(false)
 
 onMounted(async () => {
+    loading.value = true
     await getQuest(Number(id.value), { is: is.value })
     if (msg.value.length > 0) {
         toast.error = true;
         message.error = msg.value
     }
+    loading.value = false
 })
 
 const updateQuest = async ({ point, question }: any) => {

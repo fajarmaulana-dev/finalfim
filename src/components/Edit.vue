@@ -13,13 +13,16 @@ const router = useRouter()
 const route = useRoute()
 const is = route.path.split('/')[1]
 const loading = ref([...Array(is == 'mces' ? 25 : 16)].map((_, i) => false))
+const load = ref(false)
 const message: any = reactive({ info: '', error: '' });
 const toast: any = reactive({ info: false, error: false });
 const modal = ref(false)
 const idx = ref(0)
 
 onMounted(async () => {
+    load.value = true
     await getQuests({ is })
+    load.value = false
 })
 
 const init = async () => {
@@ -55,7 +58,10 @@ const onReset = async () => {
     <div class="px-[calc(.5rem+4vw)] py-[calc(4rem+4vw)]">
         <p class="text-2xl text-center font-extrabold text-sky-600 mb-[calc(1.25rem+1vw)]">
             Daftar Soal {{ is.toUpperCase() }}</p>
-        <div class="flex flex-col gap-[calc(1.25rem+1vw)]">
+        <div v-if="load" class="w-full h-[calc(100vh-20rem)] grid place-items-center">
+            <Spinner :width="64" is="blocks" fill1="fill-rose-600" fill2="fill-emerald-600" fill3="fill-amber-600" />
+        </div>
+        <div v-else class="flex flex-col gap-[calc(1.25rem+1vw)]">
             <div v-for="data, i in datas" :key="i">
                 <section class="flex flex-col mb-1.5 [&>*]:border-2 [&>*]: [&>*]:border-sky-600">
                     <div
