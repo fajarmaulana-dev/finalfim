@@ -247,23 +247,29 @@ const getQuest = async (req, res, next) => {
 };
 
 const getQuests = async (req, res, next) => {
-  const { is } = req.query;
+  const { is, from, number } = req.query;
 
   let data;
   try {
     if (is == "mces")
       data = await EQuest.aggregate([
         { $sort: { index: 1 } },
+        { $skip: Number(from) },
+        { $limit: Number(number) },
         { $project: { question: "$question", point: "$point" } },
       ]);
     if (is == "mcjhs")
       data = await JQuest.aggregate([
         { $sort: { index: 1 } },
+        { $skip: Number(from) },
+        { $limit: Number(number) },
         { $project: { question: "$question", point: "$point" } },
       ]);
     if (is == "mcshs")
       data = await SQuest.aggregate([
         { $sort: { index: 1 } },
+        { $skip: Number(from) },
+        { $limit: Number(number) },
         { $project: { question: "$question", point: "$point" } },
       ]);
   } catch (err) {
