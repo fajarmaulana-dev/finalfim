@@ -70,7 +70,7 @@ const onReset = async () => {
                         <div
                             class="[&>button]:h-[1.75rem] [&>button]:cursor-pointer [&>button]:rounded text-sm [&>button]:w-[1.85rem] flex gap-1 [&>button]:grid [&>button]:place-items-center hover:[&>button]:bg-sky-700 active:[&>button]:bg-sky-800">
                             <button :disabled="loading[i]" :title="`Reset soal nomor ${i + 1}`"
-                                v-if="data.question !== questInit(i)" style="transition: .4s;"
+                                v-if="data.question !== questInit(i) || data.point !== 30" style="transition: .4s;"
                                 class="grid place-items-center"
                                 :class="loading[i] ? 'hover:bg-sky-600 active:bg-sky-600 cursor-not-allowed' : ''"
                                 @click="openModal(i)">
