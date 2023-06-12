@@ -37,6 +37,7 @@ router.post(
   usersControllers.signup
 );
 router.get("/", usersControllers.getUsers);
+router.get("/logout", usersControllers.logout);
 
 router.use(deserializer, requireUser);
 router.patch(
@@ -44,6 +45,5 @@ router.patch(
   [...checkPass("password"), ...checkPass("newPassword")],
   usersControllers.changePass
 );
-router.get("/logout", usersControllers.logout);
 
 module.exports = router;
