@@ -7,30 +7,41 @@ import Spinner from './Spinner.vue';
 import Menu from './Menu.vue'
 import { useContest } from "@/api/contest"
 
-const { data: datas, msg, getQuests, resetQuest } = useContest()
+const { data, msg, getQuests, resetQuest } = useContest()
 
 const router = useRouter()
 const route = useRoute()
 const is = route.path.split('/')[1]
-const loading = ref([...Array(is == 'mces' ? 25 : 16)].map((_, i) => false))
-const load = ref(false)
+const many = is == 'mces' ? 25 : 16
+const loading = ref([...Array(many)].map((_, i) => false))
+const load = reactive({ init: false, more: false })
 const message: any = reactive({ info: '', error: '' });
 const toast: any = reactive({ info: false, error: false });
 const modal = ref(false)
 const idx = ref(0)
+const datas: any = ref([])
 
 onMounted(async () => {
-    load.value = true
-    await getQuests({ is })
-    load.value = false
+    load.init = true
+    await getQuests({ is, from: 0, number: 5 })
+    datas.value = data.value
+    load.init = false
 })
 
-const init = async () => {
-    await getQuests({ is })
+const getMore = async () => {
+    load.more = true
+    await getQuests({ is, from: datas.value.length, number: 5 })
+    data.value.forEach((d: any) => datas.value.push(d));
+    load.more = false
+}
+
+const init = async (from: number) => {
+    await getQuests({ is, from, number: 1 })
     if (msg.value.length > 0) {
         toast.error = true;
         message.error = msg.value
     }
+    datas.value[from] = data.value[0]
 }
 
 const openModal = (i: number) => {
@@ -48,7 +59,7 @@ const onReset = async () => {
         toast.error = true;
         message.error = msg.value
     }
-    await init()
+    await init(idx.value)
     loading.value[idx.value] = false
 }
 </script>
@@ -58,7 +69,7 @@ const onReset = async () => {
     <div class="px-[calc(.5rem+4vw)] py-[calc(4rem+4vw)]">
         <p class="text-2xl text-center font-extrabold text-sky-600 mb-[calc(1.25rem+1vw)]">
             Daftar Soal {{ is.toUpperCase() }}</p>
-        <div v-if="load" class="w-full h-[calc(100vh-20rem)] grid place-items-center">
+        <div v-if="load.init" class="w-full h-[calc(100vh-20rem)] grid place-items-center">
             <Spinner :width="64" is="blocks" fill1="fill-rose-600" fill2="fill-emerald-600" fill3="fill-amber-600" />
         </div>
         <div v-else class="flex flex-col gap-[calc(1.25rem+1vw)]">
@@ -87,6 +98,13 @@ const onReset = async () => {
                     </div>
                 </section>
                 <section class="font-bold text-sky-600">Poin : &emsp;{{ data.point }}</section>
+            </div>
+            <div v-if="datas.length < many" class="flex justify-center">
+                <div @click="getMore()" style="transition: color .4s;"
+                    class="font-bold text-center text-sky-600 flex flex-col w-fit cursor-pointer hover:text-sky-700 active:text-sky-600 group">
+                    <span>Tampilkan Lebih ( Sisa {{ many - datas.length }} )</span>
+                    <span class="fa-solid fa-angles-down text-xl mt-1 animate-bounce group-hover:animate-none"></span>
+                </div>
             </div>
         </div>
     </div>

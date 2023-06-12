@@ -345,7 +345,7 @@ if (is.value === 'mces') {
                     <div class="w-full h-[calc(100%-5rem)] absolute bottom-0 flex flex-col justify-between gap-6">
                         <div class="px-[3vw] mt-5 mb-2 overflow-y-auto" style="transition: .5s;"
                             :style="`min-height: calc(100% - ${expand ? '27' : '3'}.25rem)`">
-                            <div class="w-full text-slate-800 ql-snow">
+                            <div class="w-full text-sky-700 font-medium ql-snow">
                                 <div class="ql-editor" v-html="(quest as any)?.question"></div>
                             </div>
                         </div>
