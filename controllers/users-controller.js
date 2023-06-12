@@ -15,7 +15,6 @@ const refreshCookie = {
   expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
   maxAge: 24 * 60 * 60 * 1000,
   httpOnly: true,
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   secure: process.env.NODE_ENV === "production",
 };
 
@@ -23,7 +22,6 @@ const accessCookie = {
   expires: new Date(Date.now() + 10 * 60 * 1000),
   maxAge: 10 * 60 * 1000,
   httpOnly: true,
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   secure: process.env.NODE_ENV === "production",
 };
 
