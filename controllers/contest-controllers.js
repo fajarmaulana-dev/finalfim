@@ -299,7 +299,7 @@ const setAnswer = async (req, res, next) => {
   let { is, index, answer, color, points, bonus, disMin } = req.body;
   const name = ["A", "B", "C", "D", "E", "F"];
   const wrong = Object.fromEntries(
-    [...Array(Math.sqrt(name.length))].map((_, i) => [name[i], disMin[i]])
+    [...Array(name.length)].map((_, i) => [name[i], disMin[i]])
   );
 
   let data;
@@ -326,7 +326,7 @@ const setAnswer = async (req, res, next) => {
   }
 
   const pointAfter = Object.fromEntries(
-    [...Array(Math.sqrt(name.length))].map((_, i) => [name[i], points[i]])
+    [...Array(name.length)].map((_, i) => [name[i], points[i]])
   );
 
   const error = [];
