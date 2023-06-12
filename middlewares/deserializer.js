@@ -14,13 +14,13 @@ module.exports = async (req, res, next) => {
     } else if (req.cookies.access_token) {
       access_token = req.cookies.access_token;
     }
-    if (!access_token) return next(new HttpError("Autentikasi gagal", 401));
+    if (!access_token) return next(new HttpError("Autentikasi gagal", 403));
     const decoded = jwt.verify(access_token, process.env.SECRET_KEY);
     if (!decoded)
       return next(
         new HttpError(
-          "Token tidak valid atau kamu mungkin belum terdaftar sebagai member FIM.",
-          401
+          "Token tidak valid atau kamu mungkin belum terdaftar sebagai panitia FIM.",
+          403
         )
       );
     const exist = await User.findById(decoded.userId);
@@ -28,7 +28,7 @@ module.exports = async (req, res, next) => {
       return next(
         new HttpError(
           "Pengguna dengan token ini sudah tidak terdaftar di FIM.",
-          401
+          403
         )
       );
     res.locals.user = exist;

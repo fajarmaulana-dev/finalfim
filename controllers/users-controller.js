@@ -19,6 +19,14 @@ const refreshCookie = {
   secure: process.env.NODE_ENV === "production",
 };
 
+const accessCookie = {
+  expires: new Date(Date.now() + 10 * 60 * 1000),
+  maxAge: 10 * 60 * 1000,
+  httpOnly: true,
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  secure: process.env.NODE_ENV === "production",
+};
+
 const getUsers = async (req, res, next) => {
   let users;
   try {
@@ -26,9 +34,7 @@ const getUsers = async (req, res, next) => {
   } catch (err) {
     return next(new HttpError(bad, 500));
   }
-  res.json({
-    emails: users.map((user) => user.email),
-  });
+  res.json({ emails: users.map((user) => user.email) });
 };
 
 const signup = async (req, res, next) => {
@@ -58,9 +64,7 @@ const signup = async (req, res, next) => {
     return next(new HttpError(bad, 500));
   }
 
-  res.status(201).json({
-    message: "Registrasi berhasil.",
-  });
+  res.status(201).json({ message: "Registrasi berhasil." });
 };
 
 const login = async (req, res, next) => {
@@ -78,38 +82,41 @@ const login = async (req, res, next) => {
   if (!exist)
     return next(
       new HttpError(
-        "Kamu belum terdaftar sebagai member FIM, silakan daftarkan diri terlebih dahulu.",
-        401
+        "Kamu belum terdaftar sebagai panitia FIM, silakan daftarkan diri terlebih dahulu.",
+        403
       )
     );
 
   const isValidPass = await bcrypt.compare(password, exist.password);
   if (!isValidPass)
-    return next(new HttpError("Password yang kamu masukkan salah.", 401));
+    return next(new HttpError("Password yang kamu masukkan salah.", 403));
 
   const { accessToken, refreshToken } = await signToken(exist);
 
   res.cookie("refresh_token", refreshToken, refreshCookie);
+  res.cookie("access_token", accessToken, accessCookie);
   res.status(200).json({
     message: "Login berhasil.",
     data: {
-      user: {
-        userId: exist.id,
-        name: exist.name,
-        email: exist.email,
-      },
-      token: accessToken,
+      userId: exist.id,
+      name: exist.name,
+      email: exist.email,
+      date: new Date(),
+      fimunnes: true,
     },
   });
 };
 
 const logout = (req, res, next) => {
   res.cookie("refresh_token", "", { maxAge: -1 });
+  res.cookie("access_token", "", { maxAge: -1 });
   res.status(200).json({ message: "Logout berhasil." });
 };
 
 const refresh = async (req, res, next) => {
   const refresh_token = req.cookies.refresh_token;
+  if (!refresh_token)
+    return next(new HttpError("Tidak dapat merefresh token.", 403));
   const decoded = jwt.verify(refresh_token, process.env.REFRESH_KEY);
   if (!decoded) return next(new HttpError("Tidak dapat merefresh token.", 403));
 
@@ -118,12 +125,10 @@ const refresh = async (req, res, next) => {
     process.env.SECRET_KEY,
     { expiresIn: "10m" }
   );
-  res.status(200).json({
-    message: "Refresh token berhasil.",
-    data: {
-      token: accessToken,
-    },
-  });
+  res.cookie("access_token", accessToken, accessCookie);
+  res
+    .status(200)
+    .json({ message: "Refresh token berhasil.", data: new Date() });
 };
 
 const changePass = async (req, res, next) => {
@@ -132,17 +137,19 @@ const changePass = async (req, res, next) => {
   if (errorMsg.length > 0) return next(new HttpError(errorMsg[0], 422));
 
   const { password, newPassword } = req.body;
-  const userId = req.params.uid;
+  const id = req.params.id;
   let user;
   try {
-    user = await User.findById(userId);
+    user = await User.findById(id);
   } catch (err) {
     return next(new HttpError(bad, 500));
   }
 
   const isValidPass = await bcrypt.compare(password, user.password);
   if (!isValidPass)
-    return next(new HttpError("Password lama yang kamu masukkan salah.", 422));
+    return next(
+      new HttpError("Kata sandi lama yang kamu masukkan salah.", 422)
+    );
 
   const hashedPass = await bcrypt.hash(newPassword, 12);
   user.password = hashedPass;
@@ -152,7 +159,7 @@ const changePass = async (req, res, next) => {
     return next(new HttpError(bad, 500));
   }
 
-  res.status(200).json({ message: "Pembaruan password berhasil." });
+  res.status(200).json({ message: "Pembaruan kata sandi berhasil." });
 };
 
 const sendLink = async (req, res, next) => {
@@ -182,9 +189,9 @@ const sendLink = async (req, res, next) => {
     return next(new HttpError(bad, 500));
   }
 
-  const link = `${process.env.BASE_URL}/auth/reset/${createdToken.userId}/${createdToken.token}`;
+  const link = `${process.env.BASE_URL}/auth/reset?id=${createdToken.userId}&token=${createdToken.token}`;
   try {
-    await sendEmail(exist.email, "Reset Password FIM", link, exist.name);
+    await sendEmail(exist.email, "Reset Kata Sandi FIM", link, exist.name);
   } catch (err) {
     return next(new HttpError("Email gagal terkirim, silakan coba lagi.", 500));
   }
@@ -200,26 +207,25 @@ const resetPass = async (req, res, next) => {
   const errorMsg = error.errors.map((e) => e.msg);
   if (errorMsg.length > 0) return next(new HttpError(errorMsg[0], 422));
 
-  const uid = req.params.uid;
-  const token = req.params.token;
+  const { id, token } = req.query;
   const { password } = req.body;
   let isValidToken;
   try {
-    isValidToken = await Token.findOne({ userId: uid, token });
+    isValidToken = await Token.findOne({ userId: id, token });
   } catch (err) {
     return next(new HttpError(bad, 500));
   }
   if (!isValidToken)
     return next(
       new HttpError(
-        "Token reset password tidak valid atau telah kadaluwarsa. Silakan ajukan permintaan email baru melalui halaman Lupa Password.",
+        "Token reset sandi tidak valid atau telah kadaluwarsa. Silakan ajukan permintaan email baru melalui halaman Request Token Penggantian Sandi.",
         410
       )
     );
 
   let user;
   try {
-    user = await User.findById(uid);
+    user = await User.findById(id);
   } catch (err) {
     return next(new HttpError(bad, 500));
   }
@@ -240,7 +246,7 @@ const resetPass = async (req, res, next) => {
 
   res
     .status(200)
-    .json({ message: "Pembaruan password berhasil, silakan login kembali." });
+    .json({ message: "Pembaruan kata sandi berhasil, silakan login kembali." });
 };
 
 exports.getUsers = getUsers;

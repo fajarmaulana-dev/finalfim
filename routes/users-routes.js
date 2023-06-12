@@ -21,35 +21,26 @@ const checkPass = (param) => [
   ),
 ];
 
-const checkMail = [
-  check(
-    "email",
-    "Daftar atau masuk manual hanya untuk email berakhiran .com atau .id"
-  ).matches(/^\S[^\n ]+@+[^\n ]+(.com|.id)$/),
-  check("email", "Email tidak valid.").isEmail(),
-];
+const checkMail = check("email", "Email tidak valid.").isEmail();
 
 router.post(
   "/login",
-  [...checkMail, ...checkPass("password")],
+  [checkMail, ...checkPass("password")],
   usersControllers.login
 );
 router.post("/refresh", usersControllers.refresh);
 router.post("/sendmail", usersControllers.sendLink);
-router.patch(
-  "/reset/:uid/:token",
-  [...checkPass("password")],
-  usersControllers.resetPass
-);
+router.patch("/reset", [...checkPass("password")], usersControllers.resetPass);
 router.post(
   "/signup",
-  [...checkMail, ...checkPass("password")],
+  [checkMail, ...checkPass("password")],
   usersControllers.signup
 );
 router.get("/", usersControllers.getUsers);
+
 router.use(deserializer, requireUser);
 router.patch(
-  "/update/:uid",
+  "/update/:id",
   [...checkPass("password"), ...checkPass("newPassword")],
   usersControllers.changePass
 );
