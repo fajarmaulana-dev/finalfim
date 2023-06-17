@@ -10,8 +10,11 @@ const diff_minutes = (date: any) => {
 const setup = (store: any, router: any) => {
   Api.interceptors.request.use(
     async (config: any) => {
-      const noAuth = ['login', 'reset', 'sendmail', 'refresh'];
-      if (!noAuth.includes(config.url.split('/')[2])) {
+      const noAuth = ['login', 'sendmail', 'refresh'];
+      if (
+        !config.url.includes('reset') &&
+        !noAuth.includes(config.url.split('/')[2])
+      ) {
         let user = Local.getLocalData('user');
         if (!user) router.replace('/auth/login');
         if (user) {

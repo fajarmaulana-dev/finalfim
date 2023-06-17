@@ -1,4 +1,4 @@
-import {ref} from 'vue';
+import {ref} from '@vue/reactivity';
 import {ContestService} from './contestend';
 
 export const useContest = () => {

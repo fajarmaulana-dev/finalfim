@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref, computed, reactive, toRefs, watch } from 'vue';
+import { ref, computed, reactive, toRefs } from '@vue/reactivity';
+import { watch } from '@vue/runtime-core'
 import { useRouter } from 'vue-router';
-import katex from 'katex'
 import Rich from './Rich.vue';
 import Modal from './Modal.vue';
 import Menu from './Menu.vue'
@@ -45,7 +45,6 @@ const title: any = { info: 'Perbarui Soal', warning: 'Batalkan Editan' }
 const update = () => emit('update', { point: point.value, question: quest.value })
 const same = computed(() => quest.value === temp.value?.question && point.value === temp.value?.point)
 const invalid = computed(() => ((typeof point.value !== 'number') || point.value < 1) || (quest.value === '<p><br></p>'))
-onMounted(() => window.katex = katex)
 </script>
 
 <template>

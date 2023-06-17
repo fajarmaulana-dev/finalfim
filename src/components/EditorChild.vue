@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, toRefs } from 'vue';
+import { ref, reactive, toRefs } from '@vue/reactivity';
+import { onMounted } from '@vue/runtime-core';
 import Editor from './Editor.vue';
 import Toast from './Toast.vue';
 import { useContest } from "@/api/contest"

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive } from '@vue/reactivity';
+import { onMounted } from '@vue/runtime-core'
 import { useRouter, useRoute } from 'vue-router';
 import Modal from './Modal.vue';
 import Toast from './Toast.vue';
@@ -100,11 +101,16 @@ const onReset = async () => {
                 <section class="font-bold text-sky-600">Poin : &emsp;{{ data.point }}</section>
             </div>
             <div v-if="datas.length < many" class="flex justify-center select-none">
-                <div @click="getMore()" style="transition: color .4s;"
-                    class="font-bold text-center text-sky-600 flex flex-col w-fit cursor-pointer hover:text-sky-700 active:text-sky-600 group">
+                <button @click="getMore()" :disabled="load.more" style="transition: color .4s;"
+                    :class="load.more ? 'cursor-not-allowed' : 'cursor-pointer'"
+                    class="font-bold text-sky-600 flex flex-col items-center w-fit hover:text-sky-700 active:text-sky-600 group">
                     <span>Tampilkan Lebih ( Sisa {{ many - datas.length }} )</span>
-                    <span class="fa-solid fa-angles-down text-xl mt-1 animate-bounce group-hover:animate-none"></span>
-                </div>
+                    <div v-if="load.more" class="grid place-items-center mt-1">
+                        <Spinner is="yin" fill="fill-sky-600" />
+                    </div>
+                    <span v-else
+                        class="fa-solid fa-angles-down text-xl mt-1 animate-bounce group-hover:animate-none"></span>
+                </button>
             </div>
         </div>
     </div>

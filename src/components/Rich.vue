@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { toRefs } from 'vue';
+import { toRefs } from '@vue/reactivity';
 import Spinner from './Spinner.vue';
 
 const props = defineProps({

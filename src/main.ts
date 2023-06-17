@@ -1,4 +1,4 @@
-import {createApp} from 'vue';
+import {createApp} from '@vue/runtime-dom';
 import App from './App.vue';
 import router from './router';
 import store from './global';
@@ -6,7 +6,6 @@ import {QuillEditor} from '@vueup/vue-quill';
 import interceptor from '@/api/interceptor';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import 'nprogress/nprogress.css';
-import 'katex/dist/katex.min.css';
 import './style.css';
 
 const app = createApp(App);

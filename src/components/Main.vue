@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, toRefs, reactive, computed, watch } from 'vue'
+import { ref, toRefs, reactive, computed } from '@vue/reactivity'
+import { watch } from '@vue/runtime-core'
 import Toast from './Toast.vue';
 import Circle from './Circle.vue';
 import Spinner from './Spinner.vue';

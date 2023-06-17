@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from '@vue/reactivity';
 import Auth from '@/components/Auth.vue'
 import Toast from '@/components/Toast.vue';
 import { useAuth } from '@/api/auth';

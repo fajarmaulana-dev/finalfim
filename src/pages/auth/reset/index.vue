@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from '@vue/reactivity';
 import Auth from '@/components/Auth.vue'
 import Toast from '@/components/Toast.vue';
 import { useAuth } from '@/api/auth';
@@ -9,12 +9,10 @@ const { message, toast, reset } = useAuth()
 const route = useRoute()
 const router = useRouter()
 const loading = ref(false)
-const id = route.query.id as string
-const token = route.query.token as string
 
 const onReset = async ({ email, pass }: any) => {
     loading.value = true
-    await reset(id, token, { password: pass.new })
+    await reset((route.query.id as string), (route.query.token as string), { password: pass.new })
     if (message.success.length > 0) {
         setTimeout(() => {
             router.push('/auth/login')

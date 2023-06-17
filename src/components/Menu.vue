@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { toRefs } from 'vue';
+import { toRefs } from '@vue/reactivity';
 import { useRouter, useRoute } from 'vue-router';
 import Api from '@/api/api';
 import Local from '@/api/local';

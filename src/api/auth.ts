@@ -1,4 +1,4 @@
-import {reactive} from 'vue';
+import {reactive} from '@vue/reactivity';
 import Local from './local';
 import {AuthService} from './authend';
 

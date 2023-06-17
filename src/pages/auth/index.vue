@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref } from '@vue/reactivity';
 import Auth from '@/components/Auth.vue'
 import Toast from '@/components/Toast.vue';
 import Menu from '@/components/Menu.vue';

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, toRefs } from 'vue';
+import { ref, reactive, computed, toRefs } from '@vue/reactivity';
 import { useRoute } from 'vue-router'
 import SimpleText from '@/components/SimpleText.vue';
 import Spinner from '@/components/Spinner.vue'
@@ -50,7 +50,7 @@ const invalid = computed(() => pass.new === pass.conf ? '' : 'isian ini harus sa
                 </p>
             </div>
             <div class="mt-[2rem] md:mt-[3rem] flex gap-2">
-                <Form class="w-full" id="form" :validation-schema="schema[is]" v-slot="{ meta }">
+                <Form class="w-full" id="form" @submit.prevent :validation-schema="schema[is]" v-slot="{ meta }">
                     <p v-if="is == 'forgot'" class="text-xs font-bold text-sky-600 mb-4">
                         Ketikkan emailmu disini untuk menerima token penggantian sandi.
                     </p>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { reactive, onMounted, toRefs } from 'vue'
+import { reactive, toRefs } from '@vue/reactivity'
+import { onMounted } from '@vue/runtime-core';
 import Menu from './Menu.vue';
 import Main from './Main.vue';
 import Toast from './Toast.vue';
