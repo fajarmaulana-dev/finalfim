@@ -12,7 +12,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  font-family: 'Be Vietnam Pro', Ubuntu, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
