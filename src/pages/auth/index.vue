@@ -14,7 +14,7 @@ const loading = ref(false)
 
 const onUpdate = async ({ email, pass }: any) => {
     loading.value = true
-    await update(id.value, { email, password: pass.def, newPassword: pass.new })
+    await update(id.value, { password: pass.def, newPassword: pass.new })
     if (message.success.length > 0) {
         setTimeout(() => {
             router.push('/mces')

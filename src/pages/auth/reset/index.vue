@@ -9,10 +9,12 @@ const { message, toast, reset } = useAuth()
 const route = useRoute()
 const router = useRouter()
 const loading = ref(false)
+const id = route.query.id as string
+const token = route.query.token as string
 
 const onReset = async ({ email, pass }: any) => {
     loading.value = true
-    await reset((route.query.id as string), (route.query.token as string), { email, password: pass.new })
+    await reset(id, token, { password: pass.new })
     if (message.success.length > 0) {
         setTimeout(() => {
             router.push('/auth/login')
