@@ -3,9 +3,20 @@
   functions = "netlify/functions"
   publish = "dist"
 
-## Uncomment to use this redirect for Single Page Applications
-## Not needed for static site generators.
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    cache-control = '''
+    max-age=31536000,
+    immutable
+    '''

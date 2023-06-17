@@ -99,7 +99,7 @@ const onReset = async () => {
                 </section>
                 <section class="font-bold text-sky-600">Poin : &emsp;{{ data.point }}</section>
             </div>
-            <div v-if="datas.length < many" class="flex justify-center">
+            <div v-if="datas.length < many" class="flex justify-center select-none">
                 <div @click="getMore()" style="transition: color .4s;"
                     class="font-bold text-center text-sky-600 flex flex-col w-fit cursor-pointer hover:text-sky-700 active:text-sky-600 group">
                     <span>Tampilkan Lebih ( Sisa {{ many - datas.length }} )</span>
