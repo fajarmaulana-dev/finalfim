@@ -67,7 +67,8 @@ const onReset = async () => {
 
 <template>
     <Menu />
-    <div class="px-[calc(.5rem+4vw)] py-[calc(4rem+4vw)]">
+    <div class="px-[calc(.5rem+4vw)] pt-[calc(4rem+4vw)]"
+        :class="datas.length < many ? 'pb-[calc(3.5rem+3.5vw)]' : 'pb-[calc(4rem+4vw)]'">
         <p class="text-2xl text-center font-extrabold text-sky-600 mb-[calc(1.25rem+1vw)]">
             Daftar Soal {{ is.toUpperCase() }}</p>
         <div v-if="load.init" class="w-full h-[calc(100vh-20rem)] grid place-items-center">
@@ -101,15 +102,17 @@ const onReset = async () => {
                 <section class="font-bold text-sky-600">Poin : &emsp;{{ data.point }}</section>
             </div>
             <div v-if="datas.length < many" class="flex justify-center select-none">
-                <button @click="getMore()" :disabled="load.more" style="transition: color .4s;"
+                <button @click="getMore()" :disabled="load.more"
                     :class="load.more ? 'cursor-not-allowed' : 'cursor-pointer'"
-                    class="font-bold text-sky-600 flex flex-col items-center w-fit hover:text-sky-700 active:text-sky-600 group">
-                    <span>Tampilkan Lebih ( Sisa {{ many - datas.length }} )</span>
-                    <div v-if="load.more" class="grid place-items-center mt-1">
-                        <Spinner is="yin" fill="fill-sky-600" />
+                    class="font-bold select-none text-sky-600 flex flex-col items-center w-fit group">
+                    <span style="transition: .4s;"
+                        class="px-3 py-1 bg-sky-600 text-white rounded-md group-hover:bg-sky-700 group-active:bg-sky-600">Tampilkan
+                        Lebih ( Sisa {{ many - datas.length }} )</span>
+                    <div v-if="load.more" class="grid place-items-center mt-2.5">
+                        <Spinner is="jump-dots" fill="fill-sky-600" />
                     </div>
                     <span v-else
-                        class="fa-solid fa-angles-down text-xl mt-1 animate-bounce group-hover:animate-none"></span>
+                        class="fa-solid fa-angles-down text-xl mt-2.5 animate-bounce group-hover:animate-none group-hover:text-sky-700 group-active:text-sky-600"></span>
                 </button>
             </div>
         </div>
