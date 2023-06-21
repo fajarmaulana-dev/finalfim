@@ -205,8 +205,7 @@ const sosmed = [
                     </div>
                     <div
                         class="flex w-full flex-col sm:flex-row gap-2 sm:gap-3 xl:gap-4 justify-end [&>*]:text-xs xs:[&>*]:text-sm md:[&>*]:text-base [&>*]:h-8 xs:[&>*]:h-9 sm:[&>*]:h-10 [&>*]:font-bold [&>*]:rounded-md [&>*]:grid [&>*]:place-items-center">
-                        <a href="https://res.cloudinary.com/dxa4bdtdx/image/upload/v1686973671/Panduan_Kuis_euyztw.pdf"
-                            target="_blank" style="transition: .4s;"
+                        <a href="@/assets/panduan.pdf" target="_blank" style="transition: .4s;"
                             class="w-full sm:max-w-[16rem] lg:max-w-[18rem] border-[3px] border-teal-500 text-teal-500 hover:border-teal-600 hover:text-teal-600 active:border-teal-500 active:text-teal-500">
                             Unduh Panduan Babak Kuis</a>
                         <router-link to="/?sch=mces" style="transition: .4s;"
