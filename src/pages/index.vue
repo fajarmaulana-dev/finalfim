@@ -31,8 +31,8 @@ const sosmed = [
                 </div>
                 <div class="flex flex-col-reverse sm:flex-row gap-3 sm:gap-7 items-center mt-4">
                     <div class="flex justify-center gap-4">
-                        <a style="transition: .4s;" href="https://fajarmaulana-dev.me" :aria-label="`Go to my website`"
-                            target="_blank"
+                        <a style="transition: .4s;" href="https://fajarmaulana-dev.netlify.app"
+                            aria-label="Go to my website" target="_blank"
                             class="fa-solid fa-blog text-base sm:text-lg md:text-xl cursor-pointer text-teal-500 hover:text-teal-700 lg:hidden xl:block">
                         </a>
                         <a style="transition: .4s;" v-for="social, i in sosmed" :key="i" :href="social.url"
