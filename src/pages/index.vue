@@ -53,8 +53,12 @@ const sosmed = [
                 </div>
             </div>
         </div>
-        <div class="text-teal-600 pb-3 xs:pb-4 md:pb-5 lg:pb-[1vw] xl:pb-0 font-bold text-xs xs:text-sm sm:text-base">
-            Crafted by Fajar Maulana&emsp;©{{ new Date().getFullYear() }}</div>
+        <div class="pb-3 xs:pb-4 md:pb-5 lg:pb-[1vw] xl:pb-0 font-bold text-xs xs:text-sm sm:text-base flex gap-3">
+            <span class="text-sky-600">Crafted by </span><a href="https://fajarmaulana-dev.netlify.app"
+                style="transition: .4s;" class="underline text-teal-600 hover:text-teal-700 hover:font-bold"
+                aria-label="Go to my website" target="_blank">Fajar Maulana</a><span class="text-amber-600">© {{ new
+                    Date().getFullYear() }}</span>
+        </div>
         <div v-for="i in 10"
             :style="`top: ${((i - 1) * 19)}rem; left: ${i % 2 === 0 ? (Math.round(Math.random() * 42)) : ''}vw; right: ${i % 2 !== 0 ? (Math.round(Math.random() * 27)) : ''}vw; transform: rotate(${((i - 0.65) * 10) + Math.round(Math.random() * 60)}deg)`"
             class="absolute !z-0">
