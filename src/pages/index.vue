@@ -9,6 +9,10 @@ import Toast from '~/Toast.vue';
 import Modal from '~/Modal.vue';
 import { useContest } from "@/api/contest"
 
+const getAssets = (path: string) => {
+    return new URL(`/src/assets/${path}`, import.meta.url).href
+}
+
 const { data, quest, msg, decision, getData, getQuest, setAnswer, setPoint, reset } = useContest()
 
 const route = useRoute()
@@ -205,7 +209,7 @@ const sosmed = [
                     </div>
                     <div
                         class="flex w-full flex-col sm:flex-row gap-2 sm:gap-3 xl:gap-4 justify-end [&>*]:text-xs xs:[&>*]:text-sm md:[&>*]:text-base [&>*]:h-8 xs:[&>*]:h-9 sm:[&>*]:h-10 [&>*]:font-bold [&>*]:rounded-md [&>*]:grid [&>*]:place-items-center">
-                        <a href="@/assets/panduan.pdf" target="_blank" style="transition: .4s;"
+                        <a :href="getAssets('panduan.pdf')" target="_blank" style="transition: .4s;"
                             class="w-full sm:max-w-[16rem] lg:max-w-[18rem] border-[3px] border-teal-500 text-teal-500 hover:border-teal-600 hover:text-teal-600 active:border-teal-500 active:text-teal-500">
                             Unduh Panduan Babak Kuis</a>
                         <router-link to="/?sch=mces" style="transition: .4s;"
