@@ -1,43 +1,77 @@
 <script setup lang="ts">
 import { ref, reactive } from '@vue/reactivity';
-import { onMounted } from '@vue/runtime-core'
+import { onMounted, watch } from '@vue/runtime-core'
 import { useRouter, useRoute } from 'vue-router';
-import Modal from './Modal.vue';
-import Toast from './Toast.vue';
-import Spinner from './Spinner.vue';
-import Menu from './Menu.vue'
+import Modal from '~/Modal.vue';
+import Toast from '~/Toast.vue';
+import Spinner from '~/Spinner.vue';
+import Menu from '~/Menu.vue'
+import Editor from '~/Editor.vue';
 import { useContest } from "@/api/contest"
 
-const { data, msg, getQuests, resetQuest } = useContest()
+const { quest, data, msg, getQuests, resetQuest, getQuest, update } = useContest()
 
+
+// Together
 const router = useRouter()
 const route = useRoute()
-const is = route.path.split('/')[1]
-const many = is == 'mces' ? 25 : 16
-const loading = ref([...Array(many)].map((_, i) => false))
-const load = reactive({ init: false, more: false })
+const is = ref(route.query.sch as string)
+const id = ref(route.query.id as string)
+const load = reactive({ init: false, more: false, quest: false })
 const message: any = reactive({ info: '', error: '' });
 const toast: any = reactive({ info: false, error: false });
+const many = ref(25)
+const error = ref(false)
+const level = ['mces', 'mcjhs', 'mcshs']
+const core = async () => {
+    if (id.value) {
+        if ((Number(id.value) >= 1 && Number(id.value) <= many.value) && level.includes(is.value)) {
+            error.value = false
+            load.quest = true
+            await getQuest(Number(id.value), { is: is.value })
+            if (msg.value.length > 0) {
+                toast.error = true;
+                message.error = msg.value
+            }
+            load.quest = false
+        } else error.value = true
+    } else {
+        if (level.includes(is.value)) {
+            error.value = false
+            load.init = true
+            is.value ? await getQuests({ is: is.value, from: 0, number: 5 }) : await getQuests({ is: 'mces', from: 0, number: 5 })
+            datas.value = data.value
+            load.init = false
+        } else error.value = true
+    }
+}
+
+onMounted(async () => {
+    await core()
+})
+
+watch(route, async () => {
+    is.value = route.query.sch as string
+    id.value = route.query.id as string
+    many.value = is.value == 'mces' ? 25 : 16
+    await core()
+}, { deep: true })
+
+// Edit Page
+const loading = ref([...Array(many)].map((_, i) => false))
 const modal = ref(false)
 const idx = ref(0)
 const datas: any = ref([])
 
-onMounted(async () => {
-    load.init = true
-    await getQuests({ is, from: 0, number: 5 })
-    datas.value = data.value
-    load.init = false
-})
-
 const getMore = async () => {
     load.more = true
-    await getQuests({ is, from: datas.value.length, number: 5 })
+    await getQuests({ is: is.value, from: datas.value.length, number: 5 })
     data.value.forEach((d: any) => datas.value.push(d));
     load.more = false
 }
 
 const init = async (from: number) => {
-    await getQuests({ is, from, number: 1 })
+    await getQuests({ is: is.value, from, number: 1 })
     if (msg.value.length > 0) {
         toast.error = true;
         message.error = msg.value
@@ -49,13 +83,13 @@ const openModal = (i: number) => {
     idx.value = i
     modal.value = true
 }
-const questInit = (i: number) => `<p>Soal ${is} nomor ${i + 1} belum diedit.</p>`
+const questInit = (i: number) => `<p>Soal ${is.value} nomor ${i + 1} belum diedit.</p>`
 const onReset = async () => {
     loading.value[idx.value] = true
-    await resetQuest((idx.value + 1), is)
+    await resetQuest((idx.value + 1), is.value)
     if (msg.value.length == 0) {
         toast.info = true
-        message.info = `Soal ${is.toUpperCase()} nomor ${idx.value + 1} telah berhasil direset.`
+        message.info = `Soal ${is.value.toUpperCase()} nomor ${idx.value + 1} telah berhasil direset.`
     } else {
         toast.error = true;
         message.error = msg.value
@@ -63,11 +97,41 @@ const onReset = async () => {
     await init(idx.value)
     loading.value[idx.value] = false
 }
+
+// Editor Page
+const updateQuest = async ({ point, question }: any) => {
+    load.quest = true
+    await update({ is: is.value, index: id.value, point, question })
+    if (msg.value.length == 0) {
+        toast.info = true;
+        message.info = `Soal ${is.value} nomor ${id.value} berhasil diperbarui.`
+        setTimeout(() => {
+            router.replace(`/edit?sch=${is.value}`)
+        }, 4000)
+    } else {
+        toast.error = true;
+        message.error = msg.value
+    }
+    load.quest = false
+}
 </script>
 
 <template>
     <Menu />
-    <div class="px-[calc(.5rem+4vw)] pt-[calc(4rem+4vw)]"
+    <div v-if="error" class="min-h-screen px-[calc(.5rem+4vw)] py-[calc(4rem+4vw)]">
+        <div
+            class="w-full text-sm border-[.15rem] border-solid py-[0.375rem] px-3 rounded-md mb-5 bg-amber-200 text-amber-800 border-amber-800">
+            <p class="mb-3 font-bold !text-base">Kesalahan nilai query!</p>
+            <div class="flex flex-col gap-1">
+                <p v-if="!level.includes(is)">◆ Nilai yang diperbolehkan untuk parameter <b>"sch"</b> hanya <b>mces, mcjhs,
+                        atau mcshs</b>.</p>
+                <p v-if="Number(id) < 1 || Number(id) > many">◆ Nilai untuk parameter <b>"id"</b> harus <b>bilangan asli
+                        yang kurang dari sama dengan {{ many }}</b>.</p>
+            </div>
+        </div>
+    </div>
+    <Editor v-if="!error && id" :is="is" :id="id" :loading="load.quest" :data="quest" @update="updateQuest" />
+    <div v-if="!error && !id" class="px-[calc(.5rem+4vw)] pt-[calc(4rem+4vw)]"
         :class="datas.length < many ? 'pb-[calc(3.5rem+3.5vw)]' : 'pb-[calc(4rem+4vw)]'">
         <p class="text-2xl text-center font-extrabold text-sky-600 mb-[calc(1.25rem+1vw)]">
             Daftar Soal {{ is.toUpperCase() }}</p>
@@ -91,7 +155,8 @@ const onReset = async () => {
                                 <i v-else class="fa-solid fa-arrow-rotate-left"></i>
                             </button>
                             <button :title="`Edit soal nomor ${i + 1}`" style="transition: .4s;"
-                                class="fa-solid fa-pen-to-square" @click="router.push(`${route.path}/${i + 1}`)"></button>
+                                class="fa-solid fa-pen-to-square"
+                                @click="router.push(`/edit?sch=${is}&id=${i + 1}`)"></button>
                         </div>
                     </div>
                     <div class="rounded-b-md ql-snow">

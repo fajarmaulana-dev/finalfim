@@ -1,9 +1,8 @@
 import {reactive} from '@vue/reactivity';
 import Local from './local';
-import {AuthService} from './authend';
+import Api from './api';
 
 export const useAuth = () => {
-  const service = new AuthService();
   const message = reactive({
     success: '',
     warning: '',
@@ -13,25 +12,27 @@ export const useAuth = () => {
     warning: false,
   });
 
-  const composs = (res: any) => {
+  const composs = async (func: any) => {
     message.success = '';
     message.warning = '';
-    if (res.data.data) Local.setLocalData('user', res.data.data);
-    if (res.status < 300) {
+    try {
+      const res = await func;
+      if (res.data.data) Local.setLocalData('user', res.data.data);
       toast.success = true;
       message.success = res.data.message;
-    } else {
+    } catch (err: any) {
       toast.warning = true;
-      message.warning = res.data.message;
+      message.warning = err.response.data.message;
     }
   };
 
-  const login = async (data: any) => composs(await service.login(data));
-  const sendmail = async (data: any) => composs(await service.sendmail(data));
+  const login = async (data: any) => composs(Api.post(`/users/login`, data));
+  const sendmail = async (data: any) =>
+    composs(Api.post('/users/sendmail', data));
   const reset = async (id: string, token: string, data: any) =>
-    composs(await service.reset(id, token, data));
+    composs(Api.patch(`/users/reset?id=${id}&token=${token}`, data));
   const update = async (id: string, data: any) =>
-    composs(await service.update(id, data));
+    composs(Api.patch(`/users/update/${id}`, data));
 
   return {
     message,

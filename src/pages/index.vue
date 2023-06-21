@@ -1,4 +1,148 @@
 <script setup lang="ts">
+import { reactive, ref } from '@vue/reactivity'
+import { onMounted, watch } from '@vue/runtime-core';
+import { useRoute } from 'vue-router';
+import { useStore } from 'vuex';
+import Menu from '~/Menu.vue';
+import Main from '~/Main.vue';
+import Toast from '~/Toast.vue';
+import Modal from '~/Modal.vue';
+import { useContest } from "@/api/contest"
+
+const { data, quest, msg, decision, getData, getQuest, setAnswer, setPoint, reset } = useContest()
+
+const route = useRoute()
+const store = useStore()
+const is = ref(route.query.sch as string)
+const message: any = reactive({ info: '', error: '', warning: '' });
+const toast: any = reactive({ info: false, error: false, warning: false });
+const modal: any = reactive({ success: false, info: false, warning: false, error: false })
+const text: any = reactive({ success: '', info: '', warning: '', error: '' })
+const title: any = ['Pemindahan Bonus', 'Poin Bonus', 'Pembatalan Bonus']
+const error = ref(false)
+const level = ['mces', 'mcjhs', 'mcshs']
+
+const load = reactive({
+    data: false,
+    reset: false,
+    quest: [...Array(is.value == 'mces' ? 25 : 16)].map((_, i) => false),
+    point: [...Array(6)].map((_, i) => false),
+})
+const alert = reactive({
+    state: store.state.alert[is.value],
+    message: message.warning
+})
+const core = async () => {
+    if (is.value) {
+        if (level.includes(is.value)) {
+            error.value = false
+            load.data = true
+            await getData({ is: is.value })
+            load.data = false
+        } else error.value = true
+    }
+}
+onMounted(async () => {
+    await core()
+})
+
+watch(route, async () => {
+    is.value = route.query.sch as string
+    await core()
+}, { deep: true })
+
+const init = async () => {
+    await getData({ is: is.value })
+    if (msg.value.length > 0) {
+        toast.error = true;
+        message.error = msg.value
+    }
+}
+
+const getQuests = async ({ idx, openboard }: any) => {
+    load.quest[idx - 1] = true
+    await getQuest(idx, { is: is.value })
+    if (msg.value.length == 0) {
+        openboard()
+    } else {
+        toast.error = true;
+        message.error = msg.value
+    }
+    load.quest[idx - 1] = false
+}
+
+const update = async ({ idx, point, name, reader }: any) => {
+    load.point[idx] = true
+    await setPoint({ is: is.value, name, point })
+    reader()
+    if (msg.value.length == 0) {
+        toast.info = true
+        message.info = `Poin peserta ${name} telah berhasil diperbarui.`
+    } else {
+        toast.error = true;
+        message.error = msg.value
+    }
+    await init()
+    load.point[idx] = false
+}
+
+const answerKit = async ({ q_idx, answer, color, points, bonus, disMin, changer, point }: any) => {
+    load.quest[q_idx] = true
+    const name = ['A', 'B', 'C', 'D', 'E', 'F']
+    await setAnswer({ is: is.value, index: (q_idx + 1), answer, color, points, bonus, disMin })
+    if (msg.value.length == 0) {
+        if (changer.after == 'NA') {
+            toast.warning = true;
+            message.warning = `Soal nomor ${q_idx + 1} tidak terjawab. ${name.includes(changer.before) ? `${point} poin peserta ${changer.before} dari soal ini telah dibatalkan.` : ''}`
+        } else {
+            if (changer.before !== changer.after) {
+                toast.info = true
+                message.info = `${!name.includes(changer.before) ? 'Tambahan' : 'Pemindahan'} ${point} poin ${!name.includes(changer.before) ? 'untuk' : `dari peserta ${changer.before} ke`} peserta ${changer.after}`
+            }
+        }
+        if (decision.value) {
+            if (decision.value?.val < 0) {
+                text.warning = `Bonus ${bonus} poin dari peserta ${decision.value?.before} telah dibatalkan`
+                modal.warning = true
+            }
+            else if (decision.value?.val > 0) {
+                text.info = `Selamat, peserta ${decision.value?.after} memperoleh bonus ${bonus} poin`
+                modal.info = true
+            }
+            else {
+                text.success = `Pemindahan bonus ${bonus} poin dari peserta ${decision.value?.before} ke peserta ${decision.value?.after} telah sukses`
+                modal.success = true
+            }
+        }
+    } else {
+        toast.error = true;
+        message.error = msg.value
+    }
+    await init()
+    load.quest[q_idx] = false
+}
+
+const openReset = () => {
+    modal.error = true;
+    text.error = `Apakah kamu yakin ingin mereset hasil babak kuis ${is.value.toUpperCase()} ?`
+}
+
+const onReset = async () => {
+    load.reset = true
+    await reset(is.value)
+    if (msg.value.length == 0) {
+        toast.info = true
+        message.info = `Kuis ${is.value.toUpperCase()} telah berhasil dikembalikan ke default.`
+    } else {
+        toast.error = true;
+        message.error = msg.value
+    }
+    await init()
+    load.reset = false
+}
+
+const disabled = () => !data.value?.changed || load.reset
+
 const sosmed = [
     { ico: 'github', url: 'https://github.com/fajarmaulana-dev' },
     { ico: 'linkedin-in', url: 'https://www.linkedin.com/in/fajar-maulana-16b98b152' },
@@ -7,7 +151,26 @@ const sosmed = [
 </script>
 
 <template>
-    <div class="min-h-screen grid place-items-center relative [&>*]:z-[1]">
+    <div v-if="is">
+        <Menu :disabled="disabled()" :loading="load.reset" @reset="openReset()" />
+        <div v-if="error" class="min-h-screen px-[calc(.5rem+4vw)] py-[calc(4rem+4vw)]">
+            <div
+                class="w-full text-sm border-[.15rem] border-solid py-[0.375rem] px-3 rounded-md mb-5 bg-amber-200 text-amber-800 border-amber-800">
+                <p class="mb-3 font-bold !text-base">Kesalahan nilai query!</p>
+                <p>◆ Nilai yang diperbolehkan untuk parameter <b>"sch"</b> hanya <b>mces, mcjhs, atau mcshs</b>.</p>
+            </div>
+        </div>
+        <Main v-if="!error" :is="is" :alert="alert" :loading="load" :data="data" :quest="quest" @update-point="update"
+            @get-quest="getQuests" @answer="answerKit" @not-answer="answerKit"
+            @xalert="store.commit('spill', { is, to: false })" />
+        <Modal v-for="is, i in ['success', 'info', 'warning']" :is="is" v-model="modal[is]" :title="title[i]"
+            :with-confirm="false" close-text="Mengerti">{{ text[is] }}
+        </Modal>
+        <Modal is="error" v-model="modal.error" title="Reset Kuis" @confirm="onReset()" confirm-text="Ya, Reset"
+            close-text="Jangan Reset">{{ text.error }}</Modal>
+        <Toast v-for="is, i in ['info', 'error', 'warning']" :is="is" v-model="toast[is]" :text="message[is]" />
+    </div>
+    <div v-else class="min-h-screen grid place-items-center relative [&>*]:z-[1]">
         <div
             class="flex flex-col lg:flex-row justify-center items-center gap-6 lg:gap-10 px-[calc(1rem+6vw)] py-[calc(1rem+3vw)]">
             <div class="w-[10rem] lg:min-w-[18rem]">
@@ -46,7 +209,7 @@ const sosmed = [
                             target="_blank" style="transition: .4s;"
                             class="w-full sm:max-w-[16rem] lg:max-w-[18rem] border-[3px] border-teal-500 text-teal-500 hover:border-teal-600 hover:text-teal-600 active:border-teal-500 active:text-teal-500">
                             Unduh Panduan Babak Kuis</a>
-                        <router-link to="/mces" style="transition: .4s;"
+                        <router-link to="/?sch=mces" style="transition: .4s;"
                             class="w-full sm:max-w-[8.5rem] lg:max-w-[10rem] bg-gradient-to-br from-sky-600 to-teal-500 text-white hover:tracking-wider active:tracking-tight">
                             Ayo Mulai !</router-link>
                     </div>

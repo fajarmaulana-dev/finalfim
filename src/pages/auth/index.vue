@@ -4,11 +4,13 @@ import Auth from '@/components/Auth.vue'
 import Toast from '@/components/Toast.vue';
 import Menu from '@/components/Menu.vue';
 import { useAuth } from '@/api/auth';
+import { useRoute } from 'vue-router'
 import { useStore } from 'vuex';
 import router from '@/router';
 
 const { message, toast, update } = useAuth()
 const store = useStore()
+const route = useRoute()
 const id = computed(() => store.getters.id)
 const loading = ref(false)
 
@@ -17,8 +19,8 @@ const onUpdate = async ({ email, pass }: any) => {
     await update(id.value, { password: pass.def, newPassword: pass.new })
     if (message.success.length > 0) {
         setTimeout(() => {
-            router.push('/mces')
-        }, 3700)
+            router.replace(route.query.redirect as string)
+        }, 3800)
     }
     loading.value = false
 }

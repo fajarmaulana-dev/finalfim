@@ -81,7 +81,7 @@ const invalid = computed(() => pass.new === pass.conf ? '' : 'isian ini harus sa
                     </button>
                     <router-link
                         class="text-xs font-bold flex justify-center text-sky-600 hover:text-teal-700 active:text-sky-600 mt-1"
-                        :to="is == 'update' ? '/mces' : `/auth/${is == 'login' ? 'forgot' : 'login'}`"
+                        :to="is == 'update' ? (route.query.redirect as string) : `/auth/${is == 'login' ? 'forgot' : 'login'}`"
                         style="transition: .4s;">{{ is == 'update' ? '< Ke Beranda' : is == 'login' ? 'Lupa kata sandi ?'
                             : '< Kembali ke Login' }}</router-link>
                 </Form>

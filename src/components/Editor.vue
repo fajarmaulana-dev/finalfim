@@ -4,7 +4,6 @@ import { watch } from '@vue/runtime-core'
 import { useRouter } from 'vue-router';
 import Rich from './Rich.vue';
 import Modal from './Modal.vue';
-import Menu from './Menu.vue'
 import ImageResize from 'quill-image-resize-vue';
 import { ImageDrop } from 'quill-image-drop-module';
 import QuillImageDropAndPaste from 'quill-image-drop-and-paste'
@@ -48,7 +47,6 @@ const invalid = computed(() => ((typeof point.value !== 'number') || point.value
 </script>
 
 <template>
-    <Menu />
     <div class="px-[calc(.5rem+4vw)] py-[calc(4rem+4vw)]">
         <p class="text-2xl text-center font-extrabold text-sky-600 mb-[calc(1.25rem+1vw)]">
             Edit Soal {{ is.toUpperCase() }}</p>

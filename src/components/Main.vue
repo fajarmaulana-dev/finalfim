@@ -65,7 +65,6 @@ const props = defineProps({
 
 const { is, data, quest, bonus, time, minscore, vioscore, loading, alert } = toRefs(props)
 
-let divider: number; is.value === 'mces' ? divider = 5 : divider = 4;
 const readonly: any = ref([])
 const input: any = ref([])
 const name = computed(() => (data?.value as any).contestant.map((c: any) => c.name))
@@ -78,6 +77,21 @@ watch(data, () => {
     readonly.value = [...Array(data?.value?.contestant.length)].map((_, i) => true)
     input.value = (data?.value as any).contestant.map((c: any) => c.point)
     dis_vi.value = Object.fromEntries(name.value.map((n: string, i: number) => [name.value[i], 0]))
+})
+
+const gaw = [['[&_div]:gap-[0.4rem] xs:[&_div]:gap-2.5', '[&_div]:gap-[0.55rem] xs:[&_div]:gap-3.5'], ['w-[2.75rem] xs:w-[3.5rem] h-[2.75rem] xs:h-[3.5rem] text-sm xs:text-[1.15rem]', 'w-[3.425rem] xs:w-[4.35rem] h-[3.425rem] xs:h-[4.35rem] text-[1.15rem] xs:text-xl']]
+const divider = ref(is.value === 'mces' ? 5 : 4)
+const gap = ref(is.value === 'mces' ? gaw[0][0] : gaw[0][1])
+const width = ref(is.value === 'mces' ? gaw[1][0] : gaw[1][1])
+watch(is, () => {
+    divider.value = is.value === 'mces' ? 5 : 4
+    if (is.value === 'mces') {
+        gap.value = gaw[0][0]
+        width.value = gaw[1][0]
+    } else {
+        gap.value = gaw[0][1]
+        width.value = gaw[1][1]
+    }
 })
 
 const board = reactive({ container: false, box: false })
@@ -216,14 +230,6 @@ const answer = (q_idx: number, c_name: string, c_color: string, c_idx: number) =
 const btn_transition = 'transition duration-500 transform-gpu hover:scale-y-110 active:scale-y-90'
 const btn_color = 'bg-sky-200 text-sky-600 border-sky-600'
 const dis_color = 'bg-stone-200 text-stone-600 border-stone-600 !cursor-not-allowed'
-let gap: string, width: string;
-if (is.value === 'mces') {
-    gap = '[&_div]:gap-[0.4rem] xs:[&_div]:gap-2.5'
-    width = 'w-[2.75rem] xs:w-[3.5rem] h-[2.75rem] xs:h-[3.5rem] text-sm xs:text-[1.15rem]'
-} else {
-    gap = '[&_div]:gap-[0.55rem] xs:[&_div]:gap-3.5'
-    width = 'w-[3.425rem] xs:w-[4.35rem] h-[3.425rem] xs:h-[4.35rem] text-[1.15rem] xs:text-xl'
-}
 </script>
 
 <template>

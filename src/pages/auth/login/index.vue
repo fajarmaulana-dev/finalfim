@@ -17,7 +17,7 @@ const onLogin = async ({ email, pass }: any) => {
     store.dispatch('login')
     if (message.success.length > 0) {
         setTimeout(() => {
-            router.push(route.query.redirect as string || '/mces')
+            router.push(route.query.redirect as string || '/?sch=mces')
         }, 3700)
     }
     loading.value = false

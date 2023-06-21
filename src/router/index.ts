@@ -16,8 +16,8 @@ router.beforeEach((to: any, from, next) => {
     (!Local.getLocalData('user') ||
       !Object.keys(Local.getLocalData('user')).includes('fimunnes') ||
       !Object.keys(Local.getLocalData('user')).includes('date')) &&
-    !to.path.includes('auth') &&
-    to.path !== '/'
+    !to.path.includes('auth/') &&
+    to.fullPath !== '/'
   ) {
     next({
       path: '/auth/login',
