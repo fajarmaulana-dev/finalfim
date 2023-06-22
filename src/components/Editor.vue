@@ -42,7 +42,8 @@ const modal: any = reactive({ info: false, warning: false })
 const title: any = { info: 'Perbarui Soal', warning: 'Batalkan Editan' }
 
 const update = () => emit('update', { point: point.value, question: quest.value })
-const same = computed(() => quest.value === temp.value?.question && point.value === temp.value?.point)
+const re = /(<span contenteditable="false">)|(<\/span>)|(﻿)/g
+const same = computed(() => temp.value?.question.replace(re, '') == quest.value.replace(re, ''))
 const invalid = computed(() => ((typeof point.value !== 'number') || point.value < 1) || (quest.value === '<p><br></p>'))
 </script>
 
@@ -57,8 +58,9 @@ const invalid = computed(() => ((typeof point.value !== 'number') || point.value
                 :placeholder="`Edit soal ${is.toUpperCase()} nomor ${id} disini ...`" id="richeditor" name="richeditor"
                 spellcheck="false">
                 <template #toolbar>
-                    <Rich @save="modal.info = true" @cancel="same ? router.push(`/${is}/edit`) : modal.warning = true" saver
-                        :title="`No. ${id}`" :disabled="(invalid as boolean) || (same as boolean)" :loading="loading" />
+                    <Rich @save="modal.info = true"
+                        @cancel="same ? router.replace(`/edit?sch=${is}`) : modal.warning = true" saver :title="`No. ${id}`"
+                        :disabled="(invalid as boolean) || (same as boolean)" :loading="loading" />
                 </template>
             </QuillEditor>
             <section class="font-bold mt-2 text-sky-600 flex items-center gap-3">
@@ -73,7 +75,7 @@ const invalid = computed(() => ((typeof point.value !== 'number') || point.value
         </div>
     </div>
     <Modal v-for="txt, i in ['info', 'warning']" :is="txt" v-model="modal[txt]" :title="title[txt]"
-        @confirm="txt == 'info' ? update() : router.push(`/${is}/edit`)"
+        @confirm="txt == 'info' ? update() : router.replace(`/edit?sch=${is}`)"
         :confirm-text="`Ya, ${txt == 'info' ? 'Perbarui' : 'Batalkan'}`" close-text="Edit Lagi">
         <span v-if="txt == 'warning'">Apakah kamu yakin ingin membatalkan editanmu saat ini ?</span>
         <span v-else>Apakah kamu yakin ingin memperbarui<br /><b>"Soal {{ is.toUpperCase() }} nomor {{ id
