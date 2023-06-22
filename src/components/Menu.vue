@@ -75,7 +75,7 @@ const logout = async () => {
     <footer v-if="!route.path.includes('auth')"
         class="z-[1] select-none bg-sky-50 shadow-[0_-3px_5px_0] shadow-sky-200 h-[3.5rem] w-full fixed bottom-0 left-0 flex items-center justify-around">
         <router-link v-for="foot, i in footer" :key="i"
-            :to="route.path.includes('edit') ? `/edit?sch=${foot}` : `/?sch=${foot}`"
+            :to="route.path.includes('edit') ? `/edit?sch=${foot}${route.fullPath.includes('id') ? `&id=${route.query.id}` : ''}` : `/?sch=${foot}`"
             class="w-full h-full grid place-items-center" :class="route.query.sch == foot ? 'bg-sky-200' : ''">
             <span class="px-2 py-0.5 rounded-md bg-sky-600 text-white text-sm xs:text-base font-extrabold tracking-widest">
                 {{ foot.toUpperCase() }}</span>

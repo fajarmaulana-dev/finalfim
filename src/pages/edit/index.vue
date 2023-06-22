@@ -46,8 +46,16 @@ const core = async () => {
     }
 }
 
+const addAlt = () => {
+    const imagelist = Array.from(document.getElementsByTagName('img'))
+    imagelist.forEach((i: any, idx: number) => {
+        if (i.alt !== 'logo') i.setAttribute('alt', `quill-image-${idx}`)
+    })
+}
+
 onMounted(async () => {
     await core()
+    addAlt()
 })
 
 watch(route, async () => {
@@ -55,6 +63,7 @@ watch(route, async () => {
     id.value = route.query.id as string
     many.value = is.value == 'mces' ? 25 : 16
     await core()
+    addAlt()
 }, { deep: true })
 
 // Edit Page

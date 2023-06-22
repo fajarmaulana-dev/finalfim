@@ -42,7 +42,7 @@ const modal: any = reactive({ info: false, warning: false })
 const title: any = { info: 'Perbarui Soal', warning: 'Batalkan Editan' }
 
 const update = () => emit('update', { point: point.value, question: quest.value })
-const re = /(<span contenteditable="false">)|(<\/span>)|(﻿)/g
+const re = /(<span contenteditable="false">)|(<\/span>)|(﻿)|(( alt="quill-image-)\d+")/g
 const same = computed(() => temp.value?.question.replace(re, '') == quest.value.replace(re, ''))
 const invalid = computed(() => ((typeof point.value !== 'number') || point.value < 1) || (quest.value === '<p><br></p>'))
 </script>
