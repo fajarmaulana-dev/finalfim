@@ -7,7 +7,6 @@ import interceptor from '@/api/interceptor';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import 'nprogress/nprogress.css';
 import './style.css';
-import './katex.min.css';
 
 const app = createApp(App);
 
