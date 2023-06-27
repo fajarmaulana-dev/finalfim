@@ -59,17 +59,17 @@ const logout = async () => {
                 Halo, {{ user?.name }} !
             </router-link>
             <button @click="router.push(`/auth?redirect=${route.fullPath}`)" title="Perbarui Kata Sandi"
-                class="fa-solid fa-user" :class="route.path == '/auth' ? 'hidden' : 'grid sm:hidden'"></button>
+                class="fa-solid fa-user" :class="route.path == '/auth' ? '!hidden' : 'grid sm:!hidden'"></button>
             <button @click="emit('reset')" :disabled="disabled" title="Reset Kuis" class="place-items-center"
-                :class="[route.path.includes('edit') ? 'hidden' : (route.path == '/auth' ? 'hidden' : 'grid'), disabled ? `${loading ? '!bg-rose-600 active:!bg-rose-600' : '!bg-stone-300 active:!bg-stone-300'} hover:!bg-stone-300 !text-stone-500 !cursor-not-allowed` : '!bg-rose-600 active:!bg-rose-600 hover:!bg-rose-700']">
+                :class="[route.path.includes('edit') ? '!hidden' : (route.path == '/auth' ? '!hidden' : 'grid'), disabled ? `${loading ? '!bg-rose-600 active:!bg-rose-600' : '!bg-stone-300 active:!bg-stone-300'} hover:!bg-stone-300 !text-stone-500 !cursor-not-allowed` : '!bg-rose-600 active:!bg-rose-600 hover:!bg-rose-700']">
                 <Spinner v-if="loading" is="yin" :width="18" fill="fill-white" />
                 <i v-else class="fa-solid fa-arrow-rotate-left"></i>
             </button>
             <button @click="logout()" title="Logout" class="fa-solid fa-right-from-bracket grid"></button>
             <button @click="router.push(`/edit?sch=${route.query.sch}`)" title="Edit Soal" class="fa-solid fa-pen"
-                :class="route.path.includes('edit') ? 'hidden' : (route.path == '/auth' ? 'hidden' : 'grid')"></button>
+                :class="route.path.includes('edit') ? '!hidden' : (route.path == '/auth' ? '!hidden' : 'grid')"></button>
             <button @click="router.push(`/?sch=${route.query.sch ? route.query.sch : 'mces'}`)" title="Kembali ke Kuis"
-                class="fa-solid fa-house-chimney" :class="route.path.includes('edit') ? 'grid' : 'hidden'"></button>
+                class="fa-solid fa-house-chimney" :class="route.path.includes('edit') ? 'grid' : '!hidden'"></button>
         </div>
     </header>
     <footer v-if="!route.path.includes('auth')"

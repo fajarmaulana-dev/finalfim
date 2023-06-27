@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from '@vue/reactivity'
+import { reactive, ref, computed } from '@vue/reactivity'
 import { onMounted, watch } from '@vue/runtime-core';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
@@ -32,8 +32,9 @@ const load = reactive({
     quest: [...Array(is.value == 'mces' ? 25 : 16)].map((_, i) => false),
     point: [...Array(6)].map((_, i) => false),
 })
+const state = computed(() => store.state.alert[is.value])
 const alert = reactive({
-    state: store.state.alert[is.value],
+    state,
     message: message.warning
 })
 const core = async () => {
@@ -166,7 +167,7 @@ const sosmed = [
         </div>
         <Main v-if="!error" :is="is" :alert="alert" :loading="load" :data="data" :quest="quest" @update-point="update"
             @get-quest="getQuests" @answer="answerKit" @not-answer="answerKit"
-            @xalert="store.commit('spill', { is, to: false })" />
+            @xalert="store.commit('spill', { is, to: true })" />
         <Modal v-for="is, i in ['success', 'info', 'warning']" :is="is" v-model="modal[is]" :title="title[i]"
             :with-confirm="false" close-text="Mengerti">{{ text[is] }}
         </Modal>
@@ -200,7 +201,7 @@ const sosmed = [
                     <div class="flex justify-center gap-4">
                         <a style="transition: .4s;" href="https://fajarmaulana-dev.netlify.app"
                             aria-label="Go to my website" target="_blank"
-                            class="fa-solid fa-blog text-base sm:text-lg md:text-xl cursor-pointer text-teal-500 hover:text-teal-700 lg:hidden xl:block">
+                            class="fa-solid fa-blog text-base sm:text-lg md:text-xl cursor-pointer text-teal-500 hover:text-teal-700 lg:!hidden xl:block">
                         </a>
                         <a style="transition: .4s;" v-for="social, i in sosmed" :key="i" :href="social.url"
                             :aria-label="`Go to my ${social.ico} account`" target="_blank"

@@ -93,6 +93,11 @@ watch(is, () => {
         width.value = gaw[1][1]
     }
 })
+const ale: any = reactive({ state: false, message: '' })
+watch(alert, () => {
+    ale.state = alert.value.state
+    ale.message = alert.value.message
+}, { deep: true })
 
 const board = reactive({ container: false, box: false })
 const toast: any = reactive({ success: false, warning: false })
@@ -234,12 +239,13 @@ const dis_color = 'bg-stone-200 text-stone-600 border-stone-600 !cursor-not-allo
 
 <template>
     <div class="px-[calc(.5rem+4vw)] py-[calc(4rem+4vw)] [&_button]:select-none">
-        <div v-if="alert.state"
+        <div v-if="ale.state"
             class="relative bg-amber-100 text-amber-700 mb-8 p-3 pr-12 border-2 border-amber-700 font-bold rounded-md">
-            Jaringanmu bermasalah. Silakan cek terlebih dahulu koneksi internetmu.<br />Pesan :<br />
-            {{ alert.message.length > 0 ? alert.message : '-' }}
+            Jaringanmu bermasalah. Silakan cek terlebih dahulu koneksi internetmu.<br />Pesan : {{ ale.state }}<br />
+            {{ ale.message.length > 0 ? ale.message : '-' }}
             <i style="transition: .4s;" @click="emit('xalert')"
-                class="fa-solid fa-xmark absolute h-full grid place-items-center right-4 bottom-0 cursor-pointer text-xl hover:text-amber-900"></i>
+                class="fa-solid fa-xmark absolute h-full !grid place-items-center right-4 bottom-0 cursor-pointer text-xl hover:text-amber-900">
+            </i>
         </div>
         <div>
             <p class="text-2xl text-center font-extrabold text-sky-600 leading-6">Babak Kuis<br />

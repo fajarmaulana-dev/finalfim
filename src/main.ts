@@ -7,12 +7,14 @@ import interceptor from '@/api/interceptor';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import 'nprogress/nprogress.css';
 import './style.css';
+import './awesome.css';
+import '@fontsource/be-vietnam-pro';
 
+interceptor(store, router);
 const app = createApp(App);
 
 app.use(router);
 app.use(store);
-interceptor(store, router);
 app.component('QuillEditor', QuillEditor);
 
 app.mount('#app');
