@@ -152,10 +152,11 @@ const onReset = async () => {
 
 const disabled = () => !data.value?.changed || load.reset
 
-const sosmed = [
-    { ico: 'github', url: 'https://github.com/fajarmaulana-dev' },
-    { ico: 'linkedin-in', url: 'https://www.linkedin.com/in/fajar-maulana-16b98b152' },
-    { ico: 'facebook', url: 'https://web.facebook.com/profile.php?id=100090702398845' },
+const socials = [
+    { ico: 'solid fa-blog', url: 'https://fajarmaulana-dev.netlify.app' },
+    { ico: 'brands fa-github', url: 'https://github.com/fajarmaulana-dev' },
+    { ico: 'brands fa-linkedin-in', url: 'https://www.linkedin.com/in/fajar-maulana-16b98b152' },
+    { ico: 'brands fa-facebook', url: 'https://web.facebook.com/profile.php?id=100090702398845' },
 ]
 </script>
 
@@ -203,13 +204,9 @@ const sosmed = [
                 </div>
                 <div class="flex flex-col-reverse sm:flex-row gap-3 sm:gap-7 items-center mt-4">
                     <div class="flex justify-center gap-4">
-                        <a style="transition: .4s;" href="https://fajarmaulana-dev.netlify.app"
-                            aria-label="Go to my website" target="_blank"
-                            class="fa-solid fa-blog text-base sm:text-lg md:text-xl cursor-pointer text-teal-500 hover:text-teal-700 lg:!hidden xl:block">
-                        </a>
-                        <a style="transition: .4s;" v-for="social, i in sosmed" :key="i" :href="social.url"
-                            :aria-label="`Go to my ${social.ico} account`" target="_blank"
-                            :class="`fa-brands fa-${social.ico} text-base sm:text-lg md:text-xl cursor-pointer text-teal-500 hover:text-teal-700`">
+                        <a style="transition: .4s;" v-for="social, i in socials" :key="i" :href="social.url"
+                            :aria-label="`Go to developers ${social.ico.split('-')[1]} account`" target="_blank"
+                            :class="`fa-${social.ico} ${social.ico.includes('blog') ? 'lg:!hidden xl:!block' : ''} text-base sm:text-lg md:text-xl cursor-pointer text-teal-500 hover:text-teal-700`">
                         </a>
                     </div>
                     <div
