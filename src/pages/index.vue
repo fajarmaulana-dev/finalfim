@@ -47,7 +47,11 @@ const core = async () => {
         } else error.value = true
     }
 }
+const screenWidth = ref(window.innerWidth);
 onMounted(async () => {
+    window.addEventListener('resize', () => {
+        screenWidth.value = window.innerWidth;
+    })
     await core()
 })
 
@@ -239,7 +243,7 @@ const sosmed = [
                 <div class="dot down w-[12px] h-[8px] top-20 left-20"></div>
             </div>
         </div>
-        <div v-for="i in 5"
+        <div v-if="screenWidth >= 768" v-for="i in 5"
             :style="`top: ${((i - 0.7) * 43)}rem; left: ${i % 2 === 0 ? (Math.round(Math.random() * 21)) : ''}vw; right: ${i % 2 !== 0 ? (Math.round(Math.random() * 38)) : ''}vw; transform: rotate(${((i - 0.35) * 20) + Math.round(Math.random() * 140)}deg)`"
             class="absolute !z-0">
             <div
