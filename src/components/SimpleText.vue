@@ -64,7 +64,7 @@ const onModel = (e: any) => emit('update:modelValue', e.target.value)
                     peer-valid:text-slate-50 bg-gradient-to-br peer-valid:from-sky-600 peer-valid:to-teal-500 peer-focus:text-slate-50 peer-focus:from-sky-600 peer-focus:to-teal-500 text-sky-600">
             {{ placeholder }}</label>
         <i v-if="ico.length > 0" @click="emit('appendClick')"
-            class="absolute inset-y-0 right-2 xl:right-0 cursor-pointer w-[calc(.7rem+2.5vw)] grid place-items-center transition duration-300 hover:text-teal-700 active:text-sky-600"
+            class="absolute inset-y-0 right-2 xl:right-0 cursor-pointer w-[calc(.7rem+2.5vw)] !grid place-items-center transition duration-300 hover:text-teal-700 active:text-sky-600"
             :class="[ico, disabled ? 'text-slate-200' : 'text-sky-600']"></i>
     </section>
 </template>
