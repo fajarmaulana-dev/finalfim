@@ -14,6 +14,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
       workbox: {
+        cleanupOutdatedCaches: true,
         globPatterns: [
           '**/*.{js,ts,css,html,ico,png,svg,json,vue,txt,woff2,ttf,avif,pdf}',
         ],
@@ -25,6 +26,7 @@ export default defineConfig({
         description:
           'Aplikasi untuk babak kuis Forum Ilmiah Matematika Nasional',
         theme_color: '#ffffff',
+        background_color: '#ffffff',
         start_url: '/',
         icons: [
           {
