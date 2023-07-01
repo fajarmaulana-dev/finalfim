@@ -8,8 +8,11 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import 'nprogress/nprogress.css';
 import './style.css';
 import './awesome.css';
+import {useRegisterSW} from 'virtual:pwa-register/vue';
 
+useRegisterSW({immediate: true});
 interceptor(store, router);
+
 const app = createApp(App);
 
 app.use(router);
