@@ -189,7 +189,7 @@ const sendLink = async (req, res, next) => {
     return next(new HttpError(bad, 500));
   }
 
-  const link = `${process.env.BASE_URL}/auth/reset?id=${createdToken.userId}&token=${createdToken.token}`;
+  const link = `${process.env.BASE_URL}/auth?p=reset&id=${createdToken.userId}&token=${createdToken.token}`;
   try {
     await sendEmail(exist.email, "Reset Kata Sandi FIM", link, exist.name);
   } catch (err) {
