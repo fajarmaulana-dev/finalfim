@@ -16,13 +16,13 @@ const setup = (store: any, router: any) => {
         !noAuth.includes(config.url.split('/')[2])
       ) {
         let user = Local.getLocalData('user');
-        if (!user) router.replace('/auth/login');
+        if (!user) router.replace('/auth?p=login');
         if (user) {
           if (
             !Object.keys(user).includes('fimunnes') ||
             !Object.keys(user).includes('date')
           ) {
-            router.replace('/auth/login');
+            router.replace('/auth?p=login');
           }
         }
         const limit = user.date;
@@ -34,7 +34,7 @@ const setup = (store: any, router: any) => {
             store.dispatch('login');
           } catch (error: any) {
             if (error.message === 'Network Error') {
-              router.replace('/auth/login');
+              router.replace('/auth?p=login');
             }
             if (error.response) {
               if (error.response.status === 403) {
@@ -42,7 +42,7 @@ const setup = (store: any, router: any) => {
                   Local.removeLocalData('user');
                   store.dispatch('logout');
                 }
-                router.replace('/auth/login');
+                router.replace('/auth?p=login');
               }
             }
             return Promise.reject(error);
@@ -64,7 +64,7 @@ const setup = (store: any, router: any) => {
       if (err.message === 'Network Error') {
         const is = err.config.params.is;
         if (is) store.commit('spill', {is, to: true});
-        else router.replace('/auth/login');
+        else router.replace('/auth?p=login');
       }
       return Promise.reject(err);
     },

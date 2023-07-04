@@ -47,9 +47,9 @@ const onModel = (e: any) => emit('update:modelValue', e.target.value)
 
 <template>
     <section class="relative">
-        <input v-if="is === 'text'" :required="true" :type="type" :id="id" :name="name" :disabled="disabled"
-            :value="modelValue" @input="onModel($event)" spellcheck="false" @keyup.enter="emit('onEnter')"
-            :class="ico.length > 0 ? 'pr-[calc(1.5rem+2.5vw)]' : ''"
+        <input v-if="is === 'text'" autocomplete="new-password" :required="true" :type="type" :id="id" :name="name"
+            :disabled="disabled" :value="modelValue" @input="onModel($event)" spellcheck="false"
+            @keyup.enter="emit('onEnter')" :class="ico.length > 0 ? 'pr-[calc(1.5rem+2.5vw)]' : ''"
             class="peer outline-none w-full bg-transparent py-2 px-4 focus:pb-[0.2rem] focus:pt-[0.8rem] valid:pb-[0.2rem] valid:pt-[0.8rem] border-2 focus:outline-none rounded-md disabled:cursor-not-allowed focus:ring-2
             disabled:border-slate-200 disabled:shadow-none disabled:ring-0 focus:ring-opacity-50 text-sky-600 border-sky-600 hover:border-sky-700 focus:ring-teal-500 focus:border-sky-600 light">
         <textarea v-if="is === 'area'" :rows="rows" required="true" :type="type" :id="id" :name="name" :disabled="disabled"

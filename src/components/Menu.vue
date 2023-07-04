@@ -32,7 +32,7 @@ const logout = async () => {
         Local.removeLocalData('user');
         store.dispatch('logout');
     }
-    router.replace('/auth/login');
+    router.replace('/auth?p=login');
 }
 </script>
 
