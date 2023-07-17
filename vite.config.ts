@@ -11,13 +11,26 @@ export default defineConfig({
     vue(),
     Pages(),
     VitePWA({
-      strategies: 'generateSW',
       registerType: 'autoUpdate',
       injectRegister: 'auto',
       workbox: {
         cleanupOutdatedCaches: true,
         globPatterns: [
           '**/*.{js,ts,css,html,ico,png,svg,json,vue,txt,woff2,ttf,avif,pdf}',
+        ],
+        runtimeCaching: [
+          {
+            urlPattern: ({url}) => {
+              return url.pathname.startsWith('/api');
+            },
+            handler: 'CacheFirst' as const,
+            options: {
+              cacheName: 'fim-api-cache',
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
         ],
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
