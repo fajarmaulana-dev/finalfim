@@ -8,9 +8,12 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import 'nprogress/nprogress.css';
 import './style.css';
 import './awesome.css';
-// import {useRegisterSW} from 'virtual:pwa-register/vue';
+import {useRegisterSW} from 'virtual:pwa-register/vue';
 
-// useRegisterSW({immediate: true});
+if ('serviceWorker' in navigator) {
+  useRegisterSW();
+}
+
 interceptor(store, router);
 
 const app = createApp(App);

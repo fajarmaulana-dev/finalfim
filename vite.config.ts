@@ -26,6 +26,10 @@ export default defineConfig({
             handler: 'CacheFirst' as const,
             options: {
               cacheName: 'fim-api-cache',
+              expiration: {
+                maxEntries: 500,
+                maxAgeSeconds: 60 * 60 * 24 * 365 * 2, // 2 years
+              },
               cacheableResponse: {
                 statuses: [0, 200],
               },

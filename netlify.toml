@@ -1,7 +1,6 @@
 [build]
-  command = "vite build"
-  functions = "netlify/functions"
   publish = "dist"
+  command = "pnpm run build"
 
 [[redirects]]
   from = "/*"
