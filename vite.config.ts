@@ -11,6 +11,7 @@ export default defineConfig({
     vue(),
     Pages(),
     VitePWA({
+      strategies: 'generateSW',
       registerType: 'autoUpdate',
       injectRegister: 'auto',
       workbox: {
@@ -28,6 +29,8 @@ export default defineConfig({
         theme_color: '#ffffff',
         background_color: '#ffffff',
         start_url: '/',
+        scope: '/',
+        id: '/',
         icons: [
           {
             src: 'pwa-192x192.png',

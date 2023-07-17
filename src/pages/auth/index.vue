@@ -114,7 +114,7 @@ const invalid = computed(() => pass.new === pass.conf ? '' : 'isian ini harus sa
                         <button type="button" :disabled="!(meta.valid && meta.dirty) || loading || pass.new !== pass.conf"
                             style="transition: letter-spacing .4s;"
                             :class="(!(meta.valid && meta.dirty) || pass.new !== pass.conf) ? 'cursor-not-allowed text-stone-700 bg-stone-300 border-stone-700' : `${loading ? 'cursor-not-allowed' : 'cursor-pointer'} text-white bg-gradient-to-br border-white space`"
-                            class="h-[2.65rem] md:h-[2.75rem] lg:h-[2.85rem] font-bold text-xs xs:text-update sm:text-lg rounded-lg w-full grid place-items-center from-sky-600 to-teal-500 border-2"
+                            class="h-[2.65rem] md:h-[2.75rem] lg:h-[2.85rem] font-bold text-sm xs:text-base sm:text-lg rounded-lg w-full grid place-items-center from-sky-600 to-teal-500 border-2"
                             @click.prevent="send()">
                             <Spinner v-if="loading" is="lazy-ring" stroke="stroke-white" />
                             <span v-else>{{ button[is] }}</span>
