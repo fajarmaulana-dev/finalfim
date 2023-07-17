@@ -10,9 +10,7 @@ import './style.css';
 import './awesome.css';
 import {useRegisterSW} from 'virtual:pwa-register/vue';
 
-if ('serviceWorker' in navigator) {
-  useRegisterSW();
-}
+useRegisterSW({immediate: true});
 
 interceptor(store, router);
 
