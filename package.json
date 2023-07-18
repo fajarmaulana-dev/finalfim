@@ -12,6 +12,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@fontsource/be-vietnam-pro": "^5.0.5",
     "@vueup/vue-quill": "^1.1.1",
     "axios": "^1.4.0",
     "nprogress": "^0.2.0",
