@@ -18,24 +18,6 @@ export default defineConfig({
         globPatterns: [
           '**/*.{js,ts,css,html,ico,png,svg,json,vue,txt,woff2,ttf,avif,pdf}',
         ],
-        runtimeCaching: [
-          {
-            urlPattern: ({url}) => {
-              return url.pathname.startsWith('/api');
-            },
-            handler: 'CacheFirst' as const,
-            options: {
-              cacheName: 'fim-api-cache',
-              expiration: {
-                maxEntries: 500,
-                maxAgeSeconds: 60 * 60 * 24 * 365 * 2, // 2 years
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-        ],
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
