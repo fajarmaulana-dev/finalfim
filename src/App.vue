@@ -16,6 +16,10 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+:root {
+  color-scheme: only light;
+}
+
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
