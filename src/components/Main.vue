@@ -213,23 +213,29 @@ const justClose = () => {
 
 const notAnswer = (q_idx: number) => {
     const changer = { before: (quest?.value as any).answer, after: 'NA' }
-    if (isNaN((quest?.value as any).answer)) {
-        if ((quest?.value as any).answer == 'NA') false;
-        else input.value[name.value.indexOf((quest?.value as any).answer)] -= (quest?.value as any).point
+    if (changer.before == changer.after) justClose();
+    else {
+        if (isNaN((quest?.value as any).answer)) {
+            if ((quest?.value as any).answer == 'NA') false;
+            else input.value[name.value.indexOf((quest?.value as any).answer)] -= (quest?.value as any).point
+        }
+        emit('notAnswer', { q_idx, answer: 'NA', color: 'bg-white text-sky-600 border-sky-600', points: input.value, bonus: bonus.value, disMin: disMin.value, changer, point: (quest?.value as any).point })
     }
-    emit('notAnswer', { q_idx, answer: 'NA', color: 'bg-white text-sky-600 border-sky-600', points: input.value, bonus: bonus.value, disMin: disMin.value, changer, point: (quest?.value as any).point })
 }
 
 const answer = (q_idx: number, c_name: string, c_color: string, c_idx: number) => {
     const changer = { before: (quest?.value as any).answer, after: c_name }
-    if (isNaN((quest?.value as any).answer)) {
-        if ((quest?.value as any).answer == 'NA') false
-        else input.value[name.value.indexOf((quest?.value as any).answer)] -= (quest?.value as any).point
+    if (changer.before == changer.after) justClose();
+    else {
+        if (isNaN((quest?.value as any).answer)) {
+            if ((quest?.value as any).answer == 'NA') false
+            else input.value[name.value.indexOf((quest?.value as any).answer)] -= (quest?.value as any).point
+        }
+        input.value[c_idx] += (quest?.value as any).point
+        emit('answer', { q_idx, answer: c_name, color: c_color, points: input.value, bonus: bonus.value, disMin: disMin.value, changer, point: (quest?.value as any).point })
+        answerHandler.value = true
+        current.value = 0
     }
-    input.value[c_idx] += (quest?.value as any).point
-    emit('answer', { q_idx, answer: c_name, color: c_color, points: input.value, bonus: bonus.value, disMin: disMin.value, changer, point: (quest?.value as any).point })
-    answerHandler.value = true
-    current.value = 0
 }
 
 const btn_transition = 'transition duration-500 transform-gpu hover:scale-y-110 active:scale-y-90'
