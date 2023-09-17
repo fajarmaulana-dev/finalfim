@@ -3,12 +3,10 @@ module.exports = (is, index, data, answerer) => {
   const name = ["A", "B", "C", "D", "E", "F"];
   const divider = is == "mces" ? 5 : 4;
   const watchTemp = JSON.stringify(analyzer.watcher);
-  const reduceTemp = JSON.stringify(analyzer.reducer);
-  if (analyzer.reducer[0].length > 0 && analyzer.reducer[0].includes(index)) {
-    const idx = analyzer.reducer[0].findIndex((i) => i === index);
+  if (analyzer.reducer.length > 0 && analyzer.reducer.includes(index)) {
+    const idx = analyzer.reducer.findIndex((i) => i === index);
     const indexa = (idx + 1) % 3 == 0 ? idx - 2 : (idx + 1) % 3 == 2 ? idx - 1 : idx;
-    analyzer.reducer[0].splice(indexa, 3);
-    analyzer.reducer[1].splice(indexa, 3);
+    analyzer.reducer.splice(indexa, 3);
     analyzer.watcher = [...Array(4)].map((_, i) =>
       Object.fromEntries([...Array(divider)].map((n, i) => [i.toString(), ""]))
     );
@@ -60,10 +58,6 @@ module.exports = (is, index, data, answerer) => {
     return arr;
   };
 
-  const beta = JSON.parse(watchTemp);
-  const temp = watchTemp.length > JSON.stringify(analyzer.watcher).length;
-  const indexa = JSON.parse(reduceTemp)[1][JSON.parse(reduceTemp)[0].findIndex((i) => i === index)];
-
   const analyze = (tempMaker, idx, id, nameId) => {
     const floor = (m, param) =>
       Math.floor(m / (divider + 0.1)) == Math.floor(param / (divider + 0.1));
@@ -72,71 +66,50 @@ module.exports = (is, index, data, answerer) => {
       extract(rightData(), 1).some((n) => n.includes(m) && n.includes(param));
     const to = (m, param) =>
       extract(leftData(), -1).some((n) => n.includes(m) && n.includes(param));
-    const exist = tempMaker.find((m) => analyzer.reducer[0].includes(m));
+    const exist = tempMaker.find((m) => analyzer.reducer.includes(m));
 
     const adder = () => {
-      analyzer.reducer[0].push(...tempMaker);
-      analyzer.reducer[1].push(
-        ...[
-          [idx, id],
-          [idx, id],
-          [idx, id],
-        ]
-      );
+      analyzer.reducer.push(...tempMaker);
       analyzer.watcher[idx][id] = name[nameId];
     };
 
     const extraAdder = (inter, rule, indic, arr) => {
       if (
         Math.abs(index - exist) == inter &&
-        !tempMaker.every((m) => analyzer.reducer[0].includes(m))
+        !tempMaker.every((m) => analyzer.reducer.includes(m))
       ) {
-        let spl = analyzer.reducer[0].indexOf(exist);
-        if (analyzer.reducer[0].some((m) => m == exist - indic && rule(m, exist))) {
-          spl = analyzer.reducer[0].indexOf(exist - indic);
+        let spl = analyzer.reducer.indexOf(exist);
+        if (analyzer.reducer.some((m) => m == exist - indic && rule(m, exist))) {
+          spl = analyzer.reducer.indexOf(exist - indic);
         }
-        analyzer.reducer[0].splice(spl, 3, ...arr);
+        analyzer.reducer.splice(spl, 3, ...arr);
         adder();
       }
     };
 
-    if (!tempMaker.some((m) => analyzer.reducer[0].includes(m))) adder();
+    if (!tempMaker.some((m) => analyzer.reducer.includes(m))) adder();
     else {
-      if ([0, 2, 3].includes(idx) && analyzer.reducer[0].some((m) => floor(m, index))) {
+      if ([0, 2, 3].includes(idx) && analyzer.reducer.some((m) => floor(m, index))) {
         const arr = [...Array(3)].map((_, i) => (index - exist < 0 ? index + i : index - 2 + i));
         extraAdder(3, floor, 1, arr);
       }
-      if ([1, 2, 3].includes(idx) && analyzer.reducer[0].some((m) => bottom(m, index))) {
+      if ([1, 2, 3].includes(idx) && analyzer.reducer.some((m) => bottom(m, index))) {
         const arr = [...Array(3)].map((_, i) =>
           index - exist < 0 ? index + i * divider : index + (i - 2) * divider
         );
         extraAdder(3 * divider, bottom, divider, arr);
       }
-      if ([0, 1, 2].includes(idx) && analyzer.reducer[0].some((m) => to(m, index))) {
+      if ([0, 1, 2].includes(idx) && analyzer.reducer.some((m) => to(m, index))) {
         const arr = [...Array(3)].map((_, i) =>
           index - exist < 0 ? index + i * (divider - 1) : index + (i - 2) * (divider - 1)
         );
         extraAdder(3 * (divider - 1), from, divider - 1, arr);
       }
-      if ([0, 1, 3].includes(idx) && analyzer.reducer[0].some((m) => from(m, index))) {
+      if ([0, 1, 3].includes(idx) && analyzer.reducer.some((m) => from(m, index))) {
         const arr = [...Array(3)].map((_, i) =>
           index - exist < 0 ? index + i * (divider + 1) : index + (i - 2) * (divider + 1)
         );
         extraAdder(3 * (divider + 1), from, divider + 1, arr);
-      }
-    }
-
-    for (const i in beta) {
-      for (const j of Object.keys(beta[i])) {
-        if (
-          beta[i][j] !== analyzer.watcher[i][j] &&
-          analyzer.watcher[i][j] === "" &&
-          watchTemp.length !== JSON.stringify(analyzer.watcher).length
-        )
-          analyzer.watcher[i][j] = beta[i][j];
-        if (indexa) {
-          if (temp) analyzer.watcher[indexa[0]][indexa[1]] = "";
-        }
       }
     }
   };

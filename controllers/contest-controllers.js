@@ -63,11 +63,9 @@ const createData = async (req, res, next) => {
   const metas = {
     answerer: [...Array(sum)].map((_, i) => "JC"),
     watcher: [...Array(4)].map((_, i) =>
-      Object.fromEntries(
-        [...Array(Math.sqrt(sum))].map((_, i) => [i.toString(), ""])
-      )
+      Object.fromEntries([...Array(Math.sqrt(sum))].map((_, i) => [i.toString(), ""]))
     ),
-    reducer: [[], []],
+    reducer: [],
   };
 
   const error = [];
@@ -209,12 +207,7 @@ const getDatas = async (req, res, next) => {
       };
     });
   } catch (error) {
-    return next(
-      new HttpError(
-        "Gagal melakukan operasi pemetaan. Silakan reload halaman.",
-        409
-      )
-    );
+    return next(new HttpError("Gagal melakukan operasi pemetaan. Silakan reload halaman.", 409));
   }
 
   const changed =
@@ -296,17 +289,13 @@ const setPoint = async (req, res, next) => {
     return next(new HttpError(bad, 500));
   }
 
-  res
-    .status(200)
-    .json({ message: `Berhasil memperbarui poin peserta ${name}.` });
+  res.status(200).json({ message: `Berhasil memperbarui poin peserta ${name}.` });
 };
 
 const setAnswer = async (req, res, next) => {
   let { is, index, answer, color, points, bonus, disMin } = req.body;
   const name = ["A", "B", "C", "D", "E", "F"];
-  const wrong = Object.fromEntries(
-    [...Array(name.length)].map((_, i) => [name[i], disMin[i]])
-  );
+  const wrong = Object.fromEntries([...Array(name.length)].map((_, i) => [name[i], disMin[i]]));
 
   let data;
   try {
@@ -321,149 +310,140 @@ const setAnswer = async (req, res, next) => {
     i !== "JC" && idx !== index - 1 ? i : idx === index - 1 ? answer : "JC"
   );
 
-  const { dec, newData } = analyze(is, index, data, answerer);
-  if (dec !== null) {
-    if (dec.val < 0) points[name.indexOf(dec.before)] -= bonus;
-    else if (dec.val > 0) points[name.indexOf(dec.after)] += bonus;
-    else {
-      points[name.indexOf(dec.before)] -= bonus;
-      points[name.indexOf(dec.after)] += bonus;
+  if (JSON.stringify(data.answerer) !== JSON.stringify(answerer)) {
+    const { dec, newData } = analyze(is, index, data, answerer);
+    if (dec !== null) {
+      if (dec.val < 0) points[name.indexOf(dec.before)] -= bonus;
+      else if (dec.val > 0) points[name.indexOf(dec.after)] += bonus;
+      else {
+        points[name.indexOf(dec.before)] -= bonus;
+        points[name.indexOf(dec.after)] += bonus;
+      }
     }
-  }
 
-  const pointAfter = Object.fromEntries(
-    [...Array(name.length)].map((_, i) => [name[i], points[i]])
-  );
-
-  const error = [];
-  try {
-    if (is == "mces") {
-      try {
-        await EMeta.updateMany({}, [
-          {
-            $set: {
-              answerer,
-              watcher: newData.watcher,
-              reducer: newData.reducer,
-            },
-          },
-        ]);
-      } catch (err) {
-        error.push("meta");
-      }
-      try {
-        await EQuest.updateOne(
-          { index },
-          { answer, color, disMin, disTemp: disMin }
-        );
-      } catch (err) {
-        error.push("quest");
-      }
-      try {
-        await EPart.bulkWrite(
-          name.map((i, idx) => {
-            return {
-              updateOne: {
-                filter: { name: i },
-                update: { point: points[idx] },
-              },
-            };
-          })
-        );
-      } catch (err) {
-        error.push("part");
-      }
-    }
-    if (is == "mcjhs") {
-      try {
-        await JMeta.updateMany({}, [
-          {
-            $set: {
-              answerer,
-              watcher: newData.watcher,
-              reducer: newData.reducer,
-            },
-          },
-        ]);
-      } catch (err) {
-        error.push("meta");
-      }
-      try {
-        await JQuest.updateOne(
-          { index },
-          { answer, color, disMin, disTemp: disMin }
-        );
-      } catch (err) {
-        error.push("quest");
-      }
-      try {
-        await JPart.bulkWrite(
-          name.map((i, idx) => {
-            return {
-              updateOne: {
-                filter: { name: i },
-                update: { point: points[idx] },
-              },
-            };
-          })
-        );
-      } catch (err) {
-        error.push("part");
-      }
-    }
-    if (is == "mcshs") {
-      try {
-        await SMeta.updateMany({}, [
-          {
-            $set: {
-              answerer,
-              watcher: newData.watcher,
-              reducer: newData.reducer,
-            },
-          },
-        ]);
-      } catch (err) {
-        error.push("meta");
-      }
-      try {
-        await SQuest.updateOne(
-          { index },
-          { answer, color, disMin, disTemp: disMin }
-        );
-      } catch (err) {
-        error.push("quest");
-      }
-      try {
-        await SPart.bulkWrite(
-          name.map((i, idx) => {
-            return {
-              updateOne: {
-                filter: { name: i },
-                update: { point: points[idx] },
-              },
-            };
-          })
-        );
-      } catch (err) {
-        error.push("part");
-      }
-    }
-  } catch (err) {
-    return next(
-      new HttpError(
-        `${bad} ${
-          error[0] == "part"
-            ? `Point: ${pointAfter}`
-            : `Responden: ${answerer}, Wrong: ${wrong}`
-        }`,
-        500
-      )
+    const pointAfter = Object.fromEntries(
+      [...Array(name.length)].map((_, i) => [name[i], points[i]])
     );
-  }
 
-  res
-    .status(200)
-    .json({ message: "Berhasil memperbarui data.", decision: dec });
+    const error = [];
+    try {
+      if (is == "mces") {
+        try {
+          await EMeta.updateMany({}, [
+            {
+              $set: {
+                answerer,
+                watcher: newData.watcher,
+                reducer: newData.reducer,
+              },
+            },
+          ]);
+        } catch (err) {
+          error.push("meta");
+        }
+        try {
+          await EQuest.updateOne({ index }, { answer, color, disMin, disTemp: disMin });
+        } catch (err) {
+          error.push("quest");
+        }
+        try {
+          await EPart.bulkWrite(
+            name.map((i, idx) => {
+              return {
+                updateOne: {
+                  filter: { name: i },
+                  update: { point: points[idx] },
+                },
+              };
+            })
+          );
+        } catch (err) {
+          error.push("part");
+        }
+      }
+      if (is == "mcjhs") {
+        try {
+          await JMeta.updateMany({}, [
+            {
+              $set: {
+                answerer,
+                watcher: newData.watcher,
+                reducer: newData.reducer,
+              },
+            },
+          ]);
+        } catch (err) {
+          error.push("meta");
+        }
+        try {
+          await JQuest.updateOne({ index }, { answer, color, disMin, disTemp: disMin });
+        } catch (err) {
+          error.push("quest");
+        }
+        try {
+          await JPart.bulkWrite(
+            name.map((i, idx) => {
+              return {
+                updateOne: {
+                  filter: { name: i },
+                  update: { point: points[idx] },
+                },
+              };
+            })
+          );
+        } catch (err) {
+          error.push("part");
+        }
+      }
+      if (is == "mcshs") {
+        try {
+          await SMeta.updateMany({}, [
+            {
+              $set: {
+                answerer,
+                watcher: newData.watcher,
+                reducer: newData.reducer,
+              },
+            },
+          ]);
+        } catch (err) {
+          error.push("meta");
+        }
+        try {
+          await SQuest.updateOne({ index }, { answer, color, disMin, disTemp: disMin });
+        } catch (err) {
+          error.push("quest");
+        }
+        try {
+          await SPart.bulkWrite(
+            name.map((i, idx) => {
+              return {
+                updateOne: {
+                  filter: { name: i },
+                  update: { point: points[idx] },
+                },
+              };
+            })
+          );
+        } catch (err) {
+          error.push("part");
+        }
+      }
+    } catch (err) {
+      return next(
+        new HttpError(
+          `${bad} ${
+            error[0] == "part" ? `Point: ${pointAfter}` : `Responden: ${answerer}, Wrong: ${wrong}`
+          }`,
+          500
+        )
+      );
+    }
+
+    res.status(200).json({ message: "Berhasil memperbarui data.", decision: dec });
+  } else {
+    res.status(200).json({ message: "Berhasil memperbarui data.", decision: null });
+  }
 };
 
 const resetData = async (req, res, next) => {
@@ -473,11 +453,9 @@ const resetData = async (req, res, next) => {
   const disMin = [...Array(6)].map((_, i) => false);
   const answerer = [...Array(sum)].map((_, i) => "JC");
   const watcher = [...Array(4)].map((_, i) =>
-    Object.fromEntries(
-      [...Array(Math.sqrt(sum))].map((_, i) => [i.toString(), ""])
-    )
+    Object.fromEntries([...Array(Math.sqrt(sum))].map((_, i) => [i.toString(), ""]))
   );
-  const reducer = [[], []];
+  const reducer = [];
   try {
     if (is == "mces") {
       await EMeta.updateMany({}, [{ $set: { answerer, watcher, reducer } }]);
@@ -548,9 +526,7 @@ const update = async (req, res, next) => {
     return next(new HttpError(bad, 500));
   }
 
-  res
-    .status(200)
-    .json({ message: `Berhasil memperbarui soal nomor ${index}.` });
+  res.status(200).json({ message: `Berhasil memperbarui soal nomor ${index}.` });
 };
 
 const resetQuest = async (req, res, next) => {
