@@ -34,7 +34,7 @@ app.use((error, req, res, next) => {
     message: error.message || "Kesalahan server/koneksi, silakan coba lagi.",
   });
 });
-
+mongoose.set("strictQuery", false);
 mongoose
   .connect(process.env.DATABASE_URL, { useNewUrlParser: true })
   .then(() => app.listen(5000))
