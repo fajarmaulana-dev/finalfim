@@ -3,13 +3,13 @@ module.exports = (is, index, data, answerer) => {
   const name = ["A", "B", "C", "D", "E", "F"];
   const divider = is == "mces" ? 5 : 4;
   const watchTemp = JSON.stringify(analyzer.watcher);
-  if (analyzer.reducer.length > 0 && analyzer.reducer.includes(index)) {
-    const idx = analyzer.reducer.findIndex((i) => i === index);
+  if (analyzer.reducer[0].length > 0 && analyzer.reducer[0].includes(index)) {
+    const idx = analyzer.reducer[0].findIndex((i) => i === index);
     const indexa = (idx + 1) % 3 == 0 ? idx - 2 : (idx + 1) % 3 == 2 ? idx - 1 : idx;
-    analyzer.reducer.splice(indexa, 3);
-    analyzer.watcher = [...Array(4)].map((_, i) =>
-      Object.fromEntries([...Array(divider)].map((n, i) => [i.toString(), ""]))
-    );
+    const current = analyzer.reducer[1][indexa];
+    analyzer.watcher[current[0]][current[1]] = "";
+    analyzer.reducer[0].splice(indexa, 3);
+    analyzer.reducer[1].splice(indexa, 3);
   }
   const modFilter = (mod) => answerer.filter((r, i) => (i + 1) % divider === mod);
   const lessFilter = (less) =>
@@ -66,46 +66,53 @@ module.exports = (is, index, data, answerer) => {
       extract(rightData(), 1).some((n) => n.includes(m) && n.includes(param));
     const to = (m, param) =>
       extract(leftData(), -1).some((n) => n.includes(m) && n.includes(param));
-    const exist = tempMaker.find((m) => analyzer.reducer.includes(m));
+    const exist = tempMaker.find((m) => analyzer.reducer[0].includes(m));
 
     const adder = () => {
-      analyzer.reducer.push(...tempMaker);
+      analyzer.reducer[0].push(...tempMaker);
+      analyzer.reducer[1].push(
+        ...[
+          [idx, id],
+          [idx, id],
+          [idx, id],
+        ]
+      );
       analyzer.watcher[idx][id] = name[nameId];
     };
 
     const extraAdder = (inter, rule, indic, arr) => {
       if (
         Math.abs(index - exist) == inter &&
-        !tempMaker.every((m) => analyzer.reducer.includes(m))
+        !tempMaker.every((m) => analyzer.reducer[0].includes(m))
       ) {
-        let spl = analyzer.reducer.indexOf(exist);
-        if (analyzer.reducer.some((m) => m == exist - indic && rule(m, exist))) {
-          spl = analyzer.reducer.indexOf(exist - indic);
+        let spl = analyzer.reducer[0].indexOf(exist);
+        if (analyzer.reducer[0].some((m) => m == exist - indic && rule(m, exist))) {
+          spl = analyzer.reducer[0].indexOf(exist - indic);
         }
-        analyzer.reducer.splice(spl, 3, ...arr);
+        analyzer.reducer[0].splice(spl, 3, ...arr);
         adder();
       }
     };
 
-    if (!tempMaker.some((m) => analyzer.reducer.includes(m))) adder();
+    if (!tempMaker.some((m) => analyzer.reducer[0].includes(m))) adder();
     else {
-      if ([0, 2, 3].includes(idx) && analyzer.reducer.some((m) => floor(m, index))) {
+      if ([0, 2, 3].includes(idx) && analyzer.reducer[0].some((m) => floor(m, index))) {
         const arr = [...Array(3)].map((_, i) => (index - exist < 0 ? index + i : index - 2 + i));
         extraAdder(3, floor, 1, arr);
       }
-      if ([1, 2, 3].includes(idx) && analyzer.reducer.some((m) => bottom(m, index))) {
+      if ([1, 2, 3].includes(idx) && analyzer.reducer[0].some((m) => bottom(m, index))) {
         const arr = [...Array(3)].map((_, i) =>
           index - exist < 0 ? index + i * divider : index + (i - 2) * divider
         );
         extraAdder(3 * divider, bottom, divider, arr);
       }
-      if ([0, 1, 2].includes(idx) && analyzer.reducer.some((m) => to(m, index))) {
+      if ([0, 1, 2].includes(idx) && analyzer.reducer[0].some((m) => to(m, index))) {
         const arr = [...Array(3)].map((_, i) =>
           index - exist < 0 ? index + i * (divider - 1) : index + (i - 2) * (divider - 1)
         );
         extraAdder(3 * (divider - 1), from, divider - 1, arr);
       }
-      if ([0, 1, 3].includes(idx) && analyzer.reducer.some((m) => from(m, index))) {
+      if ([0, 1, 3].includes(idx) && analyzer.reducer[0].some((m) => from(m, index))) {
         const arr = [...Array(3)].map((_, i) =>
           index - exist < 0 ? index + i * (divider + 1) : index + (i - 2) * (divider + 1)
         );

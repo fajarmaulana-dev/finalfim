@@ -65,7 +65,7 @@ const createData = async (req, res, next) => {
     watcher: [...Array(4)].map((_, i) =>
       Object.fromEntries([...Array(Math.sqrt(sum))].map((_, i) => [i.toString(), ""]))
     ),
-    reducer: [],
+    reducer: [[], []],
   };
 
   const error = [];
@@ -458,7 +458,7 @@ const resetData = async (req, res, next) => {
   const watcher = [...Array(4)].map((_, i) =>
     Object.fromEntries([...Array(Math.sqrt(sum))].map((_, i) => [i.toString(), ""]))
   );
-  const reducer = [];
+  const reducer = [[], []];
   try {
     if (is == "mces") {
       await EMeta.updateMany({}, [{ $set: { answerer, watcher, reducer } }]);
