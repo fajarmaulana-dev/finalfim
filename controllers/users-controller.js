@@ -12,8 +12,8 @@ const signToken = require("../utils/sign-token");
 const bad = "Kesalahan server/koneksi, silakan coba lagi.";
 
 const refreshCookie = {
-  expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-  maxAge: 24 * 60 * 60 * 1000,
+  expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+  maxAge: 30 * 24 * 60 * 60 * 1000,
   httpOnly: true,
   sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   secure: process.env.NODE_ENV === "production",
@@ -88,8 +88,7 @@ const login = async (req, res, next) => {
     );
 
   const isValidPass = await bcrypt.compare(password, exist.password);
-  if (!isValidPass)
-    return next(new HttpError("Password yang kamu masukkan salah.", 403));
+  if (!isValidPass) return next(new HttpError("Password yang kamu masukkan salah.", 403));
 
   const { accessToken, refreshToken } = await signToken(exist);
 
@@ -115,8 +114,7 @@ const logout = (req, res, next) => {
 
 const refresh = async (req, res, next) => {
   const refresh_token = req.cookies.refresh_token;
-  if (!refresh_token)
-    return next(new HttpError("Tidak dapat merefresh token.", 403));
+  if (!refresh_token) return next(new HttpError("Tidak dapat merefresh token.", 403));
   const decoded = jwt.verify(refresh_token, process.env.REFRESH_KEY);
   if (!decoded) return next(new HttpError("Tidak dapat merefresh token.", 403));
 
@@ -126,9 +124,7 @@ const refresh = async (req, res, next) => {
     { expiresIn: "10m" }
   );
   res.cookie("access_token", accessToken, accessCookie);
-  res
-    .status(200)
-    .json({ message: "Refresh token berhasil.", data: new Date() });
+  res.status(200).json({ message: "Refresh token berhasil.", data: new Date() });
 };
 
 const changePass = async (req, res, next) => {
@@ -146,10 +142,7 @@ const changePass = async (req, res, next) => {
   }
 
   const isValidPass = await bcrypt.compare(password, user.password);
-  if (!isValidPass)
-    return next(
-      new HttpError("Kata sandi lama yang kamu masukkan salah.", 422)
-    );
+  if (!isValidPass) return next(new HttpError("Kata sandi lama yang kamu masukkan salah.", 422));
 
   const hashedPass = await bcrypt.hash(newPassword, 12);
   user.password = hashedPass;
@@ -171,12 +164,7 @@ const sendLink = async (req, res, next) => {
     return next(new HttpError(bad, 500));
   }
   if (!exist) {
-    return next(
-      new HttpError(
-        "Pengguna dengan email yang diberikan belum terdaftar di FIM.",
-        422
-      )
-    );
+    return next(new HttpError("Pengguna dengan email yang diberikan belum terdaftar di FIM.", 422));
   }
 
   const createdToken = new Token({
@@ -244,9 +232,7 @@ const resetPass = async (req, res, next) => {
     return next(new HttpError(bad, 500));
   }
 
-  res
-    .status(200)
-    .json({ message: "Pembaruan kata sandi berhasil, silakan login kembali." });
+  res.status(200).json({ message: "Pembaruan kata sandi berhasil, silakan login kembali." });
 };
 
 exports.getUsers = getUsers;
