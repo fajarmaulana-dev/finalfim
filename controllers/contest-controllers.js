@@ -347,7 +347,7 @@ const setAnswer = async (req, res, next) => {
           },
         ]);
       }
-      if (is == "mcjhs") {
+      if (is == "mcshs") {
         await SMeta.updateMany({}, [
           {
             $set: {
