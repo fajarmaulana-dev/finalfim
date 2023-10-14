@@ -17,6 +17,7 @@ const refreshCookie = {
   httpOnly: true,
   sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   secure: process.env.NODE_ENV === "production",
+  partitioned: process.env.NODE_ENV === "production",
 };
 
 const accessCookie = {
@@ -25,6 +26,7 @@ const accessCookie = {
   httpOnly: true,
   sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   secure: process.env.NODE_ENV === "production",
+  partitioned: process.env.NODE_ENV === "production",
 };
 
 const getUsers = async (req, res, next) => {
