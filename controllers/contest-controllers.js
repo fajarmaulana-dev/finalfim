@@ -11,22 +11,15 @@ const createData = async (req, res, next) => {
   const { is } = req.query;
   const sum = is === "mces" ? 25 : 16;
   let quest, part, meta;
+  const getter = async (quest, part, meta) => {
+    quest = await quest.findOne();
+    part = await part.findOne();
+    meta = await meta.findOne();
+  };
   try {
-    if (is == "mces") {
-      quest = await EQuest.findOne();
-      part = await EPart.findOne();
-      meta = await EMeta.findOne();
-    }
-    if (is == "mcjhs") {
-      quest = await JQuest.findOne();
-      part = await JPart.findOne();
-      meta = await JMeta.findOne();
-    }
-    if (is == "mcshs") {
-      quest = await SQuest.findOne();
-      part = await SPart.findOne();
-      meta = await SMeta.findOne();
-    }
+    if (is == "mces") await getter(EQuest, EPart, EMeta);
+    if (is == "mcjhs") await getter(JQuest, JPart, JMeta);
+    if (is == "mcshs") await getter(SQuest, SPart, SMeta);
   } catch (err) {
     return next(new HttpError(bad, 500));
   }
@@ -69,59 +62,27 @@ const createData = async (req, res, next) => {
   };
 
   const error = [];
-
+  const creator = async (quest, part, meta) => {
+    try {
+      if (meta === null) await meta.create(metas);
+    } catch (err) {
+      error.push("meta");
+    }
+    try {
+      if (quest === null) await quest.create(questions);
+    } catch (err) {
+      error.push("question");
+    }
+    try {
+      if (part === null) await part.create(contestants);
+    } catch (err) {
+      error.push("contestant");
+    }
+  };
   try {
-    if (is == "mces") {
-      try {
-        if (meta === null) await EMeta.create(metas);
-      } catch (err) {
-        error.push("meta");
-      }
-      try {
-        if (quest === null) await EQuest.create(questions);
-      } catch (err) {
-        error.push("question");
-      }
-      try {
-        if (part === null) await EPart.create(contestants);
-      } catch (err) {
-        error.push("contestant");
-      }
-    }
-    if (is == "mcjhs") {
-      try {
-        if (meta === null) await JMeta.create(metas);
-      } catch (err) {
-        error.push("meta");
-      }
-      try {
-        if (quest === null) await JQuest.create(questions);
-      } catch (err) {
-        error.push("question");
-      }
-      try {
-        if (part === null) await JPart.create(contestants);
-      } catch (err) {
-        error.push("contestant");
-      }
-    }
-    if (is == "mcshs") {
-      try {
-        if (meta === null) await SMeta.create(metas);
-      } catch (err) {
-        error.push("meta");
-      }
-      try {
-        if (quest === null) await SQuest.create(questions);
-      } catch (err) {
-        error.push("question");
-      }
-      try {
-        if (part === null) await SPart.create(contestants);
-      } catch (err) {
-        error.push("contestant");
-      }
-    }
+    if (is == "mces") await creator(EQuest, EPart, EMeta);
+    if (is == "mcjhs") await creator(JQuest, JPart, JMeta);
+    if (is == "mcshs") await creator(SQuest, SPart, SMeta);
   } catch (err) {
     return next(new HttpError(`${bad} Error on ${error.join(", ")}`, 500));
   }
@@ -134,22 +95,15 @@ const createData = async (req, res, next) => {
 const remove = async (req, res, next) => {
   const { is } = req.query;
 
+  const remover = async (quest, part, meta) => {
+    await meta.deleteMany({});
+    await quest.deleteMany({});
+    await part.deleteMany({});
+  };
   try {
-    if (is == "mces") {
-      await EMeta.deleteMany({});
-      await EQuest.deleteMany({});
-      await EPart.deleteMany({});
-    }
-    if (is == "mcjhs") {
-      await JMeta.deleteMany({});
-      await JQuest.deleteMany({});
-      await JPart.deleteMany({});
-    }
-    if (is == "mcshs") {
-      await SMeta.deleteMany({});
-      await SQuest.deleteMany({});
-      await SPart.deleteMany({});
-    }
+    if (is == "mces") await remover(EQuest, EPart, EMeta);
+    if (is == "mcjhs") await remover(JQuest, JPart, JMeta);
+    if (is == "mcshs") await remover(SQuest, SPart, SMeta);
   } catch (err) {
     return next(new HttpError(bad, 500));
   }
@@ -162,37 +116,21 @@ const remove = async (req, res, next) => {
 const getDatas = async (req, res, next) => {
   const { is } = req.query;
   let questions, contestants;
+
+  const getter = async (quest, part) => {
+    questions = await quest.aggregate([
+      { $sort: { index: 1 } },
+      { $project: { answer: "$answer", color: "$color" } },
+    ]);
+    contestants = await part.aggregate([
+      { $sort: { name: 1 } },
+      { $project: { name: "$name", point: "$point", color: "$color" } },
+    ]);
+  };
   try {
-    if (is == "mces") {
-      questions = await EQuest.aggregate([
-        { $sort: { index: 1 } },
-        { $project: { answer: "$answer", color: "$color" } },
-      ]);
-      contestants = await EPart.aggregate([
-        { $sort: { name: 1 } },
-        { $project: { name: "$name", point: "$point", color: "$color" } },
-      ]);
-    }
-    if (is == "mcjhs") {
-      questions = await JQuest.aggregate([
-        { $sort: { index: 1 } },
-        { $project: { answer: "$answer", color: "$color" } },
-      ]);
-      contestants = await JPart.aggregate([
-        { $sort: { name: 1 } },
-        { $project: { name: "$name", point: "$point", color: "$color" } },
-      ]);
-    }
-    if (is == "mcshs") {
-      questions = await SQuest.aggregate([
-        { $sort: { index: 1 } },
-        { $project: { answer: "$answer", color: "$color" } },
-      ]);
-      contestants = await SPart.aggregate([
-        { $sort: { name: 1 } },
-        { $project: { name: "$name", point: "$point", color: "$color" } },
-      ]);
-    }
+    if (is == "mces") await getter(EQuest, EPart);
+    if (is == "mcjhs") await getter(JQuest, JPart);
+    if (is == "mcshs") await getter(SQuest, SPart);
   } catch (err) {
     return next(new HttpError(bad, 500));
   }
@@ -243,28 +181,18 @@ const getQuests = async (req, res, next) => {
   const { is, from, number } = req.query;
 
   let data;
+  const getter = async (quest) => {
+    data = await quest.aggregate([
+      { $sort: { index: 1 } },
+      { $skip: Number(from) },
+      { $limit: Number(number) },
+      { $project: { question: "$question", point: "$point" } },
+    ]);
+  };
   try {
-    if (is == "mces")
-      data = await EQuest.aggregate([
-        { $sort: { index: 1 } },
-        { $skip: Number(from) },
-        { $limit: Number(number) },
-        { $project: { question: "$question", point: "$point" } },
-      ]);
-    if (is == "mcjhs")
-      data = await JQuest.aggregate([
-        { $sort: { index: 1 } },
-        { $skip: Number(from) },
-        { $limit: Number(number) },
-        { $project: { question: "$question", point: "$point" } },
-      ]);
-    if (is == "mcshs")
-      data = await SQuest.aggregate([
-        { $sort: { index: 1 } },
-        { $skip: Number(from) },
-        { $limit: Number(number) },
-        { $project: { question: "$question", point: "$point" } },
-      ]);
+    if (is == "mces") await getter(EQuest);
+    if (is == "mcjhs") await getter(JQuest);
+    if (is == "mcshs") await getter(SQuest);
   } catch (err) {
     return next(new HttpError(bad, 500));
   }
@@ -324,40 +252,22 @@ const setAnswer = async (req, res, next) => {
       }
     }
 
+    const metaPatcher = async (meta) => {
+      await meta.updateMany({}, [
+        {
+          $set: {
+            answerer,
+            watcher: newData.watcher,
+            reducer: newData.reducer,
+          },
+        },
+      ]);
+    };
+
     try {
-      if (is == "mces") {
-        await EMeta.updateMany({}, [
-          {
-            $set: {
-              answerer,
-              watcher: newData.watcher,
-              reducer: newData.reducer,
-            },
-          },
-        ]);
-      }
-      if (is == "mcjhs") {
-        await JMeta.updateMany({}, [
-          {
-            $set: {
-              answerer,
-              watcher: newData.watcher,
-              reducer: newData.reducer,
-            },
-          },
-        ]);
-      }
-      if (is == "mcshs") {
-        await SMeta.updateMany({}, [
-          {
-            $set: {
-              answerer,
-              watcher: newData.watcher,
-              reducer: newData.reducer,
-            },
-          },
-        ]);
-      }
+      if (is == "mces") await metaPatcher(EMeta);
+      if (is == "mcjhs") await metaPatcher(JMeta);
+      if (is == "mcshs") await metaPatcher(SMeta);
     } catch (err) {
       return next(new HttpError(`${bad} Responden: ${answerer}, Wrong: ${wrong}`, 500));
     }
@@ -367,70 +277,33 @@ const setAnswer = async (req, res, next) => {
   const pointAfter = Object.fromEntries(
     [...Array(name.length)].map((_, i) => [name[i], points[i]])
   );
+
+  const questPatcher = async (quest, part) => {
+    try {
+      await quest.updateOne({ index }, { answer, color, disMin, disTemp: disMin });
+    } catch (err) {
+      error.push("quest");
+    }
+    try {
+      await part.bulkWrite(
+        name.map((i, idx) => {
+          return {
+            updateOne: {
+              filter: { name: i },
+              update: { point: points[idx] },
+            },
+          };
+        })
+      );
+    } catch (err) {
+      error.push("part");
+    }
+  };
+
   try {
-    if (is == "mces") {
-      try {
-        await EQuest.updateOne({ index }, { answer, color, disMin, disTemp: disMin });
-      } catch (err) {
-        error.push("quest");
-      }
-      try {
-        await EPart.bulkWrite(
-          name.map((i, idx) => {
-            return {
-              updateOne: {
-                filter: { name: i },
-                update: { point: points[idx] },
-              },
-            };
-          })
-        );
-      } catch (err) {
-        error.push("part");
-      }
-    }
-    if (is == "mcjhs") {
-      try {
-        await JQuest.updateOne({ index }, { answer, color, disMin, disTemp: disMin });
-      } catch (err) {
-        error.push("quest");
-      }
-      try {
-        await JPart.bulkWrite(
-          name.map((i, idx) => {
-            return {
-              updateOne: {
-                filter: { name: i },
-                update: { point: points[idx] },
-              },
-            };
-          })
-        );
-      } catch (err) {
-        error.push("part");
-      }
-    }
-    if (is == "mcshs") {
-      try {
-        await SQuest.updateOne({ index }, { answer, color, disMin, disTemp: disMin });
-      } catch (err) {
-        error.push("quest");
-      }
-      try {
-        await SPart.bulkWrite(
-          name.map((i, idx) => {
-            return {
-              updateOne: {
-                filter: { name: i },
-                update: { point: points[idx] },
-              },
-            };
-          })
-        );
-      } catch (err) {
-        error.push("part");
-      }
-    }
+    if (is == "mces") await questPatcher(EQuest, EPart);
+    if (is == "mcjhs") await questPatcher(JQuest, JPart);
+    if (is == "mcshs") await questPatcher(SQuest, SPart);
   } catch (err) {
     return next(
       new HttpError(
@@ -459,49 +332,24 @@ const resetData = async (req, res, next) => {
     Object.fromEntries([...Array(Math.sqrt(sum))].map((_, i) => [i.toString(), ""]))
   );
   const reducer = [[], []];
+  const patcher = async (quest, part, meta) => {
+    await meta.updateMany({}, [{ $set: { answerer, watcher, reducer } }]);
+    await quest.updateMany({}, [
+      {
+        $set: {
+          answer: { $toString: "$index" },
+          color,
+          disMin,
+          disTemp: disMin,
+        },
+      },
+    ]);
+    await part.updateMany({}, [{ $set: { point: 100 } }]);
+  };
   try {
-    if (is == "mces") {
-      await EMeta.updateMany({}, [{ $set: { answerer, watcher, reducer } }]);
-      await EQuest.updateMany({}, [
-        {
-          $set: {
-            answer: { $toString: "$index" },
-            color,
-            disMin,
-            disTemp: disMin,
-          },
-        },
-      ]);
-      await EPart.updateMany({}, [{ $set: { point: 100 } }]);
-    }
-    if (is == "mcjhs") {
-      await JMeta.updateMany({}, [{ $set: { answerer, watcher, reducer } }]);
-      await JQuest.updateMany({}, [
-        {
-          $set: {
-            answer: { $toString: "$index" },
-            color,
-            disMin,
-            disTemp: disMin,
-          },
-        },
-      ]);
-      await JPart.updateMany({}, [{ $set: { point: 100 } }]);
-    }
-    if (is == "mcshs") {
-      await SMeta.updateMany({}, [{ $set: { answerer, watcher, reducer } }]);
-      await SQuest.updateMany({}, [
-        {
-          $set: {
-            answer: { $toString: "$index" },
-            color,
-            disMin,
-            disTemp: disMin,
-          },
-        },
-      ]);
-      await SPart.updateMany({}, [{ $set: { point: 100 } }]);
-    }
+    if (is == "mces") await patcher(EQuest, EPart, EMeta);
+    if (is == "mcjhs") await patcher(JQuest, JPart, JMeta);
+    if (is == "mcshs") await patcher(SQuest, SPart, SMeta);
   } catch (err) {
     return next(new HttpError(bad, 500));
   }
@@ -536,31 +384,19 @@ const resetQuest = async (req, res, next) => {
   const index = req.params.idx;
   const { is } = req.query;
 
+  const patcher = async (quest) => {
+    await quest.updateOne(
+      { index },
+      {
+        point: 30,
+        question: `<p>Soal ${is} nomor ${index} belum diedit.</p>`,
+      }
+    );
+  };
   try {
-    if (is == "mces")
-      await EQuest.updateOne(
-        { index },
-        {
-          point: 30,
-          question: `<p>Soal ${is} nomor ${index} belum diedit.</p>`,
-        }
-      );
-    if (is == "mcjhs")
-      await JQuest.updateOne(
-        { index },
-        {
-          point: 30,
-          question: `<p>Soal ${is} nomor ${index} belum diedit.</p>`,
-        }
-      );
-    if (is == "mcshs")
-      await SQuest.updateOne(
-        { index },
-        {
-          point: 30,
-          question: `<p>Soal ${is} nomor ${index} belum diedit.</p>`,
-        }
-      );
+    if (is == "mces") await patcher(EQuest);
+    if (is == "mcjhs") await patcher(JQuest);
+    if (is == "mcshs") await patcher(SQuest);
   } catch (err) {
     return next(new HttpError(bad, 500));
   }
