@@ -30,7 +30,7 @@ const load = reactive({
     data: false,
     reset: false,
     quest: [...Array(is.value == 'mces' ? 25 : 16)].map((_, i) => false),
-    point: [...Array(6)].map((_, i) => false),
+    point: [...Array(5)].map((_, i) => false),
 })
 const state = computed(() => store.state.alert[is.value])
 const alert = reactive({
@@ -97,7 +97,7 @@ const update = async ({ idx, point, name, reader }: any) => {
 
 const answerKit = async ({ q_idx, answer, color, points, bonus, disMin, changer, point }: any) => {
     load.quest[q_idx] = true
-    const name = ['A', 'B', 'C', 'D', 'E', 'F']
+    const name = ['A', 'B', 'C', 'D', 'E']
     await setAnswer({ is: is.value, index: (q_idx + 1), answer, color, points, bonus, disMin })
     if (msg.value.length == 0) {
         if (changer.after == 'NA') {

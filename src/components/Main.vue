@@ -26,8 +26,8 @@ const props = defineProps({
             color: 'border-sky-600 text-sky-600 bg-white',
             point: 30,
             question: '',
-            disMin: [...Array(6)].map((_, i) => false),
-            disTemp: [...Array(6)].map((_, i) => false),
+            disMin: [...Array(5)].map((_, i) => false),
+            disTemp: [...Array(5)].map((_, i) => false),
         }
     },
     bonus: {
@@ -51,7 +51,7 @@ const props = defineProps({
         default: {
             data: false,
             quest: [...Array(25)].map((_, i) => false),
-            point: [...Array(6)].map((_, i) => false),
+            point: [...Array(5)].map((_, i) => false),
         }
     },
     alert: {
@@ -262,12 +262,11 @@ const dis_color = 'bg-stone-200 text-stone-600 border-stone-600 !cursor-not-allo
                     <span class="bg-amber-100"></span>
                     <span class="bg-sky-100"></span>
                     <span class="text-fuchsia-600 bg-fuchsia-100 border-fuchsia-600"></span>
-                    <span class="text-orange-600 bg-orange-100 border-orange-600"></span>
                 </div>
             </div>
         </div>
         <div
-            class="flex flex-col lg:flex-row justify-center lg:justify-around items-center lg:items-start gap-10 mt-10 lg:mt-16 [&_mark]:h-10 [&_mark]:rounded-md [&_mark]:font-bold [&_mark]:text-sky-600 [&_mark]:text-lg [&_mark]:bg-sky-200 [&_mark]:grid [&_mark]:place-items-center">
+            class="flex flex-col lg:flex-row justify-center lg:justify-around items-center lg:items-start gap-16 lg:gap-24 mt-10 lg:mt-16 [&_mark]:h-10 [&_mark]:rounded-md [&_mark]:font-bold [&_mark]:text-sky-600 [&_mark]:text-lg [&_mark]:bg-sky-200 [&_mark]:grid [&_mark]:place-items-center">
             <section class="w-fit flex flex-col justify-center items-center">
                 <div class="flex flex-col gap-4" :class="gap">
                     <mark class="w-[15.35rem] xs:w-[20rem]">Pilihan Soal</mark>
@@ -291,22 +290,22 @@ const dis_color = 'bg-stone-200 text-stone-600 border-stone-600 !cursor-not-allo
             </section>
             <section
                 class="w-full lg:w-fit flex flex-col sm:flex-row justify-center sm:justify-around items-center lg:items-start gap-10 [&>*]:flex [&>*]:flex-col [&>*]:gap-4 [&_mark]:w-[15.35rem] [&_mark]:xs:w-[20rem]">
-                <div class="sm:w-full">
-                    <mark class="sm:w-[100%] md:!min-w-full">Poin Peserta</mark>
+                <div class="sm:w-full lg:!w-[16rem]">
+                    <mark class="sm:w-[100%] xs:!min-w-full lg:!w-[16rem]">Poin Peserta</mark>
                     <div :class="loading.data ? 'grid' : 'flex'"
-                        class="place-items-center flex-col gap-3.5 h-[15.35rem] xs:h-[20rem]">
+                        class="place-items-center flex-col gap-3.5 h-[15.35rem] xs:h-[16rem] lg:h-[20rem]">
                         <Spinner v-if="loading.data" :width="52" is="blocks" fill1="fill-rose-600" fill2="fill-emerald-600"
                             fill3="fill-amber-600" />
                         <div v-else v-for="i in input.length"
-                            class="w-[15.35rem] xs:w-[20rem] sm:w-full h-10 gap-2 lg:gap-2.5 lg:h-[2.604rem] flex">
+                            class="w-[15.35rem] xs:w-[20rem] sm:w-full h-10 gap-2 lg:gap-3 lg:h-[3.4rem] flex">
                             <div class="relative w-full h-full">
                                 <input type="text" :id="i" :name="i" :readonly="readonly[i - 1]"
                                     v-model.number="input[i - 1]"
                                     @keyup.enter="typeof (input[i - 1]) === 'number' ? updatePoint(i, true) : false"
                                     :class="readonly[i - 1] ? 'cursor-default' : 'hover:border-sky-700 focus:ring-2 focus:border-sky-700'"
-                                    class="h-full w-full border-2 border-sky-600 bg-white rounded-md focus:outline-none focus:ring-opacity-50 focus:ring-sky-500 text-sky-600 font-medium pr-2 pl-[3rem] light" />
+                                    class="h-full w-full border-2 border-sky-600 bg-white rounded-md focus:outline-none focus:ring-opacity-50 focus:ring-sky-500 text-sky-600 lg:text-lg font-medium pr-2 pl-[3rem] lg:pl-[3.9rem] light" />
                                 <label :for="i"
-                                    class="w-[2.5rem] border-2 border-sky-600 text-sky-600 font-bold h-full absolute top-0 left-0 rounded-l-md grid place-items-center">
+                                    class="w-[2.5rem] lg:w-[3.4rem] border-2 border-sky-600 text-sky-600 font-bold h-full absolute top-0 left-0 rounded-l-md grid place-items-center">
                                     <Spinner v-if="loading.point[i - 1]" is="lazy-ring" stroke="stroke-sky-600"
                                         :width="18" />
                                     <span v-else>{{ name[i - 1] }}</span>
@@ -315,19 +314,19 @@ const dis_color = 'bg-stone-200 text-stone-600 border-stone-600 !cursor-not-allo
                             <button :id="`edit-${name[i]}`" :aria-label="`edit-${name[i]}`"
                                 :disabled="(typeof (input[i - 1]) !== 'number') || loading.point[i - 1]"
                                 style="transition: .4s;" @click="updatePoint(i, !readonly[i - 1])"
-                                class="fa-solid h-full min-w-[2.5rem] rounded-md border-2 text-white"
+                                class="fa-solid h-full min-w-[2.5rem] lg:min-w-[3.4rem] rounded-md border-2 text-white"
                                 :class="readonly[i - 1] ? 'fa-pen bg-sky-600 border-sky-600 hover:bg-sky-700 active:bg-sky-600' : `fa-floppy-disk ${typeof (input[i - 1]) !== 'number' || loading.point[i - 1] ? 'bg-stone-300 border-stone-600 hover:bg-stone-300 active:bg-stone-300 !text-stone-600 cursor-not-allowed' : 'bg-amber-600 border-amber-600 hover:bg-amber-700 active:bg-amber-600'}`"></button>
                         </div>
                     </div>
                 </div>
-                <div>
-                    <mark class="md:!w-[16rem]">Warna Indikator</mark>
+                <div class="sm:pr-1.5">
+                    <mark class="sm:!w-[12rem]">Warna Indikator</mark>
                     <div :class="loading.data ? 'grid' : 'flex'"
-                        class="place-items-center flex-col gap-3.5 h-[15.35rem] xs:h-[20rem]">
+                        class="place-items-center flex-col gap-3.5 h-[15.35rem] xs:h-[16rem] lg:h-[20rem]">
                         <Spinner v-if="loading.data" :width="52" is="blocks" fill1="fill-rose-600" fill2="fill-emerald-600"
                             fill3="fill-amber-600" />
                         <div v-else v-for="color, i in colormap" :key="i" :class="color.color"
-                            class="w-[15.35rem] xs:w-[20rem] md:w-[16rem] h-10 lg:h-[2.604rem] border-[3px] rounded-md font-extrabold grid place-items-center">
+                            class="w-[15.35rem] xs:w-[20rem] sm:w-[12rem] h-10 lg:h-[3.4rem] border-[3px] rounded-md font-extrabold grid place-items-center">
                             {{ color.name }}</div>
                     </div>
                 </div>
@@ -373,17 +372,22 @@ const dis_color = 'bg-stone-200 text-stone-600 border-stone-600 !cursor-not-allo
                                 <span class="h-[2rem] text-sm font-bold text-rose-600 grid place-items-center">
                                     Pelanggaran Tata Tertib</span>
                                 <div class="flex flex-col gap-2.5">
-                                    <div v-for="i in 3" class="flex gap-2.5 [&>*]:h-8">
+                                    <div v-for="i in 2" class="flex gap-2.5 [&>*]:h-8">
                                         <button v-for="j in 2" :class="btn_transition"
                                             @click="violation(((i - 1) * 2 + (j - 1)), name[(i - 1) * 2 + (j - 1)])"
                                             class="btn w-full sm:w-[5.5rem] bg-rose-200 text-rose-600 border-2 border-rose-600">
                                             {{ name[(i - 1) * 2 + (j - 1)] }} - 10</button>
                                     </div>
+                                    <div class="[&>*]:h-8">
+                                        <button :class="btn_transition" @click="violation(4, name[4])"
+                                            class="btn w-full bg-rose-200 text-rose-600 border-2 border-rose-600">
+                                            {{ name[4] }} - 10</button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="flex w-full flex-col gap-2.5 [&>div]:flex [&>div]:gap-2.5 [&_.btn]:w-full">
                                 <div v-for="i in 3" class="flex gap-2.5">
-                                    <button v-for="j in 6" :disabled="i == 3 ? !disMin[j - 1] : disMin[j - 1]"
+                                    <button v-for="j in 5" :disabled="i == 3 ? !disMin[j - 1] : disMin[j - 1]"
                                         @click="i == 2 ? minScore(j - 1, name[j - 1]) : i == 3 ? undoMin(j - 1, name[j - 1]) : answer(((quest as any).index - 1), name[j - 1], color[j - 1], j - 1)"
                                         :class="[i == 3 ? 'h-10 xs:h-8 ' + (disMin[j - 1] ? `cursor-pointer ${btn_transition} ${btn_color}` : dis_color) : 'h-8 ' + (disMin[j - 1] ? dis_color : `cursor-pointer ${btn_transition} ${btn_color}`)]"
                                         class="btn flex flex-col xs:flex-row items-center justify-center xs:gap-1">
