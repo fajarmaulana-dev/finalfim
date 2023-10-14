@@ -1,6 +1,6 @@
 module.exports = (is, index, data, answerer) => {
   let analyzer = data;
-  const name = ["A", "B", "C", "D", "E", "F"];
+  const name = ["A", "B", "C", "D", "E"];
   const divider = is == "mces" ? 5 : 4;
   const watchTemp = JSON.stringify(analyzer.watcher);
   if (analyzer.reducer[0].length > 0 && analyzer.reducer[0].includes(index)) {

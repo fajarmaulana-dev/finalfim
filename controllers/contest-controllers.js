@@ -46,13 +46,13 @@ const createData = async (req, res, next) => {
       color: "border-sky-600 text-sky-600 bg-white",
       point: 30,
       question: `<p>Soal ${is} nomor ${i + 1} belum diedit.</p>`,
-      disMin: [...Array(6)].map((_, i) => false),
-      disTemp: [...Array(6)].map((_, i) => false),
+      disMin: [...Array(5)].map((_, i) => false),
+      disTemp: [...Array(5)].map((_, i) => false),
     };
   });
 
-  const color = ["rose", "sky", "amber", "emerald", "fuchsia", "orange"];
-  const contestants = [...Array(6)].map((_, i) => {
+  const color = ["rose", "sky", "amber", "emerald", "fuchsia"];
+  const contestants = [...Array(5)].map((_, i) => {
     return {
       name: String.fromCharCode(i + 65),
       color: color[i],
@@ -294,7 +294,7 @@ const setPoint = async (req, res, next) => {
 
 const setAnswer = async (req, res, next) => {
   let { is, index, answer, color, points, bonus, disMin } = req.body;
-  const name = ["A", "B", "C", "D", "E", "F"];
+  const name = ["A", "B", "C", "D", "E"];
   const wrong = Object.fromEntries([...Array(name.length)].map((_, i) => [name[i], disMin[i]]));
 
   let data;
@@ -347,7 +347,7 @@ const setAnswer = async (req, res, next) => {
           },
         ]);
       }
-      if (is == "mcjhs") {
+      if (is == "mcshs") {
         await SMeta.updateMany({}, [
           {
             $set: {
@@ -453,7 +453,7 @@ const resetData = async (req, res, next) => {
   const { is } = req.query;
   const sum = is === "mces" ? 25 : 16;
   const color = "border-sky-600 text-sky-600 bg-white";
-  const disMin = [...Array(6)].map((_, i) => false);
+  const disMin = [...Array(5)].map((_, i) => false);
   const answerer = [...Array(sum)].map((_, i) => "JC");
   const watcher = [...Array(4)].map((_, i) =>
     Object.fromEntries([...Array(Math.sqrt(sum))].map((_, i) => [i.toString(), ""]))
