@@ -10,10 +10,12 @@ const contestRoutes = require("./routes/contest-routes");
 const usersRoutes = require("./routes/users-routes");
 const app = express();
 
-app.use(cors({ credentials: true }));
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", process.env.BASE_URL);
-});
+app.use(
+  cors({
+    origin: process.env.BASE_URL,
+    credentials: true,
+  })
+);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
