@@ -12,8 +12,9 @@ const app = express();
 
 app.use(
   cors({
-    origin: [process.env.BASE_URL, "https://fimunnes.netlify.app/?sch=mces"],
+    origin: process.env.BASE_URL,
     credentials: true,
+    preflightContinue: true,
   })
 );
 app.use(bodyParser.urlencoded({ extended: true }));
