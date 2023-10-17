@@ -227,7 +227,7 @@ const socials = [
                 aria-label="Go to my website" target="_blank">Fajar Maulana</a><span class="text-amber-600">© {{ new
                     Date().getFullYear() }}</span>
         </div>
-        <div v-for="i in 10"
+        <div v-for="i in 10" v-once
             :style="`top: ${((i - 1) * 19)}rem; left: ${i % 2 === 0 ? (Math.round(Math.random() * 42)) : ''}vw; right: ${i % 2 !== 0 ? (Math.round(Math.random() * 27)) : ''}vw; transform: rotate(${((i - 0.65) * 10) + Math.round(Math.random() * 60)}deg)`"
             class="absolute !z-0">
             <div
@@ -240,7 +240,7 @@ const socials = [
                 <div class="dot down w-[12px] h-[8px] top-20 left-20"></div>
             </div>
         </div>
-        <div v-if="screenWidth >= 768" v-for="i in 5"
+        <div v-if="screenWidth >= 768" v-for="i in 5" v-once
             :style="`top: ${((i - 0.7) * 43)}rem; left: ${i % 2 === 0 ? (Math.round(Math.random() * 21)) : ''}vw; right: ${i % 2 !== 0 ? (Math.round(Math.random() * 38)) : ''}vw; transform: rotate(${((i - 0.35) * 20) + Math.round(Math.random() * 140)}deg)`"
             class="absolute !z-0">
             <div
