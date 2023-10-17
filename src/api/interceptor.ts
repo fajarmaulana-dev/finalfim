@@ -33,6 +33,7 @@ const setup = (store: any, router: any) => {
             Local.setLocalData('user', user);
             store.dispatch('login');
           } catch (error: any) {
+            console.log(error);
             if (error.message === 'Network Error') {
               router.replace('/auth?p=login');
             }
