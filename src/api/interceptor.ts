@@ -10,7 +10,7 @@ const diff_minutes = (date: any) => {
 const setup = (store: any, router: any) => {
   Api.interceptors.request.use(
     async (config: any) => {
-      const noAuth = ['login', 'sendmail', 'refresh'];
+      const noAuth = ['login', 'sendmail', 'refresh', 'logout'];
       if (
         !config.url.includes('reset') &&
         !noAuth.includes(config.url.split('/')[2])
