@@ -14,7 +14,6 @@ app.use(
   cors({
     origin: process.env.BASE_URL,
     credentials: true,
-    preflightContinue: true,
   })
 );
 app.use(bodyParser.urlencoded({ extended: true }));
