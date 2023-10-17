@@ -63,9 +63,10 @@ const setup = (store: any, router: any) => {
     },
     (err) => {
       if (err.message === 'Network Error') {
-        const is = err.config.params.is;
-        if (is) store.commit('spill', {is, to: true});
-        else router.replace('/auth?p=login');
+        if (err.config.params) {
+          const is = err.config.params.is;
+          if (is) store.commit('spill', {is, to: true});
+        } else router.replace('/auth?p=login');
       }
       return Promise.reject(err);
     },
