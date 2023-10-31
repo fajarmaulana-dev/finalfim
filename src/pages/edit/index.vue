@@ -20,7 +20,7 @@ const id = ref(route.query.id as string)
 const load = reactive({ init: false, more: false, quest: false })
 const message: any = reactive({ info: '', error: '' });
 const toast: any = reactive({ info: false, error: false });
-const many = ref(25)
+const many = ref(route.query.sch == 'mces' ? 25 : 16)
 const error = ref(false)
 const level = ['mces', 'mcjhs', 'mcshs']
 const core = async () => {
