@@ -163,7 +163,7 @@ const socials = [
 <template>
     <div v-if="is">
         <Menu :disabled="disabled()" :loading="load.reset" @reset="openReset()" />
-        <div v-if="error" class="min-h-screen px-[calc(.5rem+4vw)] py-[calc(4rem+4vw)]">
+        <div v-if="error" class="viet min-h-screen px-[calc(.5rem+4vw)] py-[calc(4rem+4vw)]">
             <div
                 class="w-full text-sm border-[.15rem] border-solid py-[0.375rem] px-3 rounded-md mb-5 bg-amber-200 text-amber-800 border-amber-800">
                 <p class="mb-3 font-bold !text-base">Kesalahan nilai query!</p>

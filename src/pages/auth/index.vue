@@ -64,7 +64,7 @@ const invalid = computed(() => pass.new === pass.conf ? '' : 'isian ini harus sa
 </script>
 
 <template>
-    <div v-if="!Object.keys(title).includes(is)" class="min-h-screen grid place-items-center">
+    <div v-if="!Object.keys(title).includes(is)" class="viet min-h-screen grid place-items-center">
         <div class="w-[80vw] max-w-[35rem] grid place-items-center">
             <img src="@/assets/notfound.avif" class="max-h-[50vh]" alt="Notfound Thumbnail" />
             <router-link to="/" style="transition: .4s;"

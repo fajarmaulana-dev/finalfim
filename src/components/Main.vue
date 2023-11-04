@@ -238,7 +238,7 @@ const dis_color = 'bg-stone-200 text-stone-600 border-stone-600 !cursor-not-allo
 </script>
 
 <template>
-    <div class="px-[calc(.5rem+4vw)] py-[calc(4rem+4vw)] [&_button]:select-none">
+    <div class="viet px-[calc(.5rem+4vw)] py-[calc(4rem+4vw)] [&_button]:select-none">
         <div v-if="ale.state"
             class="relative bg-amber-100 text-amber-700 mb-8 p-3 pr-12 border-2 border-amber-700 font-bold rounded-md">
             Jaringanmu bermasalah. Silakan cek terlebih dahulu koneksi internetmu.<br />Pesan : {{ ale.state }}<br />
@@ -358,7 +358,7 @@ const dis_color = 'bg-stone-200 text-stone-600 border-stone-600 !cursor-not-allo
                         <div class="px-[3vw] mt-5 mb-2 overflow-y-auto" style="transition: .5s;"
                             :style="`min-height: calc(100% - ${expand ? '27' : '3'}.25rem)`">
                             <div class="w-full text-sky-700 font-medium ql-snow">
-                                <div class="ql-editor" v-html="(quest as any)?.question"></div>
+                                <div class="ql-editor basic" v-html="(quest as any)?.question"></div>
                             </div>
                         </div>
                         <div

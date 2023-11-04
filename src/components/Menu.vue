@@ -38,7 +38,7 @@ const logout = async () => {
 
 <template>
     <header style="transition: .4s;"
-        class="z-[1] select-none bg-sky-50 shadow-[0_3px_5px_0] shadow-sky-200 px-4 h-[3.5rem] w-full fixed top-0 left-0 flex items-center justify-between">
+        class="viet z-[1] select-none bg-sky-50 shadow-[0_3px_5px_0] shadow-sky-200 px-4 h-[3.5rem] w-full fixed top-0 left-0 flex items-center justify-between">
         <div class="flex gap-3 items-center cursor-pointer" @click="router.push('/')">
             <div class="w-[1.65rem] grid place-items-center cursor-pointer" @click="router.push('/');">
                 <img src="@/assets/fimojempol.avif" width="26" height="50" alt="logo">
@@ -73,7 +73,7 @@ const logout = async () => {
         </div>
     </header>
     <footer v-if="!route.path.includes('auth')"
-        class="z-[1] select-none bg-sky-50 shadow-[0_-3px_5px_0] shadow-sky-200 h-[3.5rem] w-full fixed bottom-0 left-0 flex items-center justify-around">
+        class="viet z-[1] select-none bg-sky-50 shadow-[0_-3px_5px_0] shadow-sky-200 h-[3.5rem] w-full fixed bottom-0 left-0 flex items-center justify-around">
         <router-link v-for="foot, i in footer" :key="i"
             :to="route.path.includes('edit') ? `/edit?sch=${foot}${route.fullPath.includes('id') ? `&id=${route.query.id}` : ''}` : `/?sch=${foot}`"
             class="w-full h-full grid place-items-center" :class="route.query.sch == foot ? 'bg-sky-200' : ''">

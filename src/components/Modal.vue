@@ -79,7 +79,7 @@ if (is.value === 'success') {
 </script>
 
 <template>
-    <section class="fixed inset-0 z-[70] place-items-center bg-[#bae5fd46]" :class="container ? 'grid' : 'hidden'">
+    <section class="viet fixed inset-0 z-[70] place-items-center bg-[#bae5fd46]" :class="container ? 'grid' : 'hidden'">
         <div class="w-[72vw] max-w-[23rem] lg:max-w-[27rem] bg-sky-50 shadow-[0_0_8px_2px] shadow-sky-300 rounded-md p-[calc(.6rem+.6vw)] flex flex-col gap-[calc(.75rem+.75vw)]"
             :class="box ? 'scale-100' : 'scale-0'" style="transition: .2s;">
             <div class="w-full grid place-items-center [&>i]:text-[calc(4.5rem+1.5vw)]" :class="text">

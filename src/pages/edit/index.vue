@@ -127,7 +127,7 @@ const updateQuest = async ({ point, question }: any) => {
 
 <template>
     <Menu />
-    <div v-if="error" class="min-h-screen px-[calc(.5rem+4vw)] py-[calc(4rem+4vw)]">
+    <div v-if="error" class="viet min-h-screen px-[calc(.5rem+4vw)] py-[calc(4rem+4vw)]">
         <div
             class="w-full text-sm border-[.15rem] border-solid py-[0.375rem] px-3 rounded-md mb-5 bg-amber-200 text-amber-800 border-amber-800">
             <p class="mb-3 font-bold !text-base">Kesalahan nilai query!</p>
@@ -140,7 +140,7 @@ const updateQuest = async ({ point, question }: any) => {
         </div>
     </div>
     <Editor v-if="!error && id" :is="is" :id="id" :loading="load.quest" :data="quest" @update="updateQuest" />
-    <div v-if="!error && !id" class="px-[calc(.5rem+4vw)] pt-[calc(4rem+4vw)]"
+    <div v-if="!error && !id" class="viet px-[calc(.5rem+4vw)] pt-[calc(4rem+4vw)]"
         :class="datas.length < many ? 'pb-[calc(3.5rem+3.5vw)]' : 'pb-[calc(4rem+4vw)]'">
         <p class="text-2xl text-center font-extrabold text-sky-600 mb-[calc(1.25rem+1vw)]">
             Daftar Soal {{ is.toUpperCase() }}</p>
@@ -169,7 +169,7 @@ const updateQuest = async ({ point, question }: any) => {
                         </div>
                     </div>
                     <div class="rounded-b-md ql-snow">
-                        <div class="min-h-[5rem] rounded-b-md w-full bg-white text-sky-600 py-[.8rem] px-[.95rem] ql-editor"
+                        <div class="basic min-h-[5rem] rounded-b-md w-full bg-white text-sky-600 py-[.8rem] px-[.95rem] ql-editor"
                             v-html="data.question"></div>
                     </div>
                 </section>

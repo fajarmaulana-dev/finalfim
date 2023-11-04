@@ -48,12 +48,12 @@ const invalid = computed(() => ((typeof point.value !== 'number') || point.value
 </script>
 
 <template>
-    <div class="px-[calc(.5rem+4vw)] py-[calc(4rem+4vw)]">
+    <div class="viet px-[calc(.5rem+4vw)] py-[calc(4rem+4vw)]">
         <p class="text-2xl text-center font-extrabold text-sky-600 mb-[calc(1.25rem+1vw)]">
             Edit Soal {{ is.toUpperCase() }}</p>
         <div>
             <QuillEditor
-                class="!border-2 !border-sky-600 !bg-slate-50 !text-sky-600 !rounded-b-md !min-h-[2rem] !border-t-0 !text-base"
+                class="basic !border-2 !border-sky-600 !bg-slate-50 !text-sky-600 !rounded-b-md !min-h-[2rem] !border-t-0"
                 theme="snow" toolbar="#rich" v-model:content="quest" contentType="html" :modules="modules"
                 :placeholder="`Edit soal ${is.toUpperCase()} nomor ${id} disini ...`" id="richeditor" name="richeditor"
                 spellcheck="false">
@@ -105,5 +105,11 @@ const invalid = computed(() => ((typeof point.value !== 'number') || point.value
 
 :deep(.ql-editing input) {
     max-width: 20vw;
+    font-size: .9rem !important;
+}
+
+.basic,
+.basic * {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif !important;
 }
 </style>

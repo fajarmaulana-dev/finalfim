@@ -46,7 +46,7 @@ const onModel = (e: any) => emit('update:modelValue', e.target.value)
 </script>
 
 <template>
-    <section class="relative">
+    <section class="viet relative">
         <input v-if="is === 'text'" autocomplete="new-password" :required="true" :type="type" :id="id" :name="name"
             :disabled="disabled" :value="modelValue" @input="onModel($event)" spellcheck="false"
             @keyup.enter="emit('onEnter')" :class="ico.length > 0 ? 'pr-[calc(1.5rem+2.5vw)]' : ''"

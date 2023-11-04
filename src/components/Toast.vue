@@ -65,7 +65,7 @@ if (is.value === 'success') {
 </script>
 
 <template>
-    <section class="fixed z-[70] items-end justify-end bottom-0 left-0 w-full" :class="container ? 'flex' : 'hidden'">
+    <section class="viet fixed z-[70] items-end justify-end bottom-0 left-0 w-full" :class="container ? 'flex' : 'hidden'">
         <div :class="[style, box ? 'trans' : 'translate-y-[100%]']" style="transition: .5s;"
             class="w-fit max-w-[15rem] sm:max-w-[29rem] font-bold border-[.15rem] py-[0.375rem] px-3 rounded-md flex items-center gap-3 -translate-x-4">
             <i :class="`fa-solid fa-${ico}`" class=" text-2xl"></i>

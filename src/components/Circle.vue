@@ -23,7 +23,7 @@ const slice3 = () => 330 - Math.round(percent.value * 360);
 </script>
 
 <template>
-    <section class="select-none flex flex-col items-center gap-1">
+    <section class="viet select-none flex flex-col items-center gap-1">
         <div
             class="peer bg-sky-300 relative w-20 h-20 rounded-full overflow-hidden cursor-pointer [&>div]:absolute [&>div]:top-[50%] [&>div]:left-[50%] [&>div]:w-full [&>div]:h-full [&>div]:origin-top-left [&>div]:border-[1px] [&>div]:">
             <div :class="color" :style="`transform: rotate(270deg) skew(${slice1() < -30 ? -30 : slice1()}deg)`">
