@@ -53,7 +53,7 @@ const invalid = computed(() => ((typeof point.value !== 'number') || point.value
             Edit Soal {{ is.toUpperCase() }}</p>
         <div>
             <QuillEditor
-                class="basic !border-2 !border-sky-600 !bg-slate-50 !text-sky-600 !rounded-b-md !min-h-[2rem] !border-t-0"
+                class="basic !border-2 !border-sky-600 !bg-slate-50 [&_*]:!text-sky-600 !rounded-b-md !min-h-[2rem] !border-t-0"
                 theme="snow" toolbar="#rich" v-model:content="quest" contentType="html" :modules="modules"
                 :placeholder="`Edit soal ${is.toUpperCase()} nomor ${id} disini ...`" id="richeditor" name="richeditor"
                 spellcheck="false">

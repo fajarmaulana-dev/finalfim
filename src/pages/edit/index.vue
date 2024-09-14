@@ -169,7 +169,7 @@ const updateQuest = async ({ point, question }: any) => {
                         </div>
                     </div>
                     <div class="rounded-b-md ql-snow">
-                        <div class="basic min-h-[5rem] rounded-b-md w-full bg-white text-sky-600 py-[.8rem] px-[.95rem] ql-editor"
+                        <div class="basic min-h-[5rem] rounded-b-md w-full bg-white [&_*]:!text-sky-700 py-[.8rem] px-[.95rem] ql-editor"
                             v-html="data.question"></div>
                     </div>
                 </section>
