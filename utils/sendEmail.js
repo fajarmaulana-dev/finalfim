@@ -5,18 +5,12 @@ const sendEmail = async (email, subject, url, user) => {
   try {
     const transporter = nodemailer.createTransport({
       host: process.env.HOST,
-      port: 587,
-      tls: {
-        rejectUnauthorized: true,
-        minVersion: "TLSv1.2",
-      },
-      secure: false,
+      port: 465,
+      secure: true,
       auth: {
         user: "m.fajars.net",
         pass: process.env.PASS,
       },
-      debug: false,
-      logger: true,
     });
 
     await transporter.sendMail({
