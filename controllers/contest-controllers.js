@@ -1,4 +1,5 @@
 const HttpError = require("../utils/http-error");
+const mongoose = require("mongoose")
 const { EQuest, JQuest, SQuest } = require("../models/question");
 const { EPart, JPart, SPart } = require("../models/contestant");
 const { EMeta, JMeta, SMeta } = require("../models/meta");
@@ -344,6 +345,7 @@ const resetData = async (req, res, next) => {
       await session.abortTransaction();
       session.endSession();
     }
+    console.log(err)
     return next(new HttpError(bad, 500));
   }
 };
