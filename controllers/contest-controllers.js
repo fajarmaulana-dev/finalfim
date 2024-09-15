@@ -11,85 +11,75 @@ const createData = async (req, res, next) => {
   const { is } = req.query;
   const sum = is === "mces" ? 25 : 16;
   let quest, part, meta;
-  const getter = async (quest, part, meta) => {
-    quest = await quest.findOne();
-    part = await part.findOne();
-    meta = await meta.findOne();
+
+  const getter = async (questModel, partModel, metaModel, session) => {
+    quest = await questModel.findOne().session(session);
+    part = await partModel.findOne().session(session);
+    meta = await metaModel.findOne().session(session);
   };
-  try {
-    if (is == "mces") await getter(EQuest, EPart, EMeta);
-    if (is == "mcjhs") await getter(JQuest, JPart, JMeta);
-    if (is == "mcshs") await getter(SQuest, SPart, SMeta);
-  } catch (err) {
-    return next(new HttpError(bad, 500));
-  }
 
-  if (quest !== null && part !== null && meta !== null)
-    return next(
-      new HttpError(
-        `Inisiasi data telah dilakukan pada koleksi ${is}. Silakan reset koleksi terlebih dahulu untuk membuat inisiasi baru.`,
-        409
-      )
-    );
+  const creator = async (questModel, partModel, metaModel, session) => {
+    if (meta === null) await metaModel.create([metas], { session });
+    if (quest === null) await questModel.create(questions, { session });
+    if (part === null) await partModel.create(contestants, { session });
+  };
 
-  const questions = [...Array(sum)].map((_, i) => {
-    return {
-      index: i + 1,
-      answer: (i + 1).toString(),
-      color: "border-sky-600 text-sky-600 bg-white",
-      point: 30,
-      question: `<p>Soal ${is} nomor ${i + 1} belum diedit.</p>`,
-      disMin: [...Array(5)].map((_, i) => false),
-      disTemp: [...Array(5)].map((_, i) => false),
-    };
-  });
+  const questions = [...Array(sum)].map((_, i) => ({
+    index: i + 1,
+    answer: (i + 1).toString(),
+    color: "border-sky-600 text-sky-600 bg-white",
+    point: 30,
+    question: `<p>Soal ${is} nomor ${i + 1} belum diedit.</p>`,
+    disMin: [...Array(5)].map(() => false),
+    disTemp: [...Array(5)].map(() => false),
+  }));
 
   const color = ["rose", "sky", "amber", "emerald", "fuchsia"];
-  const contestants = [...Array(5)].map((_, i) => {
-    return {
-      name: String.fromCharCode(i + 65),
-      color: color[i],
-      point: 100,
-    };
-  });
+  const contestants = [...Array(5)].map((_, i) => ({
+    name: String.fromCharCode(i + 65),
+    color: color[i],
+    point: 100,
+  }));
 
   const metas = {
-    answerer: [...Array(sum)].map((_, i) => "JC"),
-    watcher: [...Array(4)].map((_, i) =>
+    answerer: [...Array(sum)].map(() => "JC"),
+    watcher: [...Array(4)].map(() =>
       Object.fromEntries([...Array(Math.sqrt(sum))].map((_, i) => [i.toString(), ""]))
     ),
     reducer: [[], []],
   };
 
-  const error = [];
-  const creator = async (quest, part, meta) => {
-    try {
-      if (meta === null) await meta.create(metas);
-    } catch (err) {
-      error.push("meta");
-    }
-    try {
-      if (quest === null) await quest.create(questions);
-    } catch (err) {
-      error.push("question");
-    }
-    try {
-      if (part === null) await part.create(contestants);
-    } catch (err) {
-      error.push("contestant");
-    }
-  };
-  try {
-    if (is == "mces") await creator(EQuest, EPart, EMeta);
-    if (is == "mcjhs") await creator(JQuest, JPart, JMeta);
-    if (is == "mcshs") await creator(SQuest, SPart, SMeta);
-  } catch (err) {
-    return next(new HttpError(`${bad} Error on ${error.join(", ")}`, 500));
-  }
+  let session;
 
-  res.status(200).json({
-    message: "Inisiasi data berhasil dilakukan.",
-  });
+  try {
+    session = await mongoose.startSession();
+    session.startTransaction();
+
+    if (is === "mces") await getter(EQuest, EPart, EMeta, session);
+    if (is === "mcjhs") await getter(JQuest, JPart, JMeta, session);
+    if (is === "mcshs") await getter(SQuest, SPart, SMeta, session);
+
+    if (quest !== null && part !== null && meta !== null) {
+      throw new Error(`Inisiasi data telah dilakukan pada koleksi ${is}. Silakan reset koleksi terlebih dahulu untuk membuat inisiasi baru.`);
+    }
+
+    if (is === "mces") await creator(EQuest, EPart, EMeta, session);
+    if (is === "mcjhs") await creator(JQuest, JPart, JMeta, session);
+    if (is === "mcshs") await creator(SQuest, SPart, SMeta, session);
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(200).json({
+      message: "Inisiasi data berhasil dilakukan.",
+    });
+  } catch (error) {
+    if (session) {
+      await session.abortTransaction();
+      session.endSession();
+    }
+    return next(new HttpError(bad, 500));
+  }
 };
 
 const remove = async (req, res, next) => {
@@ -223,102 +213,89 @@ const setPoint = async (req, res, next) => {
 const setAnswer = async (req, res, next) => {
   let { is, index, answer, color, points, bonus, disMin } = req.body;
   const name = ["A", "B", "C", "D", "E"];
-  const wrong = Object.fromEntries([...Array(name.length)].map((_, i) => [name[i], disMin[i]]));
 
   let data;
+  let session;
+
   try {
-    if (is == "mces") data = await EMeta.findOne();
-    if (is == "mcjhs") data = await JMeta.findOne();
-    if (is == "mcshs") data = await SMeta.findOne();
-  } catch (error) {
-    return next(new HttpError(bad, 500));
-  }
+    session = await mongoose.startSession();
+    session.startTransaction();
 
-  const initAnswer = data.answerer;
-  const answerer = initAnswer.map((i, idx) =>
-    i !== "JC" && idx !== index - 1 ? i : idx === index - 1 ? answer : "JC"
-  );
+    if (is === "mces") data = await EMeta.findOne().session(session);
+    if (is === "mcjhs") data = await JMeta.findOne().session(session);
+    if (is === "mcshs") data = await SMeta.findOne().session(session);
 
-  let decision;
-  if (JSON.stringify(initAnswer) !== JSON.stringify(answerer)) {
-    const { dec, newData } = analyze(is, index, data, answerer);
-    decision = dec;
-    if (dec !== null) {
-      if (dec.val < 0) points[name.indexOf(dec.before)] -= bonus;
-      else if (dec.val > 0) points[name.indexOf(dec.after)] += bonus;
-      else {
-        points[name.indexOf(dec.before)] -= bonus;
-        points[name.indexOf(dec.after)] += bonus;
-      }
+    if (!data) {
+      throw new Error('Meta data not found');
     }
 
-    const metaPatcher = async (meta) => {
-      await meta.updateMany({}, [
-        {
-          $set: {
-            answerer,
-            watcher: newData.watcher,
-            reducer: newData.reducer,
+    const initAnswer = data.answerer;
+    const answerer = initAnswer.map((i, idx) =>
+      i !== "JC" && idx !== index - 1 ? i : idx === index - 1 ? answer : "JC"
+    );
+
+    let decision;
+    if (JSON.stringify(initAnswer) !== JSON.stringify(answerer)) {
+      const { dec, newData } = analyze(is, index, data, answerer);
+      decision = dec;
+
+      if (dec !== null) {
+        if (dec.val < 0) points[name.indexOf(dec.before)] -= bonus;
+        else if (dec.val > 0) points[name.indexOf(dec.after)] += bonus;
+        else {
+          points[name.indexOf(dec.before)] -= bonus;
+          points[name.indexOf(dec.after)] += bonus;
+        }
+      }
+
+      const metaPatcher = async (metaModel) => {
+        await metaModel.updateMany({}, [
+          {
+            $set: {
+              answerer,
+              watcher: newData.watcher,
+              reducer: newData.reducer,
+            },
           },
-        },
-      ]);
+        ]).session(session);
+      };
+
+      if (is === "mces") await metaPatcher(EMeta);
+      if (is === "mcjhs") await metaPatcher(JMeta);
+      if (is === "mcshs") await metaPatcher(SMeta);
+    }
+
+    const questPatcher = async (questModel, partModel) => {
+      await questModel.updateOne({ index }, { answer, color, disMin, disTemp: disMin }).session(session);
+      await partModel.bulkWrite(
+        name.map((i, idx) => ({
+          updateOne: {
+            filter: { name: i },
+            update: { point: points[idx] },
+          },
+        })),
+        { session }
+      );
     };
 
-    try {
-      if (is == "mces") await metaPatcher(EMeta);
-      if (is == "mcjhs") await metaPatcher(JMeta);
-      if (is == "mcshs") await metaPatcher(SMeta);
-    } catch (err) {
-      return next(new HttpError(`${bad} Responden: ${answerer}, Wrong: ${wrong}`, 500));
+    if (is === "mces") await questPatcher(EQuest, EPart);
+    if (is === "mcjhs") await questPatcher(JQuest, JPart);
+    if (is === "mcshs") await questPatcher(SQuest, SPart);
+
+    await session.commitTransaction();
+    session.endSession();
+
+    if (JSON.stringify(initAnswer) !== JSON.stringify(answerer)) {
+      res.status(200).json({ message: "Berhasil memperbarui data.", decision });
+    } else {
+      res.status(200).json({ message: "Berhasil memperbarui data.", decision: null });
     }
-  }
-
-  const error = [];
-  const pointAfter = Object.fromEntries(
-    [...Array(name.length)].map((_, i) => [name[i], points[i]])
-  );
-
-  const questPatcher = async (quest, part) => {
-    try {
-      await quest.updateOne({ index }, { answer, color, disMin, disTemp: disMin });
-    } catch (err) {
-      error.push("quest");
+  } catch (error) {
+    if (session) {
+      await session.abortTransaction();
+      session.endSession();
     }
-    try {
-      await part.bulkWrite(
-        name.map((i, idx) => {
-          return {
-            updateOne: {
-              filter: { name: i },
-              update: { point: points[idx] },
-            },
-          };
-        })
-      );
-    } catch (err) {
-      error.push("part");
-    }
-  };
-
-  try {
-    if (is == "mces") await questPatcher(EQuest, EPart);
-    if (is == "mcjhs") await questPatcher(JQuest, JPart);
-    if (is == "mcshs") await questPatcher(SQuest, SPart);
-  } catch (err) {
-    return next(
-      new HttpError(
-        `${bad} ${
-          error[0] == "part" ? `Point: ${pointAfter}` : `Responden: ${answerer}, Wrong: ${wrong}`
-        }`,
-        500
-      )
-    );
-  }
-
-  if (JSON.stringify(initAnswer) !== JSON.stringify(answerer)) {
-    res.status(200).json({ message: "Berhasil memperbarui data.", decision });
-  } else {
-    res.status(200).json({ message: "Berhasil memperbarui data.", decision: null });
+    return next(new HttpError(bad, 500));
   }
 };
 
@@ -326,35 +303,49 @@ const resetData = async (req, res, next) => {
   const { is } = req.query;
   const sum = is === "mces" ? 25 : 16;
   const color = "border-sky-600 text-sky-600 bg-white";
-  const disMin = [...Array(5)].map((_, i) => false);
-  const answerer = [...Array(sum)].map((_, i) => "JC");
-  const watcher = [...Array(4)].map((_, i) =>
+  const disMin = [...Array(5)].map(() => false);
+  const answerer = [...Array(sum)].map(() => "JC");
+  const watcher = [...Array(4)].map(() =>
     Object.fromEntries([...Array(Math.sqrt(sum))].map((_, i) => [i.toString(), ""]))
   );
   const reducer = [[], []];
-  const patcher = async (quest, part, meta) => {
-    await meta.updateMany({}, [{ $set: { answerer, watcher, reducer } }]);
-    await quest.updateMany({}, [
-      {
-        $set: {
-          answer: { $toString: "$index" },
-          color,
-          disMin,
-          disTemp: disMin,
-        },
-      },
-    ]);
-    await part.updateMany({}, [{ $set: { point: 100 } }]);
-  };
+  
+  let session;
+
   try {
-    if (is == "mces") await patcher(EQuest, EPart, EMeta);
-    if (is == "mcjhs") await patcher(JQuest, JPart, JMeta);
-    if (is == "mcshs") await patcher(SQuest, SPart, SMeta);
+    session = await mongoose.startSession();
+    session.startTransaction();
+
+    const patcher = async (questModel, partModel, metaModel) => {
+      await metaModel.updateMany({}, [{ $set: { answerer, watcher, reducer } }], { session });
+      await questModel.updateMany({}, [
+        {
+          $set: {
+            answer: { $toString: "$index" },
+            color,
+            disMin,
+            disTemp: disMin,
+          },
+        },
+      ], { session });
+      await partModel.updateMany({}, [{ $set: { point: 100 } }], { session });
+    };
+
+    if (is === "mces") await patcher(EQuest, EPart, EMeta);
+    if (is === "mcjhs") await patcher(JQuest, JPart, JMeta);
+    if (is === "mcshs") await patcher(SQuest, SPart, SMeta);
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(200).json({ message: "Berhasil mereset data." });
   } catch (err) {
+    if (session) {
+      await session.abortTransaction();
+      session.endSession();
+    }
     return next(new HttpError(bad, 500));
   }
-
-  res.status(200).json({ message: "Berhasil mereset data." });
 };
 
 const update = async (req, res, next) => {

@@ -5,8 +5,12 @@ const sendEmail = async (email, subject, url, user) => {
   try {
     const transporter = nodemailer.createTransport({
       host: process.env.HOST,
-      port: 465,
-      secure: true,
+      port: 587,
+      tls: {
+        rejectUnauthorized: true,
+        minVersion: "TLSv1.2",
+      },
+      secure: false,
       auth: {
         user: "m.fajars.net",
         pass: process.env.PASS,
@@ -27,11 +31,9 @@ const sendEmail = async (email, subject, url, user) => {
             Password</a>
     </div>`,
     });
-
-    console.log("Email telah terkirim");
   } catch (error) {
-    console.log("Email gagal terkirim");
     console.log(error);
+    throw error
   }
 };
 
