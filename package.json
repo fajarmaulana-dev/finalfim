@@ -2,10 +2,9 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "backend side of fimapp",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "nodemon functions/api.js"
   },
   "repository": {
     "type": "git",
@@ -29,7 +28,8 @@
     "mongoose": "^6.7.0",
     "mongoose-unique-validator": "^3.1.0",
     "nanoid": "^3.3.4",
-    "nodemailer": "^6.8.0"
+    "nodemailer": "^6.8.0",
+    "serverless-http": "^3.2.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"

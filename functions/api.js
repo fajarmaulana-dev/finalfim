@@ -1,13 +1,14 @@
 require("dotenv").config();
 const express = require("express");
+const serverless = require('serverless-http');
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const HttpError = require("./utils/http-error");
+const HttpError = require("../utils/http-error");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-const contestRoutes = require("./routes/contest-routes");
-const usersRoutes = require("./routes/users-routes");
+const contestRoutes = require("../routes/contest-routes");
+const usersRoutes = require("../routes/users-routes");
 const app = express();
 
 app.use(
@@ -46,3 +47,5 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+
+module.exports.handler = serverless(app)
