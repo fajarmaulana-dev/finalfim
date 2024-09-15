@@ -23,7 +23,7 @@ app.use(cookieParser());
 app.use("/api/contest", contestRoutes);
 app.use("/api/users", usersRoutes);
 
-app.get("/", (req, res, next) => {
+app.get("/api", (req, res, next) => {
   res.status(200).json({
     message: "Success to build backend app",
   });
