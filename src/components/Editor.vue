@@ -43,7 +43,7 @@ const title: any = { info: 'Perbarui Soal', warning: 'Batalkan Editan' }
 
 const update = () => emit('update', { point: point.value, question: quest.value })
 const re = /(<span contenteditable="false">)|(<\/span>)|(﻿)|(( alt="quill-image-)\d+")/g
-const same = computed(() => temp.value?.question.replace(re, '') == quest.value.replace(re, ''))
+const same = computed(() => temp.value?.question.replace(re, '') == quest.value.replace(re, '') && temp.value?.point == point.value)
 const invalid = computed(() => ((typeof point.value !== 'number') || point.value < 1) || (quest.value === '<p><br></p>'))
 </script>
 
@@ -58,9 +58,9 @@ const invalid = computed(() => ((typeof point.value !== 'number') || point.value
                 :placeholder="`Edit soal ${is.toUpperCase()} nomor ${id} disini ...`" id="richeditor" name="richeditor"
                 spellcheck="false">
                 <template #toolbar>
-                    <Rich @save="modal.info = true"
-                        @cancel="same ? router.replace(`/edit?sch=${is}`) : modal.warning = true" saver :title="`No. ${id}`"
-                        :disabled="(invalid as boolean) || (same as boolean)" :loading="loading" />
+                    <Rich @save="modal.info = true" saver :loading="loading" :title="`No. ${id}`"
+                        @cancel="same ? router.replace(`/edit?sch=${is}`) : modal.warning = true"
+                        :disabled="(invalid as boolean) || (same as boolean)" />
                 </template>
             </QuillEditor>
             <section class="font-bold mt-2 text-sky-600 flex items-center gap-3">
@@ -79,7 +79,7 @@ const invalid = computed(() => ((typeof point.value !== 'number') || point.value
         :confirm-text="`Ya, ${txt == 'info' ? 'Perbarui' : 'Batalkan'}`" close-text="Edit Lagi">
         <span v-if="txt == 'warning'">Apakah kamu yakin ingin membatalkan editanmu saat ini ?</span>
         <span v-else>Apakah kamu yakin ingin memperbarui<br /><b>"Soal {{ is.toUpperCase() }} nomor {{ id
-        }}"</b> ini ?</span>
+                }}"</b> ini ?</span>
     </Modal>
 </template>
 
