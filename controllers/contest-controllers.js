@@ -1,5 +1,5 @@
 const HttpError = require("../utils/http-error");
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 const { EQuest, JQuest, SQuest } = require("../models/question");
 const { EPart, JPart, SPart } = require("../models/contestant");
 const { EMeta, JMeta, SMeta } = require("../models/meta");
@@ -60,8 +60,10 @@ const createData = async (req, res, next) => {
     if (is === "mcjhs") await getter(JQuest, JPart, JMeta, session);
     if (is === "mcshs") await getter(SQuest, SPart, SMeta, session);
 
-    if (quest !== null && part !== null && meta !== null) {
-      throw new Error(`Inisiasi data telah dilakukan pada koleksi ${is}. Silakan reset koleksi terlebih dahulu untuk membuat inisiasi baru.`);
+    if (quest && part && meta) {
+      throw new Error(
+        `Inisiasi data telah dilakukan pada koleksi ${is}. Silakan reset koleksi terlebih dahulu untuk membuat inisiasi baru.`
+      );
     }
 
     if (is === "mces") await creator(EQuest, EPart, EMeta, session);
@@ -227,7 +229,7 @@ const setAnswer = async (req, res, next) => {
     if (is === "mcshs") data = await SMeta.findOne().session(session);
 
     if (!data) {
-      throw new Error('Meta data not found');
+      throw new Error("Meta data not found");
     }
 
     const initAnswer = data.answerer;
@@ -240,7 +242,7 @@ const setAnswer = async (req, res, next) => {
       const { dec, newData } = analyze(is, index, data, answerer);
       decision = dec;
 
-      if (dec !== null) {
+      if (dec) {
         if (dec.val < 0) points[name.indexOf(dec.before)] -= bonus;
         else if (dec.val > 0) points[name.indexOf(dec.after)] += bonus;
         else {
@@ -250,15 +252,17 @@ const setAnswer = async (req, res, next) => {
       }
 
       const metaPatcher = async (metaModel) => {
-        await metaModel.updateMany({}, [
-          {
-            $set: {
-              answerer,
-              watcher: newData.watcher,
-              reducer: newData.reducer,
+        await metaModel
+          .updateMany({}, [
+            {
+              $set: {
+                answerer,
+                watcher: newData.watcher,
+                reducer: newData.reducer,
+              },
             },
-          },
-        ]).session(session);
+          ])
+          .session(session);
       };
 
       if (is === "mces") await metaPatcher(EMeta);
@@ -267,7 +271,9 @@ const setAnswer = async (req, res, next) => {
     }
 
     const questPatcher = async (questModel, partModel) => {
-      await questModel.updateOne({ index }, { answer, color, disMin, disTemp: disMin }).session(session);
+      await questModel
+        .updateOne({ index }, { answer, color, disMin, disTemp: disMin })
+        .session(session);
       await partModel.bulkWrite(
         name.map((i, idx) => ({
           updateOne: {
@@ -310,7 +316,7 @@ const resetData = async (req, res, next) => {
     Object.fromEntries([...Array(Math.sqrt(sum))].map((_, i) => [i.toString(), ""]))
   );
   const reducer = [[], []];
-  
+
   let session;
 
   try {
@@ -319,16 +325,20 @@ const resetData = async (req, res, next) => {
 
     const patcher = async (questModel, partModel, metaModel) => {
       await metaModel.updateMany({}, [{ $set: { answerer, watcher, reducer } }], { session });
-      await questModel.updateMany({}, [
-        {
-          $set: {
-            answer: { $toString: "$index" },
-            color,
-            disMin,
-            disTemp: disMin,
+      await questModel.updateMany(
+        {},
+        [
+          {
+            $set: {
+              answer: { $toString: "$index" },
+              color,
+              disMin,
+              disTemp: disMin,
+            },
           },
-        },
-      ], { session });
+        ],
+        { session }
+      );
       await partModel.updateMany({}, [{ $set: { point: 100 } }], { session });
     };
 
@@ -345,7 +355,7 @@ const resetData = async (req, res, next) => {
       await session.abortTransaction();
       session.endSession();
     }
-    console.log(err)
+    console.log(err);
     return next(new HttpError(bad, 500));
   }
 };

@@ -69,7 +69,9 @@ module.exports = (is, index, data, answerer) => {
     const exist = tempMaker.find((m) => analyzer.reducer[0].includes(m));
 
     const adder = () => {
+      console.log(tempMaker);
       analyzer.reducer[0].push(...tempMaker);
+      console.log(analyzer.reducer[0]);
       analyzer.reducer[1].push(
         ...[
           [idx, id],
@@ -87,7 +89,7 @@ module.exports = (is, index, data, answerer) => {
       ) {
         let spl = analyzer.reducer[0].indexOf(exist);
         if (analyzer.reducer[0].some((m) => m == exist - indic && rule(m, exist))) {
-          spl = analyzer.reducer[0].indexOf(exist - indic);
+          spl = analyzer.reducer[0].indexOf(exist - indic) - 1;
         }
         analyzer.reducer[0].splice(spl, 3, ...arr);
         adder();
@@ -172,7 +174,7 @@ module.exports = (is, index, data, answerer) => {
 
   const decision = (a, b) => {
     const compare = (c, d) => c.split("").find((i, idx) => c[idx] !== d[idx]);
-    const filter = (e) => JSON.stringify(e.split("").filter((i, idx) => name.includes(i)));
+    const filter = (e) => JSON.stringify(e.split("").filter((i) => name.includes(i)));
     if (a.length > b.length) return { before: "", after: compare(a, `${b}$`), val: 1 };
     else if (a.length < b.length) return { before: compare(b, `${a}$`), after: "", val: -1 };
     else
