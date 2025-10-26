@@ -31,11 +31,6 @@ router.post(
 router.post("/refresh", usersControllers.refresh);
 router.post("/sendmail", usersControllers.sendLink);
 router.patch("/reset", [...checkPass("password")], usersControllers.resetPass);
-router.post(
-  "/signup",
-  [checkMail, ...checkPass("password")],
-  usersControllers.signup
-);
 router.get("/", usersControllers.getUsers);
 router.get("/logout", usersControllers.logout);
 
@@ -44,6 +39,11 @@ router.patch(
   "/update/:id",
   [...checkPass("password"), ...checkPass("newPassword")],
   usersControllers.changePass
+);
+router.post(
+  "/signup",
+  [checkMail, ...checkPass("password")],
+  usersControllers.signup
 );
 
 module.exports = router;
