@@ -11,7 +11,7 @@ import { Form, Field } from 'vee-validate';
 import * as yup from 'yup';
 import { useStore } from 'vuex'
 
-const { message, toast, sendmail, login, reset, update } = useAuth()
+const { message, toast, sendmail, login, reset, update, register } = useAuth()
 const store = useStore()
 const router = useRouter()
 const route = useRoute()
@@ -28,7 +28,8 @@ const send = async () => {
         }
         if (is.value == 'reset') await reset((route.query.id as string), (route.query.token as string), { password: pass.new })
         if (is.value == 'update') await update(id.value, { password: pass.def, newPassword: pass.new })
-        if (message.success.length > 0) {
+        if (is.value === 'register') await register({ email: email.value, password: pass.new })
+        if (message.success.length > 0 && is.value !== 'register') {
             setTimeout(() => {
                 router.replace(is.value == 'reset' ? '/auth?p=login' : (route.query.redirect as string || '/?sch=mces'))
             }, 3700)
@@ -48,9 +49,9 @@ const email = ref('')
 const seen: any = reactive({ def: false, new: false, conf: false })
 const pass: any = reactive({ def: '', new: '', conf: '' })
 const placeholder = ['Kata Sandi', 'Sandi Baru', 'Ketik Ulang']
-const title: any = { login: 'Login', forgot: 'Request Token Penggantian Sandi', reset: 'Reset Kata Sandi', update: 'Perbarui Kata Sandi' }
-const button: any = { login: 'LOGIN', forgot: 'Request Token', reset: 'RESET', update: 'PERBARUI' }
-const exist = [['login', 'update'], ['reset', 'update'], ['reset', 'update']]
+const title: any = { login: 'Login', forgot: 'Request Token Penggantian Sandi', reset: 'Reset Kata Sandi', update: 'Perbarui Kata Sandi', register: 'Tambah Akun' }
+const button: any = { login: 'LOGIN', forgot: 'Request Token', reset: 'RESET', update: 'PERBARUI', register: 'TAMBAHKAN' }
+const exist = [['login', 'update'], ['reset', 'update', 'register'], ['reset', 'update', 'register']]
 
 const passval = (x: string) => yup.string().required(`kata sandi${x} wajib diisi`).matches(/[A-Z]/, `kata sandi${x} harus memuat minimal 1 huruf kapital`).matches(/[a-z]/, `kata sandi${x} harus memuat minimal 1 huruf kecil`).matches(/\d/, `kata sandi${x} harus memuat minimal 1 angka`).matches(/[\W+_]/, `kata sandi${x} harus memuat minimal 1 karakter unik`).min(8, `kata sandi${x} harus terdiri dari minimal 8 karakter`).matches(/^\S+$/, `kata sandi${x} tidak boleh memuat spasi`)
 const mailval = yup.string().required('email wajib diisi').matches(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'email tidak valid')
@@ -82,9 +83,7 @@ const invalid = computed(() => pass.new === pass.conf ? '' : 'isian ini harus sa
                     </div>
                     <p
                         class="w-full text-center font-extrabold md:text-lg text-sky-600 leading-6 md:leading-7 mt-0 sm:mt-2">
-                        {{
-                            title[is]
-                        }}<br />
+                        {{ title[is] }}<br />
                         <span class="text-teal-600" v-if="is !== 'forgot'">Forum Ilmiah Matematika Nasional</span>
                     </p>
                 </div>
@@ -93,7 +92,7 @@ const invalid = computed(() => pass.new === pass.conf ? '' : 'isian ini harus sa
                         <p v-if="is == 'forgot'" class="text-xs font-bold text-sky-600 mb-4">
                             Ketikkan emailmu disini untuk menerima token penggantian sandi.
                         </p>
-                        <Field v-if="is == 'login' || is == 'forgot'" v-slot="{ field, errorMessage }" name="email">
+                        <Field v-if="is == 'login' || is == 'forgot' || is === 'register'" v-slot="{ field, errorMessage }" name="email">
                             <SimpleText placeholder="Email" id="email" width="w-36" type="text" v-model="email"
                                 @on-enter="!(meta.valid && meta.dirty) || loading || pass.new !== pass.conf ? false : send()"
                                 v-bind="field" />
@@ -121,9 +120,8 @@ const invalid = computed(() => pass.new === pass.conf ? '' : 'isian ini harus sa
                         </button>
                         <router-link
                             class="text-xs font-bold flex justify-center text-sky-600 hover:text-teal-700 active:text-sky-600 mt-1"
-                            :to="is == 'update' ? (route.query.redirect as string || '/?sch=mces') : `/auth?p=${is == 'login' ? 'forgot' : 'login'}`"
-                            style="transition: .4s;">{{ is == 'update' ? '< Ke Beranda' : is == 'login' ? 'Lupa kata sandi ?'
-                                : '< Kembali ke Login' }}</router-link>
+                            :to="is == 'update' || is === 'register' ? (route.query.redirect as string || '/?sch=mces') : `/auth?p=${is == 'login' ? 'forgot' : 'login'}`"
+                            style="transition: .4s;">{{ is == 'update' || is === 'register' ? '< Ke Beranda' : is == 'login' ? 'Lupa kata sandi ?' : '< Kembali ke Login' }}</router-link>
                     </Form>
                     <div class="w-[19rem] hidden sm:block relative">
                         <img class="absolute -bottom-6" width="300" height="600" src="@/assets/flip.avif" alt="fimo">

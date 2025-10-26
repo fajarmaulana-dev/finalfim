@@ -33,6 +33,7 @@ export const useAuth = () => {
     composs(Api.patch(`/users/reset?id=${id}&token=${token}`, data));
   const update = async (id: string, data: any) =>
     composs(Api.patch(`/users/update/${id}`, data));
+  const register = async (data: any) => composs(Api.post(`/users/signup`, data))
 
   return {
     message,
@@ -41,5 +42,6 @@ export const useAuth = () => {
     sendmail,
     reset,
     update,
+    register
   };
 };
