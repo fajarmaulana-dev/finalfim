@@ -9,6 +9,7 @@ const cors = require("cors");
 
 const contestRoutes = require("../routes/contest-routes");
 const usersRoutes = require("../routes/users-routes");
+const { initScheduler } = require("../utils/scheduler");
 const app = express();
 
 app.use(
@@ -43,7 +44,10 @@ app.use((error, req, res, next) => {
 mongoose.set("strictQuery", false);
 mongoose
   .connect(process.env.DATABASE_URL, { useNewUrlParser: true })
-  .then(() => app.listen(5000))
+  .then(() => {
+    initScheduler();
+    app.listen(5000);
+  })
   .catch((err) => {
     console.log(err);
   });
